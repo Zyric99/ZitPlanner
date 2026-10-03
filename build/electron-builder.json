@@ -1,0 +1,36 @@
+{
+  "appId": "be.klaslokaal.desktop",
+  "productName": "Zitplanner",
+  "directories": { "output": "dist", "buildResources": "assets" },
+  "files": [
+    "src/**/*",
+    "desktop/**/*",
+    "assets/klaslokaal.ico",
+    "assets/klaslokaal.png",
+    "defaults/standaard-project.json",
+    "LICENSE",
+    "package.json"
+  ],
+  "asar": true,
+  "npmRebuild": false,
+  "win": {
+    "target": [{ "target": "nsis", "arch": ["x64"] }],
+    "icon": "assets/klaslokaal.ico",
+    "artifactName": "Zitplanner-Setup-${version}-${arch}.${ext}"
+  },
+  "nsis": {
+    "include": "build/installer.nsh",
+    "oneClick": false,
+    "perMachine": false,
+    "selectPerMachineByDefault": false,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Zitplanner",
+    "uninstallDisplayName": "Zitplanner",
+    "installerLanguages": ["nl_NL"],
+    "deleteAppDataOnUninstall": false,
+    "runAfterFinish": true
+  }
+}

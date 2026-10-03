@@ -1,0 +1,6368 @@
+{
+  "version": 2,
+  "state": {
+    "students": [
+      {
+        "id": "d1ea0f18-aaac-4bf6-b95a-17df23b689b5",
+        "name": "Adam Aerts",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Adam",
+        "lastName": "Aerts",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "616a5ec7-4e07-4efa-9a78-20937a4a4cee",
+        "name": "Gilles Aerts",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Gilles",
+        "lastName": "Aerts",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "78a2a4be-d6eb-4a7d-8cfd-05f967de5b66",
+        "name": "Ines Baert",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Ines",
+        "lastName": "Baert",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "74dc7ffe-3e2b-49be-973a-b6e378973abd",
+        "name": "Mathis Baert",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Mathis",
+        "lastName": "Baert",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "b29eb986-286f-4ede-9c6f-bdf2111e2c3d",
+        "name": "Noor Bogaert",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Noor",
+        "lastName": "Bogaert",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "4916bb9c-8bc8-48d4-9822-28cbd0611bc3",
+        "name": "Yara Bogaert",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Yara",
+        "lastName": "Bogaert",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "31c9b4e2-bf06-40ee-92e3-bc524a1be88a",
+        "name": "Amelie Bosmans",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Amelie",
+        "lastName": "Bosmans",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "897cd86b-8cdb-4936-8321-f227b1f3ff27",
+        "name": "Hanne Bosmans",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Hanne",
+        "lastName": "Bosmans",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "479116d9-0320-4417-960b-89db7e478bb2",
+        "name": "Jasper Claes",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Jasper",
+        "lastName": "Claes",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "5a2e39c5-26ab-43c8-b9cb-abb0b5a0d4b3",
+        "name": "Milan Claes",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Milan",
+        "lastName": "Claes",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "a562723f-cb75-4fbd-ac1c-401966254e80",
+        "name": "Olivia Coppens",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Olivia",
+        "lastName": "Coppens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "9a95300f-eaea-4ee2-b9ec-c676ea84fc8f",
+        "name": "Yasmine Coppens",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Yasmine",
+        "lastName": "Coppens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "3dfc89a3-6a9f-4fcd-9ee5-f09c2462f0d1",
+        "name": "Arthur De Backer",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Arthur",
+        "lastName": "De Backer",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "ae17f01a-d0a2-48b4-a2fe-e70da9f6d37d",
+        "name": "Hugo De Backer",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Hugo",
+        "lastName": "De Backer",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "8b5778f1-30f9-448e-b589-96d6b8133a27",
+        "name": "Jules De Clercq",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Jules",
+        "lastName": "De Clercq",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "5100eb00-10d7-4ceb-874e-5f23faadb4ee",
+        "name": "Nina De Clercq",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Nina",
+        "lastName": "De Clercq",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "332a0a0d-d897-4452-a488-1f57c8ac36a7",
+        "name": "Oscar De Cock",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Oscar",
+        "lastName": "De Cock",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "924d9a82-6984-43ad-8705-22ed7c9b62dd",
+        "name": "Zoë De Cock",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Zoë",
+        "lastName": "De Cock",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "6eb3b0f6-2676-4e7e-a636-4af5d9ec1fda",
+        "name": "Bram De Graeve",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Bram",
+        "lastName": "De Graeve",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "ab5ead0e-0300-4f4a-807b-f9c83bfc7b7b",
+        "name": "Ilias De Graeve",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Ilias",
+        "lastName": "De Graeve",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "083535ec-216d-4fd1-b41b-049b27520441",
+        "name": "Kato De Meyer",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Kato",
+        "lastName": "De Meyer",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "92ff2f42-d9c6-49d3-bb7c-9b6f7ceba156",
+        "name": "Noah De Meyer",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Noah",
+        "lastName": "De Meyer",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "1c7cf5ae-c62a-4b08-82fc-3f3368f1b095",
+        "name": "Adam De Smet",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Adam",
+        "lastName": "De Smet",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "6b5c627a-cb8d-4afb-bc7e-e44270db14ce",
+        "name": "Ruben De Smet",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Ruben",
+        "lastName": "De Smet",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "90d5404d-f6ae-42b0-9c07-64e572a137c4",
+        "name": "Camille De Vos",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Camille",
+        "lastName": "De Vos",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "851a0391-c3b7-44f8-a738-ca5484f722fc",
+        "name": "Ines De Vos",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Ines",
+        "lastName": "De Vos",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "4bc0aca8-f65f-42cf-a5d7-8a172c26cab6",
+        "name": "Lars Declercq",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Lars",
+        "lastName": "Declercq",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "45406c32-a870-4bae-bbb2-6e7fd58b5442",
+        "name": "Noor Declercq",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Noor",
+        "lastName": "Declercq",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "aac6e49f-2344-4408-9f01-3045aaa5f186",
+        "name": "Amelie Desmet",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Amelie",
+        "lastName": "Desmet",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "94fd2887-c543-4a55-b8ec-3888c3959e67",
+        "name": "Sam Desmet",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Sam",
+        "lastName": "Desmet",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "76e272df-581a-405b-ba40-175cbbabf8b3",
+        "name": "Celine Devos",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Celine",
+        "lastName": "Devos",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "5061a151-ab33-424e-9c56-eea0bdb8ceae",
+        "name": "Jasper Devos",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Jasper",
+        "lastName": "Devos",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "59cf2f40-dd11-455a-aeb3-71b213298054",
+        "name": "Laura Dierckx",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Laura",
+        "lastName": "Dierckx",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "471d9adc-f858-4f8f-b9f7-e481394c5c20",
+        "name": "Olivia Dierckx",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Olivia",
+        "lastName": "Dierckx",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "9f11322c-bbf7-46ba-9c0c-f0617e731768",
+        "name": "Arthur Dubois",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Arthur",
+        "lastName": "Dubois",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "e649cf10-e6e1-4afd-9686-c2f06d0ef538",
+        "name": "Sarah Dubois",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Sarah",
+        "lastName": "Dubois",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "87963df3-b80b-4f77-a7e6-48b2698627ca",
+        "name": "Daan Dumont",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Daan",
+        "lastName": "Dumont",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "a69ff6d0-eda4-454f-af4b-0aaea214ca8d",
+        "name": "Jules Dumont",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Jules",
+        "lastName": "Dumont",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "deb6c880-5af3-46a5-a8d5-22bee390630d",
+        "name": "Lena Goossens",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Lena",
+        "lastName": "Goossens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "b47a2d5f-6f5a-4252-a111-d8b9004343cc",
+        "name": "Oscar Goossens",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Oscar",
+        "lastName": "Goossens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "074c0a14-fd4a-4795-b8f5-64178698d09f",
+        "name": "Bram Hermans",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Bram",
+        "lastName": "Hermans",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "16eae68c-2565-4970-a621-4b6cc0e3f956",
+        "name": "Senne Hermans",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Senne",
+        "lastName": "Hermans",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "5d3a6518-b15f-4885-be6a-7f6209aa6dbc",
+        "name": "Elena Jacobs",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Elena",
+        "lastName": "Jacobs",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "914cd636-a848-494d-b85d-c75a3248ae73",
+        "name": "Kato Jacobs",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Kato",
+        "lastName": "Jacobs",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "0c8938b2-0a06-4509-acf9-705761876d34",
+        "name": "Leon Janssens",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Leon",
+        "lastName": "Janssens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "038f6804-763e-43b2-bbf6-3c1a275622af",
+        "name": "Ruben Janssens",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Ruben",
+        "lastName": "Janssens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "d445c079-a6dc-4cce-a00e-c3125e6dfad4",
+        "name": "Camille Lambrechts",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Camille",
+        "lastName": "Lambrechts",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "57d51cc7-97cc-439e-bd46-b51a4470ce22",
+        "name": "Sofia Lambrechts",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Sofia",
+        "lastName": "Lambrechts",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "3e5355c4-8b9b-4dd6-9226-bb73ec9ae1d9",
+        "name": "Elias Leclercq",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Elias",
+        "lastName": "Leclercq",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "20136b9b-bac6-4b59-9923-0c43e1932c51",
+        "name": "Lars Leclercq",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Lars",
+        "lastName": "Leclercq",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "0389ca36-88f1-4cea-b820-ba964d6cf3b9",
+        "name": "Liam Maes",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Liam",
+        "lastName": "Maes",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "b537c44f-e26e-47d1-8bcf-dafb87b054a3",
+        "name": "Sam Maes",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Sam",
+        "lastName": "Maes",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "7bd9ba44-6bf8-42a3-a7e5-39ec299fb0fb",
+        "name": "Celine Martens",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Celine",
+        "lastName": "Martens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "5f7492f5-902e-429b-b6c2-82e2a25d221b",
+        "name": "Stan Martens",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Stan",
+        "lastName": "Martens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "ae42bd89-4c61-4a79-bff5-c54f50059fa9",
+        "name": "Emma Mertens",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Emma",
+        "lastName": "Mertens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "037a68ca-1b4b-4029-bddb-e0662a0314f3",
+        "name": "Laura Mertens",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Laura",
+        "lastName": "Mertens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "dd03928b-f614-4bd3-90b6-b471fe8839e4",
+        "name": "Lotte Michiels",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Lotte",
+        "lastName": "Michiels",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "1810eb72-d547-42ba-bf6a-e818578c6265",
+        "name": "Sarah Michiels",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Sarah",
+        "lastName": "Michiels",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "119e7c16-70d6-431b-bc5a-13f6930bc66d",
+        "name": "Daan Peeters",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Daan",
+        "lastName": "Peeters",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "d0590ce8-b42e-4962-ba53-ad55a8b8ad40",
+        "name": "Thomas Peeters",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Thomas",
+        "lastName": "Peeters",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "3f37e5af-878b-4217-941e-cf3ade262875",
+        "name": "Fien Pieters",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Fien",
+        "lastName": "Pieters",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "41958b2b-141f-4f92-86d5-8ee3d5cd229d",
+        "name": "Lena Pieters",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Lena",
+        "lastName": "Pieters",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "9fb8d38d-0468-4e5b-a7a6-b6f0100230f4",
+        "name": "Louise Sels",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Louise",
+        "lastName": "Sels",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "d71e254c-a934-40af-89ca-4fbc1b4ed4a7",
+        "name": "Senne Sels",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Senne",
+        "lastName": "Sels",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "89739ce3-2e2e-4ccb-a0ae-93b68ab1e497",
+        "name": "Elena Simons",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Elena",
+        "lastName": "Simons",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "85274871-7c73-45ba-8296-bd3cd1ab4bea",
+        "name": "Tuur Simons",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Tuur",
+        "lastName": "Simons",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "d5267b5e-597c-41ef-b0a9-91b71c79d30b",
+        "name": "Finn Smets",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Finn",
+        "lastName": "Smets",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "7a2fb7a1-8f25-49ec-8da5-f578d0d13b44",
+        "name": "Leon Smets",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Leon",
+        "lastName": "Smets",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "75259dae-9b64-40af-a2d7-f16717b87eb0",
+        "name": "Lucas Stevens",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Lucas",
+        "lastName": "Stevens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "466e5363-ccda-437a-a917-df410dd4c373",
+        "name": "Sofia Stevens",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Sofia",
+        "lastName": "Stevens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "3432fc25-4940-4b10-8e2f-2803f90a70c4",
+        "name": "Elias Thijs",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Elias",
+        "lastName": "Thijs",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "31402e82-e16a-40bc-ad84-115b10f09bb7",
+        "name": "Victor Thijs",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Victor",
+        "lastName": "Thijs",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "986965d6-b81f-4207-b9ac-515a60da32ea",
+        "name": "Florence Van Acker",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Florence",
+        "lastName": "Van Acker",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "2579be42-10fa-46c7-960c-8a56faa4d854",
+        "name": "Liam Van Acker",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Liam",
+        "lastName": "Van Acker",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "bc880871-ec0a-4d9c-8183-197296dde56f",
+        "name": "Marie Van Damme",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Marie",
+        "lastName": "Van Damme",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "34a19b08-2cc3-4a64-9a5a-2a5322ef2589",
+        "name": "Stan Van Damme",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Stan",
+        "lastName": "Van Damme",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "8b811e86-5670-4274-8148-d99fa46f0dcf",
+        "name": "Emma Van de Velde",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Emma",
+        "lastName": "Van de Velde",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "2593b2a5-ac75-4705-b13e-0134a7e84b13",
+        "name": "Wout Van de Velde",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Wout",
+        "lastName": "Van de Velde",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "e9a4203a-ab28-42d2-b73e-5b4082fb552c",
+        "name": "Gilles Van den Berg",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Gilles",
+        "lastName": "Van den Berg",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "1174b8d3-932b-449e-92e5-18e7537e7678",
+        "name": "Lotte Van den Berg",
+        "class": "DEMO-5BASa1",
+        "year": "5",
+        "absent": false,
+        "firstName": "Lotte",
+        "lastName": "Van den Berg",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "e02baf41-6598-4a3f-8583-d1ee3c281d08",
+        "name": "Mathis Van den Broeck",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Mathis",
+        "lastName": "Van den Broeck",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "d48e58f0-1dd1-44a5-b8f5-c0317cc07c30",
+        "name": "Thomas Van den Broeck",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Thomas",
+        "lastName": "Van den Broeck",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "eab1b202-ba51-467f-8c63-f9dd0aff6e79",
+        "name": "Fien Van der Linden",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Fien",
+        "lastName": "Van der Linden",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "6196aec2-b48d-442a-a2f2-4d377975caf4",
+        "name": "Yara Van der Linden",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Yara",
+        "lastName": "Van der Linden",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "641a1931-16b3-4711-8da0-6ed781cd1b37",
+        "name": "Hanne Van Dijk",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Hanne",
+        "lastName": "Van Dijk",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "a0b86944-485a-4570-8ac7-3892fd738d1f",
+        "name": "Louise Van Dijk",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Louise",
+        "lastName": "Van Dijk",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "62d481c1-f56d-4453-ad67-6313f459875b",
+        "name": "Milan Van Hecke",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Milan",
+        "lastName": "Van Hecke",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "a8316f91-f12b-4da8-985a-f291c3eaf73d",
+        "name": "Tuur Van Hecke",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Tuur",
+        "lastName": "Van Hecke",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "3e897f6d-5558-40df-ba66-7f5c976a31a4",
+        "name": "Finn Vandenberghe",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Finn",
+        "lastName": "Vandenberghe",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "f21a59ed-2c4c-41bf-aff8-ab2abfb39c2c",
+        "name": "Yasmine Vandenberghe",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Yasmine",
+        "lastName": "Vandenberghe",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "e711be64-0e03-4e47-b2ea-79f7036b63c7",
+        "name": "Hugo Verhaegen",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Hugo",
+        "lastName": "Verhaegen",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "0a2e70d5-2077-4dc4-99c5-e3c655881736",
+        "name": "Lucas Verhaegen",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Lucas",
+        "lastName": "Verhaegen",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "9b083413-76f5-41ff-bdd5-922fe7b90faf",
+        "name": "Nina Vermeulen",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Nina",
+        "lastName": "Vermeulen",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "0339fc44-aa6b-462d-aed8-4b8b870c7f43",
+        "name": "Victor Vermeulen",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Victor",
+        "lastName": "Vermeulen",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "afdc4737-9699-4b9c-a424-bdd2c2218e6a",
+        "name": "Florence Verschueren",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Florence",
+        "lastName": "Verschueren",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "6d788ec6-5bae-47c3-9891-f13036579090",
+        "name": "Zoë Verschueren",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Zoë",
+        "lastName": "Verschueren",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "6054d54b-0f10-4ad7-b6e7-06776ab84c67",
+        "name": "Ilias Willems",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Ilias",
+        "lastName": "Willems",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "aef63c88-1a06-492c-acce-41f36aca5348",
+        "name": "Marie Willems",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Marie",
+        "lastName": "Willems",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "4a7cb5f6-2832-413d-b721-8fdeb2fda8dd",
+        "name": "Noah Wouters",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Noah",
+        "lastName": "Wouters",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "3e740a82-4522-4d01-9e62-466ca0de34f6",
+        "name": "Wout Wouters",
+        "class": "DEMO-5BASa2",
+        "year": "5",
+        "absent": false,
+        "firstName": "Wout",
+        "lastName": "Wouters",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "6df722a6-94bb-4ef8-9a7d-67e5deb19208",
+        "name": "Lotte Aerts",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Lotte",
+        "lastName": "Aerts",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "88ea554a-148d-4aec-8a75-280d72648d62",
+        "name": "Sarah Aerts",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Sarah",
+        "lastName": "Aerts",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "c63bc91a-c3b4-445a-a4e7-09acc35251a9",
+        "name": "Daan Baert",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Daan",
+        "lastName": "Baert",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "3f672658-9a3b-4d5b-816e-57e0ef72e9e1",
+        "name": "Thomas Baert",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Thomas",
+        "lastName": "Baert",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "12bc6e21-3883-4fe7-9d64-19cdbc885f93",
+        "name": "Fien Bogaert",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Fien",
+        "lastName": "Bogaert",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "67dd560e-7f17-4835-b059-c82142cf78d5",
+        "name": "Lena Bogaert",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Lena",
+        "lastName": "Bogaert",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "92b12175-51e7-47d4-95a9-597afefe667d",
+        "name": "Louise Bosmans",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Louise",
+        "lastName": "Bosmans",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "2e568607-32b0-4c9d-8ec3-d00bac6dafa5",
+        "name": "Senne Bosmans",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Senne",
+        "lastName": "Bosmans",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "52038669-4655-4313-b54d-df49997de55a",
+        "name": "Elena Claes",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Elena",
+        "lastName": "Claes",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "5d48511b-c58b-4793-8956-8eb4778f3709",
+        "name": "Tuur Claes",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Tuur",
+        "lastName": "Claes",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "eb3d5696-0f99-4722-85b5-c3ee6b0566a2",
+        "name": "Finn Coppens",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Finn",
+        "lastName": "Coppens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "b31cffb9-7880-4e4b-8faf-6e3ee6640676",
+        "name": "Leon Coppens",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Leon",
+        "lastName": "Coppens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "a75ff153-2204-4d3d-8f92-e58b3d9b8d2c",
+        "name": "Lucas De Backer",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Lucas",
+        "lastName": "De Backer",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "2d16ce18-e507-467a-96dd-7223b67b9656",
+        "name": "Sofia De Backer",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Sofia",
+        "lastName": "De Backer",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "7c36ee74-52f9-47ce-bcc2-ababa8eb6200",
+        "name": "Elias De Clercq",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Elias",
+        "lastName": "De Clercq",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "2decca95-5f55-4cbe-937b-572032d9658f",
+        "name": "Victor De Clercq",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Victor",
+        "lastName": "De Clercq",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "1f342b4e-37ba-4901-b218-cbbc9f9b5e53",
+        "name": "Florence De Cock",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Florence",
+        "lastName": "De Cock",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "578ede6e-2ac5-40b6-bac1-23795af68407",
+        "name": "Liam De Cock",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Liam",
+        "lastName": "De Cock",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "d42d5281-991e-4afc-a1a4-9efc7ef77480",
+        "name": "Marie De Graeve",
+        "class": "DEMO-1BASa1",
+        "year": "1",
+        "absent": false,
+        "firstName": "Marie",
+        "lastName": "De Graeve",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "e76ef37c-7380-4441-a80a-d2e150381f41",
+        "name": "Stan De Graeve",
+        "class": "DEMO-3BASa2",
+        "year": "3",
+        "absent": false,
+        "firstName": "Stan",
+        "lastName": "De Graeve",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "7d84c0f4-3172-4fb6-b291-2760302a5853",
+        "name": "Emma De Meyer",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Emma",
+        "lastName": "De Meyer",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "110d48e3-f750-4723-b71f-d0c96a711e9a",
+        "name": "Wout De Meyer",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Wout",
+        "lastName": "De Meyer",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "2c64f55d-412b-4c4a-aa05-e2a5323f1964",
+        "name": "Gilles De Smet",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Gilles",
+        "lastName": "De Smet",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "074e1876-76e6-47ec-9e8b-c98a0ee9b49f",
+        "name": "Lotte De Smet",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Lotte",
+        "lastName": "De Smet",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "dfd31266-c4e7-497a-b50c-01de11136bb7",
+        "name": "Mathis De Vos",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Mathis",
+        "lastName": "De Vos",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "4ff31e75-61d9-4353-99ff-42abcfa50dbb",
+        "name": "Thomas De Vos",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Thomas",
+        "lastName": "De Vos",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "11d089bb-e259-4328-b586-bee2883ccec7",
+        "name": "Fien Declercq",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Fien",
+        "lastName": "Declercq",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "1b2ee199-6aee-45a3-9d7c-5fa791a5cfc8",
+        "name": "Yara Declercq",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Yara",
+        "lastName": "Declercq",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "00bd22ea-5c1f-4605-95b8-c45c6a4a7bcb",
+        "name": "Hanne Desmet",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Hanne",
+        "lastName": "Desmet",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "5a3006f4-f691-4d8f-a303-da339fa71f08",
+        "name": "Louise Desmet",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Louise",
+        "lastName": "Desmet",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "deea61ac-04fc-4738-bd8a-9153edfcd86e",
+        "name": "Milan Devos",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Milan",
+        "lastName": "Devos",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "9c0c7d6b-0061-44e0-a435-4d4e7a5c5201",
+        "name": "Tuur Devos",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Tuur",
+        "lastName": "Devos",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "7a83041d-9998-45c6-ad37-42ecc3a26148",
+        "name": "Finn Dierckx",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Finn",
+        "lastName": "Dierckx",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "4795c472-a9e4-426e-82f7-0f6b7a572e38",
+        "name": "Yasmine Dierckx",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Yasmine",
+        "lastName": "Dierckx",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "5e627426-727f-42c6-85da-389f0284d937",
+        "name": "Hugo Dubois",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Hugo",
+        "lastName": "Dubois",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "78d457a1-2ff8-4c9f-aa92-726b217c60d4",
+        "name": "Lucas Dubois",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Lucas",
+        "lastName": "Dubois",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "00de0bdb-df9b-486e-a5e0-8613c12414f1",
+        "name": "Nina Dumont",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Nina",
+        "lastName": "Dumont",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "dc3ce91a-5ed3-4bb9-9cfc-6a74084893e9",
+        "name": "Victor Dumont",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Victor",
+        "lastName": "Dumont",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "2ecb0e37-3a01-495d-aa44-a8ce0ab6b69a",
+        "name": "Florence Goossens",
+        "class": "DEMO-4BASa1",
+        "year": "4",
+        "absent": false,
+        "firstName": "Florence",
+        "lastName": "Goossens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "41b6c933-2832-40fe-868a-a075329cca9d",
+        "name": "Zoë Goossens",
+        "class": "DEMO-1BASa2",
+        "year": "1",
+        "absent": false,
+        "firstName": "Zoë",
+        "lastName": "Goossens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "b7e82018-531e-4a1e-850f-6d111e4a8b14",
+        "name": "Ilias Hermans",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Ilias",
+        "lastName": "Hermans",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "54f85005-ec7a-4ad4-beea-a7569c682f30",
+        "name": "Marie Hermans",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Marie",
+        "lastName": "Hermans",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "62b863f6-9b4c-4f19-a812-ea13e5b5a1fe",
+        "name": "Noah Jacobs",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Noah",
+        "lastName": "Jacobs",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "95dc838f-4323-45d6-9ff8-0183542f468a",
+        "name": "Wout Jacobs",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Wout",
+        "lastName": "Jacobs",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "653517a1-5a28-41a3-a50d-a02d91fb497d",
+        "name": "Adam Janssens",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Adam",
+        "lastName": "Janssens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "c54d16f9-b84a-40f6-b344-2fdb05c7c727",
+        "name": "Gilles Janssens",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Gilles",
+        "lastName": "Janssens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "b29774ae-eada-440a-91d1-34ab79d40420",
+        "name": "Ines Lambrechts",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Ines",
+        "lastName": "Lambrechts",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "2e602f4a-a64a-495b-b1c2-76ed6137b877",
+        "name": "Mathis Lambrechts",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Mathis",
+        "lastName": "Lambrechts",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "6ccddb32-67b9-4a7e-908b-0ecb501b78d1",
+        "name": "Noor Leclercq",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Noor",
+        "lastName": "Leclercq",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "9dc665ba-1b1d-423a-8203-95265f647f1c",
+        "name": "Yara Leclercq",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Yara",
+        "lastName": "Leclercq",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "cf255bd1-0fd0-447f-ba06-365a88b8de3c",
+        "name": "Amelie Maes",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Amelie",
+        "lastName": "Maes",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "f557bd93-bd0b-45f0-8e43-529e4acb3fc6",
+        "name": "Hanne Maes",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Hanne",
+        "lastName": "Maes",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "28249fa9-8bac-4ce4-92fa-e88224d51e0b",
+        "name": "Jasper Martens",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Jasper",
+        "lastName": "Martens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "c5aa85aa-4153-43fe-9aba-b12cb1cb11dc",
+        "name": "Milan Martens",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Milan",
+        "lastName": "Martens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "917f8ba0-c0f1-4e5a-aa71-8a22fef58971",
+        "name": "Olivia Mertens",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Olivia",
+        "lastName": "Mertens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "7884f6e5-45b4-4d89-bd15-87460f63c391",
+        "name": "Yasmine Mertens",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Yasmine",
+        "lastName": "Mertens",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "b4b35fdf-d7fa-45d1-9e1f-dbf7758e0f3b",
+        "name": "Arthur Michiels",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Arthur",
+        "lastName": "Michiels",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "d0c2c406-9c31-40e0-9e7d-047eb87e5261",
+        "name": "Hugo Michiels",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Hugo",
+        "lastName": "Michiels",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "24a63a5c-2ad8-464d-9202-811e5540a7fb",
+        "name": "Jules Peeters",
+        "class": "DEMO-2BASa1",
+        "year": "2",
+        "absent": false,
+        "firstName": "Jules",
+        "lastName": "Peeters",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "e420a7a8-7158-4f05-89c4-55672bf9574b",
+        "name": "Nina Peeters",
+        "class": "DEMO-4BASa2",
+        "year": "4",
+        "absent": false,
+        "firstName": "Nina",
+        "lastName": "Peeters",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "6cec2ded-fff8-4707-be76-0685307ab4b4",
+        "name": "Oscar Pieters",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Oscar",
+        "lastName": "Pieters",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "0ab75f61-ad90-4e0c-b085-3eab48de5a30",
+        "name": "Bram Sels",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Bram",
+        "lastName": "Sels",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "67405c47-729d-4446-a94b-e1e19ad7f1e6",
+        "name": "Kato Simons",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Kato",
+        "lastName": "Simons",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "3d9fae34-2e75-4469-ad24-009a706436ec",
+        "name": "Ruben Smets",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Ruben",
+        "lastName": "Smets",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "149dec11-c578-4af2-a835-3fe818b0696e",
+        "name": "Camille Stevens",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Camille",
+        "lastName": "Stevens",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "76fb6e3a-2cf6-4288-b892-f054cf9d6171",
+        "name": "Lars Thijs",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Lars",
+        "lastName": "Thijs",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "c03c2b74-a250-4903-be23-9a67c089f8d6",
+        "name": "Sam Van Acker",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Sam",
+        "lastName": "Van Acker",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "95d277b7-e8ac-4f6a-ae13-df540e3fcf8a",
+        "name": "Celine Van Damme",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Celine",
+        "lastName": "Van Damme",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "a8df332c-b6f8-4d3b-9b70-ca8a501b5a23",
+        "name": "Laura Van de Velde",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Laura",
+        "lastName": "Van de Velde",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "04088e86-1dbc-49ef-84de-86bd3b17acf7",
+        "name": "Sarah Van den Berg",
+        "class": "DEMO-2BASa2",
+        "year": "2",
+        "absent": false,
+        "firstName": "Sarah",
+        "lastName": "Van den Berg",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "b6362ba2-cba3-43a0-a26c-b88de65b3977",
+        "name": "Daan Van den Broeck",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Daan",
+        "lastName": "Van den Broeck",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "e5e79df7-00de-43a2-a859-9b3f81781c00",
+        "name": "Lena Van der Linden",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Lena",
+        "lastName": "Van der Linden",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "98624cc7-d654-4e9b-914c-b2dd40381db3",
+        "name": "Senne Van Dijk",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Senne",
+        "lastName": "Van Dijk",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "d30e2e86-ce68-4893-b463-689d64863f28",
+        "name": "Elena Van Hecke",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Elena",
+        "lastName": "Van Hecke",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "11f27ca6-f283-4d7c-b42e-b41d706326a7",
+        "name": "Leon Vandenberghe",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Leon",
+        "lastName": "Vandenberghe",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "07a32448-5165-434a-9b94-8ade26384e8b",
+        "name": "Sofia Verhaegen",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Sofia",
+        "lastName": "Verhaegen",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "ecd71da4-7203-4b36-b353-bf52e4e31565",
+        "name": "Elias Vermeulen",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Elias",
+        "lastName": "Vermeulen",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Nee"
+        }
+      },
+      {
+        "id": "056c7675-9e8e-47bc-b8d1-15da7e5cd166",
+        "name": "Liam Verschueren",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Liam",
+        "lastName": "Verschueren",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Nee",
+          "donderdag": "Nee",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "8de73b1d-d17a-40f4-bb88-f13aeaef681a",
+        "name": "Stan Willems",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Stan",
+        "lastName": "Willems",
+        "eveningStudy": {
+          "maandag": "Ja",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Ja"
+        }
+      },
+      {
+        "id": "1d7e62ca-d8a5-4844-9fad-5cbea2a52000",
+        "name": "Emma Wouters",
+        "class": "DEMO-3BASa1",
+        "year": "3",
+        "absent": false,
+        "firstName": "Emma",
+        "lastName": "Wouters",
+        "eveningStudy": {
+          "maandag": "Nee",
+          "dinsdag": "Ja",
+          "donderdag": "Ja",
+          "vrijdag": "Nee"
+        }
+      }
+    ],
+    "rules": [],
+    "settings": {
+      "rows": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2
+      ],
+      "disabled": [],
+      "sections": [
+        {
+          "id": "area-AJ",
+          "from": "A",
+          "to": "J",
+          "enabled": true,
+          "builtin": true
+        },
+        {
+          "id": "area-LU",
+          "from": "L",
+          "to": "U",
+          "enabled": true,
+          "builtin": true
+        },
+        {
+          "id": "area-VY",
+          "from": "V",
+          "to": "Y",
+          "enabled": false,
+          "builtin": true
+        },
+        {
+          "id": "area-KK",
+          "from": "K",
+          "to": "K",
+          "enabled": false,
+          "builtin": true
+        },
+        {
+          "id": "area-ZZ",
+          "from": "Z",
+          "to": "Z",
+          "enabled": false,
+          "builtin": true
+        }
+      ],
+      "placementMode": "ordered",
+      "ordered": {
+        "axis": "columns",
+        "horizontal": "left",
+        "vertical": "top",
+        "seatSide": 0,
+        "startRows": {}
+      },
+      "classRules": {
+        "default": {
+          "type": "gap",
+          "priority": "Zachte voorkeur"
+        },
+        "overrides": {}
+      },
+      "yearRules": [],
+      "classRulesEnabled": false,
+      "yearRulesEnabled": true,
+      "studentRulesEnabled": false,
+      "layout": {
+        "kind": "custom",
+        "version": 2,
+        "grid": {
+          "from": "A",
+          "to": "Z",
+          "rows": 4,
+          "columnStep": 4,
+          "rowStep": 6,
+          "firstRow": 1
+        },
+        "columns": 108,
+        "rows": 29,
+        "gaps": [
+          {
+            "after": "J",
+            "width": 2
+          },
+          {
+            "after": "K",
+            "width": 2
+          },
+          {
+            "after": "U",
+            "width": 1
+          }
+        ],
+        "rowGaps": [],
+        "sections": [],
+        "removed": [
+          "K1",
+          "K4",
+          "Z1",
+          "Z4",
+          "Z2",
+          "V1",
+          "W1",
+          "X1",
+          "Y1",
+          "J1",
+          "L1"
+        ],
+        "benches": [
+          {
+            "id": "grid-A1",
+            "code": "A1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 0,
+            "gy": 1,
+            "sortX": 0,
+            "sortY": 6,
+            "cell": {
+              "column": "A",
+              "row": 1
+            },
+            "anchor": "A"
+          },
+          {
+            "id": "grid-A2",
+            "code": "A2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 0,
+            "gy": 7,
+            "sortX": 0,
+            "sortY": 12,
+            "cell": {
+              "column": "A",
+              "row": 2
+            },
+            "anchor": "A"
+          },
+          {
+            "id": "grid-A3",
+            "code": "A3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 0,
+            "gy": 13,
+            "sortX": 0,
+            "sortY": 18,
+            "cell": {
+              "column": "A",
+              "row": 3
+            },
+            "anchor": "A"
+          },
+          {
+            "id": "grid-A4",
+            "code": "A4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 0,
+            "gy": 19,
+            "sortX": 0,
+            "sortY": 24,
+            "cell": {
+              "column": "A",
+              "row": 4
+            },
+            "anchor": "A"
+          },
+          {
+            "id": "grid-B1",
+            "code": "B1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 4,
+            "gy": 1,
+            "sortX": 6,
+            "sortY": 6,
+            "cell": {
+              "column": "B",
+              "row": 1
+            },
+            "anchor": "B"
+          },
+          {
+            "id": "grid-B2",
+            "code": "B2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 4,
+            "gy": 7,
+            "sortX": 6,
+            "sortY": 12,
+            "cell": {
+              "column": "B",
+              "row": 2
+            },
+            "anchor": "B"
+          },
+          {
+            "id": "grid-B3",
+            "code": "B3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 4,
+            "gy": 13,
+            "sortX": 6,
+            "sortY": 18,
+            "cell": {
+              "column": "B",
+              "row": 3
+            },
+            "anchor": "B"
+          },
+          {
+            "id": "grid-B4",
+            "code": "B4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 4,
+            "gy": 19,
+            "sortX": 6,
+            "sortY": 24,
+            "cell": {
+              "column": "B",
+              "row": 4
+            },
+            "anchor": "B"
+          },
+          {
+            "id": "grid-C1",
+            "code": "C1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 8,
+            "gy": 1,
+            "sortX": 12,
+            "sortY": 6,
+            "cell": {
+              "column": "C",
+              "row": 1
+            },
+            "anchor": "C"
+          },
+          {
+            "id": "grid-C2",
+            "code": "C2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 8,
+            "gy": 7,
+            "sortX": 12,
+            "sortY": 12,
+            "cell": {
+              "column": "C",
+              "row": 2
+            },
+            "anchor": "C"
+          },
+          {
+            "id": "grid-C3",
+            "code": "C3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 8,
+            "gy": 13,
+            "sortX": 12,
+            "sortY": 18,
+            "cell": {
+              "column": "C",
+              "row": 3
+            },
+            "anchor": "C"
+          },
+          {
+            "id": "grid-C4",
+            "code": "C4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 8,
+            "gy": 19,
+            "sortX": 12,
+            "sortY": 24,
+            "cell": {
+              "column": "C",
+              "row": 4
+            },
+            "anchor": "C"
+          },
+          {
+            "id": "grid-D1",
+            "code": "D1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 12,
+            "gy": 1,
+            "sortX": 18,
+            "sortY": 6,
+            "cell": {
+              "column": "D",
+              "row": 1
+            },
+            "anchor": "D"
+          },
+          {
+            "id": "grid-D2",
+            "code": "D2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 12,
+            "gy": 7,
+            "sortX": 18,
+            "sortY": 12,
+            "cell": {
+              "column": "D",
+              "row": 2
+            },
+            "anchor": "D"
+          },
+          {
+            "id": "grid-D3",
+            "code": "D3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 12,
+            "gy": 13,
+            "sortX": 18,
+            "sortY": 18,
+            "cell": {
+              "column": "D",
+              "row": 3
+            },
+            "anchor": "D"
+          },
+          {
+            "id": "grid-D4",
+            "code": "D4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 12,
+            "gy": 19,
+            "sortX": 18,
+            "sortY": 24,
+            "cell": {
+              "column": "D",
+              "row": 4
+            },
+            "anchor": "D"
+          },
+          {
+            "id": "grid-E1",
+            "code": "E1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 16,
+            "gy": 1,
+            "sortX": 24,
+            "sortY": 6,
+            "cell": {
+              "column": "E",
+              "row": 1
+            },
+            "anchor": "E"
+          },
+          {
+            "id": "grid-E2",
+            "code": "E2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 16,
+            "gy": 7,
+            "sortX": 24,
+            "sortY": 12,
+            "cell": {
+              "column": "E",
+              "row": 2
+            },
+            "anchor": "E"
+          },
+          {
+            "id": "grid-E3",
+            "code": "E3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 16,
+            "gy": 13,
+            "sortX": 24,
+            "sortY": 18,
+            "cell": {
+              "column": "E",
+              "row": 3
+            },
+            "anchor": "E"
+          },
+          {
+            "id": "grid-E4",
+            "code": "E4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 16,
+            "gy": 19,
+            "sortX": 24,
+            "sortY": 24,
+            "cell": {
+              "column": "E",
+              "row": 4
+            },
+            "anchor": "E"
+          },
+          {
+            "id": "grid-F1",
+            "code": "F1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 20,
+            "gy": 1,
+            "sortX": 30,
+            "sortY": 6,
+            "cell": {
+              "column": "F",
+              "row": 1
+            },
+            "anchor": "F"
+          },
+          {
+            "id": "grid-F2",
+            "code": "F2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 20,
+            "gy": 7,
+            "sortX": 30,
+            "sortY": 12,
+            "cell": {
+              "column": "F",
+              "row": 2
+            },
+            "anchor": "F"
+          },
+          {
+            "id": "grid-F3",
+            "code": "F3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 20,
+            "gy": 13,
+            "sortX": 30,
+            "sortY": 18,
+            "cell": {
+              "column": "F",
+              "row": 3
+            },
+            "anchor": "F"
+          },
+          {
+            "id": "grid-F4",
+            "code": "F4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 20,
+            "gy": 19,
+            "sortX": 30,
+            "sortY": 24,
+            "cell": {
+              "column": "F",
+              "row": 4
+            },
+            "anchor": "F"
+          },
+          {
+            "id": "grid-G1",
+            "code": "G1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 24,
+            "gy": 1,
+            "sortX": 36,
+            "sortY": 6,
+            "cell": {
+              "column": "G",
+              "row": 1
+            },
+            "anchor": "G"
+          },
+          {
+            "id": "grid-G2",
+            "code": "G2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 24,
+            "gy": 7,
+            "sortX": 36,
+            "sortY": 12,
+            "cell": {
+              "column": "G",
+              "row": 2
+            },
+            "anchor": "G"
+          },
+          {
+            "id": "grid-G3",
+            "code": "G3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 24,
+            "gy": 13,
+            "sortX": 36,
+            "sortY": 18,
+            "cell": {
+              "column": "G",
+              "row": 3
+            },
+            "anchor": "G"
+          },
+          {
+            "id": "grid-G4",
+            "code": "G4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 24,
+            "gy": 19,
+            "sortX": 36,
+            "sortY": 24,
+            "cell": {
+              "column": "G",
+              "row": 4
+            },
+            "anchor": "G"
+          },
+          {
+            "id": "grid-H1",
+            "code": "H1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 28,
+            "gy": 1,
+            "sortX": 42,
+            "sortY": 6,
+            "cell": {
+              "column": "H",
+              "row": 1
+            },
+            "anchor": "H"
+          },
+          {
+            "id": "grid-H2",
+            "code": "H2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 28,
+            "gy": 7,
+            "sortX": 42,
+            "sortY": 12,
+            "cell": {
+              "column": "H",
+              "row": 2
+            },
+            "anchor": "H"
+          },
+          {
+            "id": "grid-H3",
+            "code": "H3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 28,
+            "gy": 13,
+            "sortX": 42,
+            "sortY": 18,
+            "cell": {
+              "column": "H",
+              "row": 3
+            },
+            "anchor": "H"
+          },
+          {
+            "id": "grid-H4",
+            "code": "H4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 28,
+            "gy": 19,
+            "sortX": 42,
+            "sortY": 24,
+            "cell": {
+              "column": "H",
+              "row": 4
+            },
+            "anchor": "H"
+          },
+          {
+            "id": "grid-I1",
+            "code": "I1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 32,
+            "gy": 1,
+            "sortX": 48,
+            "sortY": 6,
+            "cell": {
+              "column": "I",
+              "row": 1
+            },
+            "anchor": "I"
+          },
+          {
+            "id": "grid-I2",
+            "code": "I2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 32,
+            "gy": 7,
+            "sortX": 48,
+            "sortY": 12,
+            "cell": {
+              "column": "I",
+              "row": 2
+            },
+            "anchor": "I"
+          },
+          {
+            "id": "grid-I3",
+            "code": "I3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 32,
+            "gy": 13,
+            "sortX": 48,
+            "sortY": 18,
+            "cell": {
+              "column": "I",
+              "row": 3
+            },
+            "anchor": "I"
+          },
+          {
+            "id": "grid-I4",
+            "code": "I4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 32,
+            "gy": 19,
+            "sortX": 48,
+            "sortY": 24,
+            "cell": {
+              "column": "I",
+              "row": 4
+            },
+            "anchor": "I"
+          },
+          {
+            "id": "grid-J2",
+            "code": "J2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 36,
+            "gy": 7,
+            "sortX": 54,
+            "sortY": 12,
+            "cell": {
+              "column": "J",
+              "row": 2
+            },
+            "anchor": "J"
+          },
+          {
+            "id": "grid-J3",
+            "code": "J3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 36,
+            "gy": 13,
+            "sortX": 54,
+            "sortY": 18,
+            "cell": {
+              "column": "J",
+              "row": 3
+            },
+            "anchor": "J"
+          },
+          {
+            "id": "grid-J4",
+            "code": "J4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "left",
+            "enabled": true,
+            "gx": 36,
+            "gy": 19,
+            "sortX": 54,
+            "sortY": 24,
+            "cell": {
+              "column": "J",
+              "row": 4
+            },
+            "anchor": "J"
+          },
+          {
+            "id": "grid-K2",
+            "code": "K2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "down",
+            "enabled": false,
+            "gx": 40,
+            "gy": 7,
+            "sortX": 60,
+            "sortY": 12,
+            "cell": {
+              "column": "K",
+              "row": 2
+            },
+            "anchor": "K"
+          },
+          {
+            "id": "grid-K3",
+            "code": "K3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "down",
+            "enabled": false,
+            "gx": 40,
+            "gy": 13,
+            "sortX": 60,
+            "sortY": 18,
+            "cell": {
+              "column": "K",
+              "row": 3
+            },
+            "anchor": "K"
+          },
+          {
+            "id": "grid-L2",
+            "code": "L2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 44,
+            "gy": 7,
+            "sortX": 66,
+            "sortY": 12,
+            "cell": {
+              "column": "L",
+              "row": 2
+            },
+            "anchor": "L"
+          },
+          {
+            "id": "grid-L3",
+            "code": "L3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 44,
+            "gy": 13,
+            "sortX": 66,
+            "sortY": 18,
+            "cell": {
+              "column": "L",
+              "row": 3
+            },
+            "anchor": "L"
+          },
+          {
+            "id": "grid-L4",
+            "code": "L4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 44,
+            "gy": 19,
+            "sortX": 66,
+            "sortY": 24,
+            "cell": {
+              "column": "L",
+              "row": 4
+            },
+            "anchor": "L"
+          },
+          {
+            "id": "grid-M1",
+            "code": "M1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 48,
+            "gy": 1,
+            "sortX": 72,
+            "sortY": 6,
+            "cell": {
+              "column": "M",
+              "row": 1
+            },
+            "anchor": "M"
+          },
+          {
+            "id": "grid-M2",
+            "code": "M2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 48,
+            "gy": 7,
+            "sortX": 72,
+            "sortY": 12,
+            "cell": {
+              "column": "M",
+              "row": 2
+            },
+            "anchor": "M"
+          },
+          {
+            "id": "grid-M3",
+            "code": "M3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 48,
+            "gy": 13,
+            "sortX": 72,
+            "sortY": 18,
+            "cell": {
+              "column": "M",
+              "row": 3
+            },
+            "anchor": "M"
+          },
+          {
+            "id": "grid-M4",
+            "code": "M4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 48,
+            "gy": 19,
+            "sortX": 72,
+            "sortY": 24,
+            "cell": {
+              "column": "M",
+              "row": 4
+            },
+            "anchor": "M"
+          },
+          {
+            "id": "grid-N1",
+            "code": "N1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 52,
+            "gy": 1,
+            "sortX": 78,
+            "sortY": 6,
+            "cell": {
+              "column": "N",
+              "row": 1
+            },
+            "anchor": "N"
+          },
+          {
+            "id": "grid-N2",
+            "code": "N2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 52,
+            "gy": 7,
+            "sortX": 78,
+            "sortY": 12,
+            "cell": {
+              "column": "N",
+              "row": 2
+            },
+            "anchor": "N"
+          },
+          {
+            "id": "grid-N3",
+            "code": "N3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 52,
+            "gy": 13,
+            "sortX": 78,
+            "sortY": 18,
+            "cell": {
+              "column": "N",
+              "row": 3
+            },
+            "anchor": "N"
+          },
+          {
+            "id": "grid-N4",
+            "code": "N4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 52,
+            "gy": 19,
+            "sortX": 78,
+            "sortY": 24,
+            "cell": {
+              "column": "N",
+              "row": 4
+            },
+            "anchor": "N"
+          },
+          {
+            "id": "grid-O1",
+            "code": "O1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 56,
+            "gy": 1,
+            "sortX": 84,
+            "sortY": 6,
+            "cell": {
+              "column": "O",
+              "row": 1
+            },
+            "anchor": "O"
+          },
+          {
+            "id": "grid-O2",
+            "code": "O2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 56,
+            "gy": 7,
+            "sortX": 84,
+            "sortY": 12,
+            "cell": {
+              "column": "O",
+              "row": 2
+            },
+            "anchor": "O"
+          },
+          {
+            "id": "grid-O3",
+            "code": "O3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 56,
+            "gy": 13,
+            "sortX": 84,
+            "sortY": 18,
+            "cell": {
+              "column": "O",
+              "row": 3
+            },
+            "anchor": "O"
+          },
+          {
+            "id": "grid-O4",
+            "code": "O4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 56,
+            "gy": 19,
+            "sortX": 84,
+            "sortY": 24,
+            "cell": {
+              "column": "O",
+              "row": 4
+            },
+            "anchor": "O"
+          },
+          {
+            "id": "grid-P1",
+            "code": "P1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 60,
+            "gy": 1,
+            "sortX": 90,
+            "sortY": 6,
+            "cell": {
+              "column": "P",
+              "row": 1
+            },
+            "anchor": "P"
+          },
+          {
+            "id": "grid-P2",
+            "code": "P2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 60,
+            "gy": 7,
+            "sortX": 90,
+            "sortY": 12,
+            "cell": {
+              "column": "P",
+              "row": 2
+            },
+            "anchor": "P"
+          },
+          {
+            "id": "grid-P3",
+            "code": "P3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 60,
+            "gy": 13,
+            "sortX": 90,
+            "sortY": 18,
+            "cell": {
+              "column": "P",
+              "row": 3
+            },
+            "anchor": "P"
+          },
+          {
+            "id": "grid-P4",
+            "code": "P4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 60,
+            "gy": 19,
+            "sortX": 90,
+            "sortY": 24,
+            "cell": {
+              "column": "P",
+              "row": 4
+            },
+            "anchor": "P"
+          },
+          {
+            "id": "grid-Q1",
+            "code": "Q1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 64,
+            "gy": 1,
+            "sortX": 96,
+            "sortY": 6,
+            "cell": {
+              "column": "Q",
+              "row": 1
+            },
+            "anchor": "Q"
+          },
+          {
+            "id": "grid-Q2",
+            "code": "Q2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 64,
+            "gy": 7,
+            "sortX": 96,
+            "sortY": 12,
+            "cell": {
+              "column": "Q",
+              "row": 2
+            },
+            "anchor": "Q"
+          },
+          {
+            "id": "grid-Q3",
+            "code": "Q3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 64,
+            "gy": 13,
+            "sortX": 96,
+            "sortY": 18,
+            "cell": {
+              "column": "Q",
+              "row": 3
+            },
+            "anchor": "Q"
+          },
+          {
+            "id": "grid-Q4",
+            "code": "Q4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 64,
+            "gy": 19,
+            "sortX": 96,
+            "sortY": 24,
+            "cell": {
+              "column": "Q",
+              "row": 4
+            },
+            "anchor": "Q"
+          },
+          {
+            "id": "grid-R1",
+            "code": "R1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 68,
+            "gy": 1,
+            "sortX": 102,
+            "sortY": 6,
+            "cell": {
+              "column": "R",
+              "row": 1
+            },
+            "anchor": "R"
+          },
+          {
+            "id": "grid-R2",
+            "code": "R2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 68,
+            "gy": 7,
+            "sortX": 102,
+            "sortY": 12,
+            "cell": {
+              "column": "R",
+              "row": 2
+            },
+            "anchor": "R"
+          },
+          {
+            "id": "grid-R3",
+            "code": "R3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 68,
+            "gy": 13,
+            "sortX": 102,
+            "sortY": 18,
+            "cell": {
+              "column": "R",
+              "row": 3
+            },
+            "anchor": "R"
+          },
+          {
+            "id": "grid-R4",
+            "code": "R4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 68,
+            "gy": 19,
+            "sortX": 102,
+            "sortY": 24,
+            "cell": {
+              "column": "R",
+              "row": 4
+            },
+            "anchor": "R"
+          },
+          {
+            "id": "grid-S1",
+            "code": "S1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 72,
+            "gy": 1,
+            "sortX": 108,
+            "sortY": 6,
+            "cell": {
+              "column": "S",
+              "row": 1
+            },
+            "anchor": "S"
+          },
+          {
+            "id": "grid-S2",
+            "code": "S2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 72,
+            "gy": 7,
+            "sortX": 108,
+            "sortY": 12,
+            "cell": {
+              "column": "S",
+              "row": 2
+            },
+            "anchor": "S"
+          },
+          {
+            "id": "grid-S3",
+            "code": "S3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 72,
+            "gy": 13,
+            "sortX": 108,
+            "sortY": 18,
+            "cell": {
+              "column": "S",
+              "row": 3
+            },
+            "anchor": "S"
+          },
+          {
+            "id": "grid-S4",
+            "code": "S4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 72,
+            "gy": 19,
+            "sortX": 108,
+            "sortY": 24,
+            "cell": {
+              "column": "S",
+              "row": 4
+            },
+            "anchor": "S"
+          },
+          {
+            "id": "grid-T1",
+            "code": "T1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 76,
+            "gy": 1,
+            "sortX": 114,
+            "sortY": 6,
+            "cell": {
+              "column": "T",
+              "row": 1
+            },
+            "anchor": "T"
+          },
+          {
+            "id": "grid-T2",
+            "code": "T2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 76,
+            "gy": 7,
+            "sortX": 114,
+            "sortY": 12,
+            "cell": {
+              "column": "T",
+              "row": 2
+            },
+            "anchor": "T"
+          },
+          {
+            "id": "grid-T3",
+            "code": "T3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 76,
+            "gy": 13,
+            "sortX": 114,
+            "sortY": 18,
+            "cell": {
+              "column": "T",
+              "row": 3
+            },
+            "anchor": "T"
+          },
+          {
+            "id": "grid-T4",
+            "code": "T4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 76,
+            "gy": 19,
+            "sortX": 114,
+            "sortY": 24,
+            "cell": {
+              "column": "T",
+              "row": 4
+            },
+            "anchor": "T"
+          },
+          {
+            "id": "grid-U1",
+            "code": "U1",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 80,
+            "gy": 1,
+            "sortX": 120,
+            "sortY": 6,
+            "cell": {
+              "column": "U",
+              "row": 1
+            },
+            "anchor": "U"
+          },
+          {
+            "id": "grid-U2",
+            "code": "U2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 80,
+            "gy": 7,
+            "sortX": 120,
+            "sortY": 12,
+            "cell": {
+              "column": "U",
+              "row": 2
+            },
+            "anchor": "U"
+          },
+          {
+            "id": "grid-U3",
+            "code": "U3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 80,
+            "gy": 13,
+            "sortX": 120,
+            "sortY": 18,
+            "cell": {
+              "column": "U",
+              "row": 3
+            },
+            "anchor": "U"
+          },
+          {
+            "id": "grid-U4",
+            "code": "U4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 80,
+            "gy": 19,
+            "sortX": 120,
+            "sortY": 24,
+            "cell": {
+              "column": "U",
+              "row": 4
+            },
+            "anchor": "U"
+          },
+          {
+            "id": "grid-V1",
+            "code": "V2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 84,
+            "gy": 7,
+            "sortX": 126,
+            "sortY": 12,
+            "rowAnchor": 2,
+            "cell": {
+              "column": "V",
+              "row": 2
+            },
+            "anchor": "V"
+          },
+          {
+            "id": "grid-V2",
+            "code": "V3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 84,
+            "gy": 13,
+            "sortX": 126,
+            "sortY": 18,
+            "rowAnchor": 3,
+            "cell": {
+              "column": "V",
+              "row": 3
+            },
+            "anchor": "V"
+          },
+          {
+            "id": "grid-V3",
+            "code": "V4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 84,
+            "gy": 19,
+            "sortX": 126,
+            "sortY": 24,
+            "rowAnchor": 4,
+            "cell": {
+              "column": "V",
+              "row": 4
+            },
+            "anchor": "V"
+          },
+          {
+            "id": "grid-W1",
+            "code": "W2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 88,
+            "gy": 7,
+            "sortX": 132,
+            "sortY": 12,
+            "rowAnchor": 2,
+            "cell": {
+              "column": "W",
+              "row": 2
+            },
+            "anchor": "W"
+          },
+          {
+            "id": "grid-W2",
+            "code": "W3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 88,
+            "gy": 13,
+            "sortX": 132,
+            "sortY": 18,
+            "rowAnchor": 3,
+            "cell": {
+              "column": "W",
+              "row": 3
+            },
+            "anchor": "W"
+          },
+          {
+            "id": "grid-W3",
+            "code": "W4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 88,
+            "gy": 19,
+            "sortX": 132,
+            "sortY": 24,
+            "rowAnchor": 4,
+            "cell": {
+              "column": "W",
+              "row": 4
+            },
+            "anchor": "W"
+          },
+          {
+            "id": "grid-X1",
+            "code": "X2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 92,
+            "gy": 7,
+            "sortX": 138,
+            "sortY": 12,
+            "rowAnchor": 2,
+            "cell": {
+              "column": "X",
+              "row": 2
+            },
+            "anchor": "X"
+          },
+          {
+            "id": "grid-X2",
+            "code": "X3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 92,
+            "gy": 13,
+            "sortX": 138,
+            "sortY": 18,
+            "rowAnchor": 3,
+            "cell": {
+              "column": "X",
+              "row": 3
+            },
+            "anchor": "X"
+          },
+          {
+            "id": "grid-X3",
+            "code": "X4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 92,
+            "gy": 19,
+            "sortX": 138,
+            "sortY": 24,
+            "rowAnchor": 4,
+            "cell": {
+              "column": "X",
+              "row": 4
+            },
+            "anchor": "X"
+          },
+          {
+            "id": "grid-Y1",
+            "code": "Y2",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 96,
+            "gy": 7,
+            "sortX": 144,
+            "sortY": 12,
+            "rowAnchor": 2,
+            "cell": {
+              "column": "Y",
+              "row": 2
+            },
+            "anchor": "Y"
+          },
+          {
+            "id": "grid-Y2",
+            "code": "Y3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 96,
+            "gy": 13,
+            "sortX": 144,
+            "sortY": 18,
+            "rowAnchor": 3,
+            "cell": {
+              "column": "Y",
+              "row": 3
+            },
+            "anchor": "Y"
+          },
+          {
+            "id": "grid-Y3",
+            "code": "Y4",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": true,
+            "gx": 96,
+            "gy": 19,
+            "sortX": 144,
+            "sortY": 24,
+            "rowAnchor": 4,
+            "cell": {
+              "column": "Y",
+              "row": 4
+            },
+            "anchor": "Y"
+          },
+          {
+            "id": "grid-Z2",
+            "code": "Z3",
+            "kind": "student",
+            "capacity": 2,
+            "facing": "right",
+            "enabled": false,
+            "gx": 100,
+            "gy": 13,
+            "sortX": 150,
+            "sortY": 18,
+            "rowAnchor": 3,
+            "cell": {
+              "column": "Z",
+              "row": 3
+            },
+            "anchor": "Z"
+          },
+          {
+            "id": "teacher-71bb676d-57a7-4989-a10b-7ff13f054bc8",
+            "code": "L",
+            "kind": "teacher",
+            "capacity": 1,
+            "facing": "down",
+            "enabled": true,
+            "gx": 40,
+            "gy": 1,
+            "anchor": "K",
+            "sortX": 0,
+            "sortY": 0,
+            "rowAnchor": 1
+          }
+        ],
+        "nextManual": 1
+      }
+    },
+    "assignments": {
+      "grid-B2:0": "d1ea0f18-aaac-4bf6-b95a-17df23b689b5",
+      "grid-E3:0": "b29eb986-286f-4ede-9c6f-bdf2111e2c3d",
+      "grid-D2:1": "897cd86b-8cdb-4936-8321-f227b1f3ff27",
+      "grid-E2:1": "479116d9-0320-4417-960b-89db7e478bb2",
+      "grid-C2:0": "5a2e39c5-26ab-43c8-b9cb-abb0b5a0d4b3",
+      "grid-C2:1": "4916bb9c-8bc8-48d4-9822-28cbd0611bc3"
+    },
+    "locks": [],
+    "benchLocks": [],
+    "name": "Standaard project",
+    "modified": "2026-10-03T15:56:44.042Z",
+    "hiddenWarnings": [],
+    "rooms": [
+      {
+        "id": "standaardlokaal",
+        "name": "Standaardlokaal",
+        "layout": {
+          "kind": "custom",
+          "version": 2,
+          "grid": {
+            "from": "A",
+            "to": "Z",
+            "rows": 4,
+            "columnStep": 4,
+            "rowStep": 6,
+            "firstRow": 1
+          },
+          "columns": 108,
+          "rows": 29,
+          "gaps": [
+            {
+              "after": "J",
+              "width": 2
+            },
+            {
+              "after": "K",
+              "width": 2
+            },
+            {
+              "after": "U",
+              "width": 1
+            }
+          ],
+          "rowGaps": [],
+          "sections": [],
+          "removed": [
+            "K1",
+            "K4",
+            "Z1",
+            "Z4",
+            "Z2",
+            "V1",
+            "W1",
+            "X1",
+            "Y1",
+            "J1",
+            "L1"
+          ],
+          "benches": [
+            {
+              "id": "grid-A1",
+              "code": "A1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 0,
+              "gy": 1,
+              "sortX": 0,
+              "sortY": 6,
+              "cell": {
+                "column": "A",
+                "row": 1
+              },
+              "anchor": "A"
+            },
+            {
+              "id": "grid-A2",
+              "code": "A2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 0,
+              "gy": 7,
+              "sortX": 0,
+              "sortY": 12,
+              "cell": {
+                "column": "A",
+                "row": 2
+              },
+              "anchor": "A"
+            },
+            {
+              "id": "grid-A3",
+              "code": "A3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 0,
+              "gy": 13,
+              "sortX": 0,
+              "sortY": 18,
+              "cell": {
+                "column": "A",
+                "row": 3
+              },
+              "anchor": "A"
+            },
+            {
+              "id": "grid-A4",
+              "code": "A4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 0,
+              "gy": 19,
+              "sortX": 0,
+              "sortY": 24,
+              "cell": {
+                "column": "A",
+                "row": 4
+              },
+              "anchor": "A"
+            },
+            {
+              "id": "grid-B1",
+              "code": "B1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 4,
+              "gy": 1,
+              "sortX": 6,
+              "sortY": 6,
+              "cell": {
+                "column": "B",
+                "row": 1
+              },
+              "anchor": "B"
+            },
+            {
+              "id": "grid-B2",
+              "code": "B2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 4,
+              "gy": 7,
+              "sortX": 6,
+              "sortY": 12,
+              "cell": {
+                "column": "B",
+                "row": 2
+              },
+              "anchor": "B"
+            },
+            {
+              "id": "grid-B3",
+              "code": "B3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 4,
+              "gy": 13,
+              "sortX": 6,
+              "sortY": 18,
+              "cell": {
+                "column": "B",
+                "row": 3
+              },
+              "anchor": "B"
+            },
+            {
+              "id": "grid-B4",
+              "code": "B4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 4,
+              "gy": 19,
+              "sortX": 6,
+              "sortY": 24,
+              "cell": {
+                "column": "B",
+                "row": 4
+              },
+              "anchor": "B"
+            },
+            {
+              "id": "grid-C1",
+              "code": "C1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 8,
+              "gy": 1,
+              "sortX": 12,
+              "sortY": 6,
+              "cell": {
+                "column": "C",
+                "row": 1
+              },
+              "anchor": "C"
+            },
+            {
+              "id": "grid-C2",
+              "code": "C2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 8,
+              "gy": 7,
+              "sortX": 12,
+              "sortY": 12,
+              "cell": {
+                "column": "C",
+                "row": 2
+              },
+              "anchor": "C"
+            },
+            {
+              "id": "grid-C3",
+              "code": "C3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 8,
+              "gy": 13,
+              "sortX": 12,
+              "sortY": 18,
+              "cell": {
+                "column": "C",
+                "row": 3
+              },
+              "anchor": "C"
+            },
+            {
+              "id": "grid-C4",
+              "code": "C4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 8,
+              "gy": 19,
+              "sortX": 12,
+              "sortY": 24,
+              "cell": {
+                "column": "C",
+                "row": 4
+              },
+              "anchor": "C"
+            },
+            {
+              "id": "grid-D1",
+              "code": "D1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 12,
+              "gy": 1,
+              "sortX": 18,
+              "sortY": 6,
+              "cell": {
+                "column": "D",
+                "row": 1
+              },
+              "anchor": "D"
+            },
+            {
+              "id": "grid-D2",
+              "code": "D2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 12,
+              "gy": 7,
+              "sortX": 18,
+              "sortY": 12,
+              "cell": {
+                "column": "D",
+                "row": 2
+              },
+              "anchor": "D"
+            },
+            {
+              "id": "grid-D3",
+              "code": "D3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 12,
+              "gy": 13,
+              "sortX": 18,
+              "sortY": 18,
+              "cell": {
+                "column": "D",
+                "row": 3
+              },
+              "anchor": "D"
+            },
+            {
+              "id": "grid-D4",
+              "code": "D4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 12,
+              "gy": 19,
+              "sortX": 18,
+              "sortY": 24,
+              "cell": {
+                "column": "D",
+                "row": 4
+              },
+              "anchor": "D"
+            },
+            {
+              "id": "grid-E1",
+              "code": "E1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 16,
+              "gy": 1,
+              "sortX": 24,
+              "sortY": 6,
+              "cell": {
+                "column": "E",
+                "row": 1
+              },
+              "anchor": "E"
+            },
+            {
+              "id": "grid-E2",
+              "code": "E2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 16,
+              "gy": 7,
+              "sortX": 24,
+              "sortY": 12,
+              "cell": {
+                "column": "E",
+                "row": 2
+              },
+              "anchor": "E"
+            },
+            {
+              "id": "grid-E3",
+              "code": "E3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 16,
+              "gy": 13,
+              "sortX": 24,
+              "sortY": 18,
+              "cell": {
+                "column": "E",
+                "row": 3
+              },
+              "anchor": "E"
+            },
+            {
+              "id": "grid-E4",
+              "code": "E4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 16,
+              "gy": 19,
+              "sortX": 24,
+              "sortY": 24,
+              "cell": {
+                "column": "E",
+                "row": 4
+              },
+              "anchor": "E"
+            },
+            {
+              "id": "grid-F1",
+              "code": "F1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 20,
+              "gy": 1,
+              "sortX": 30,
+              "sortY": 6,
+              "cell": {
+                "column": "F",
+                "row": 1
+              },
+              "anchor": "F"
+            },
+            {
+              "id": "grid-F2",
+              "code": "F2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 20,
+              "gy": 7,
+              "sortX": 30,
+              "sortY": 12,
+              "cell": {
+                "column": "F",
+                "row": 2
+              },
+              "anchor": "F"
+            },
+            {
+              "id": "grid-F3",
+              "code": "F3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 20,
+              "gy": 13,
+              "sortX": 30,
+              "sortY": 18,
+              "cell": {
+                "column": "F",
+                "row": 3
+              },
+              "anchor": "F"
+            },
+            {
+              "id": "grid-F4",
+              "code": "F4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 20,
+              "gy": 19,
+              "sortX": 30,
+              "sortY": 24,
+              "cell": {
+                "column": "F",
+                "row": 4
+              },
+              "anchor": "F"
+            },
+            {
+              "id": "grid-G1",
+              "code": "G1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 24,
+              "gy": 1,
+              "sortX": 36,
+              "sortY": 6,
+              "cell": {
+                "column": "G",
+                "row": 1
+              },
+              "anchor": "G"
+            },
+            {
+              "id": "grid-G2",
+              "code": "G2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 24,
+              "gy": 7,
+              "sortX": 36,
+              "sortY": 12,
+              "cell": {
+                "column": "G",
+                "row": 2
+              },
+              "anchor": "G"
+            },
+            {
+              "id": "grid-G3",
+              "code": "G3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 24,
+              "gy": 13,
+              "sortX": 36,
+              "sortY": 18,
+              "cell": {
+                "column": "G",
+                "row": 3
+              },
+              "anchor": "G"
+            },
+            {
+              "id": "grid-G4",
+              "code": "G4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 24,
+              "gy": 19,
+              "sortX": 36,
+              "sortY": 24,
+              "cell": {
+                "column": "G",
+                "row": 4
+              },
+              "anchor": "G"
+            },
+            {
+              "id": "grid-H1",
+              "code": "H1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 28,
+              "gy": 1,
+              "sortX": 42,
+              "sortY": 6,
+              "cell": {
+                "column": "H",
+                "row": 1
+              },
+              "anchor": "H"
+            },
+            {
+              "id": "grid-H2",
+              "code": "H2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 28,
+              "gy": 7,
+              "sortX": 42,
+              "sortY": 12,
+              "cell": {
+                "column": "H",
+                "row": 2
+              },
+              "anchor": "H"
+            },
+            {
+              "id": "grid-H3",
+              "code": "H3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 28,
+              "gy": 13,
+              "sortX": 42,
+              "sortY": 18,
+              "cell": {
+                "column": "H",
+                "row": 3
+              },
+              "anchor": "H"
+            },
+            {
+              "id": "grid-H4",
+              "code": "H4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 28,
+              "gy": 19,
+              "sortX": 42,
+              "sortY": 24,
+              "cell": {
+                "column": "H",
+                "row": 4
+              },
+              "anchor": "H"
+            },
+            {
+              "id": "grid-I1",
+              "code": "I1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 32,
+              "gy": 1,
+              "sortX": 48,
+              "sortY": 6,
+              "cell": {
+                "column": "I",
+                "row": 1
+              },
+              "anchor": "I"
+            },
+            {
+              "id": "grid-I2",
+              "code": "I2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 32,
+              "gy": 7,
+              "sortX": 48,
+              "sortY": 12,
+              "cell": {
+                "column": "I",
+                "row": 2
+              },
+              "anchor": "I"
+            },
+            {
+              "id": "grid-I3",
+              "code": "I3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 32,
+              "gy": 13,
+              "sortX": 48,
+              "sortY": 18,
+              "cell": {
+                "column": "I",
+                "row": 3
+              },
+              "anchor": "I"
+            },
+            {
+              "id": "grid-I4",
+              "code": "I4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 32,
+              "gy": 19,
+              "sortX": 48,
+              "sortY": 24,
+              "cell": {
+                "column": "I",
+                "row": 4
+              },
+              "anchor": "I"
+            },
+            {
+              "id": "grid-J2",
+              "code": "J2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 36,
+              "gy": 7,
+              "sortX": 54,
+              "sortY": 12,
+              "cell": {
+                "column": "J",
+                "row": 2
+              },
+              "anchor": "J"
+            },
+            {
+              "id": "grid-J3",
+              "code": "J3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 36,
+              "gy": 13,
+              "sortX": 54,
+              "sortY": 18,
+              "cell": {
+                "column": "J",
+                "row": 3
+              },
+              "anchor": "J"
+            },
+            {
+              "id": "grid-J4",
+              "code": "J4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "left",
+              "enabled": true,
+              "gx": 36,
+              "gy": 19,
+              "sortX": 54,
+              "sortY": 24,
+              "cell": {
+                "column": "J",
+                "row": 4
+              },
+              "anchor": "J"
+            },
+            {
+              "id": "grid-K2",
+              "code": "K2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "down",
+              "enabled": false,
+              "gx": 40,
+              "gy": 7,
+              "sortX": 60,
+              "sortY": 12,
+              "cell": {
+                "column": "K",
+                "row": 2
+              },
+              "anchor": "K"
+            },
+            {
+              "id": "grid-K3",
+              "code": "K3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "down",
+              "enabled": false,
+              "gx": 40,
+              "gy": 13,
+              "sortX": 60,
+              "sortY": 18,
+              "cell": {
+                "column": "K",
+                "row": 3
+              },
+              "anchor": "K"
+            },
+            {
+              "id": "grid-L2",
+              "code": "L2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 44,
+              "gy": 7,
+              "sortX": 66,
+              "sortY": 12,
+              "cell": {
+                "column": "L",
+                "row": 2
+              },
+              "anchor": "L"
+            },
+            {
+              "id": "grid-L3",
+              "code": "L3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 44,
+              "gy": 13,
+              "sortX": 66,
+              "sortY": 18,
+              "cell": {
+                "column": "L",
+                "row": 3
+              },
+              "anchor": "L"
+            },
+            {
+              "id": "grid-L4",
+              "code": "L4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 44,
+              "gy": 19,
+              "sortX": 66,
+              "sortY": 24,
+              "cell": {
+                "column": "L",
+                "row": 4
+              },
+              "anchor": "L"
+            },
+            {
+              "id": "grid-M1",
+              "code": "M1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 48,
+              "gy": 1,
+              "sortX": 72,
+              "sortY": 6,
+              "cell": {
+                "column": "M",
+                "row": 1
+              },
+              "anchor": "M"
+            },
+            {
+              "id": "grid-M2",
+              "code": "M2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 48,
+              "gy": 7,
+              "sortX": 72,
+              "sortY": 12,
+              "cell": {
+                "column": "M",
+                "row": 2
+              },
+              "anchor": "M"
+            },
+            {
+              "id": "grid-M3",
+              "code": "M3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 48,
+              "gy": 13,
+              "sortX": 72,
+              "sortY": 18,
+              "cell": {
+                "column": "M",
+                "row": 3
+              },
+              "anchor": "M"
+            },
+            {
+              "id": "grid-M4",
+              "code": "M4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 48,
+              "gy": 19,
+              "sortX": 72,
+              "sortY": 24,
+              "cell": {
+                "column": "M",
+                "row": 4
+              },
+              "anchor": "M"
+            },
+            {
+              "id": "grid-N1",
+              "code": "N1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 52,
+              "gy": 1,
+              "sortX": 78,
+              "sortY": 6,
+              "cell": {
+                "column": "N",
+                "row": 1
+              },
+              "anchor": "N"
+            },
+            {
+              "id": "grid-N2",
+              "code": "N2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 52,
+              "gy": 7,
+              "sortX": 78,
+              "sortY": 12,
+              "cell": {
+                "column": "N",
+                "row": 2
+              },
+              "anchor": "N"
+            },
+            {
+              "id": "grid-N3",
+              "code": "N3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 52,
+              "gy": 13,
+              "sortX": 78,
+              "sortY": 18,
+              "cell": {
+                "column": "N",
+                "row": 3
+              },
+              "anchor": "N"
+            },
+            {
+              "id": "grid-N4",
+              "code": "N4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 52,
+              "gy": 19,
+              "sortX": 78,
+              "sortY": 24,
+              "cell": {
+                "column": "N",
+                "row": 4
+              },
+              "anchor": "N"
+            },
+            {
+              "id": "grid-O1",
+              "code": "O1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 56,
+              "gy": 1,
+              "sortX": 84,
+              "sortY": 6,
+              "cell": {
+                "column": "O",
+                "row": 1
+              },
+              "anchor": "O"
+            },
+            {
+              "id": "grid-O2",
+              "code": "O2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 56,
+              "gy": 7,
+              "sortX": 84,
+              "sortY": 12,
+              "cell": {
+                "column": "O",
+                "row": 2
+              },
+              "anchor": "O"
+            },
+            {
+              "id": "grid-O3",
+              "code": "O3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 56,
+              "gy": 13,
+              "sortX": 84,
+              "sortY": 18,
+              "cell": {
+                "column": "O",
+                "row": 3
+              },
+              "anchor": "O"
+            },
+            {
+              "id": "grid-O4",
+              "code": "O4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 56,
+              "gy": 19,
+              "sortX": 84,
+              "sortY": 24,
+              "cell": {
+                "column": "O",
+                "row": 4
+              },
+              "anchor": "O"
+            },
+            {
+              "id": "grid-P1",
+              "code": "P1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 60,
+              "gy": 1,
+              "sortX": 90,
+              "sortY": 6,
+              "cell": {
+                "column": "P",
+                "row": 1
+              },
+              "anchor": "P"
+            },
+            {
+              "id": "grid-P2",
+              "code": "P2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 60,
+              "gy": 7,
+              "sortX": 90,
+              "sortY": 12,
+              "cell": {
+                "column": "P",
+                "row": 2
+              },
+              "anchor": "P"
+            },
+            {
+              "id": "grid-P3",
+              "code": "P3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 60,
+              "gy": 13,
+              "sortX": 90,
+              "sortY": 18,
+              "cell": {
+                "column": "P",
+                "row": 3
+              },
+              "anchor": "P"
+            },
+            {
+              "id": "grid-P4",
+              "code": "P4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 60,
+              "gy": 19,
+              "sortX": 90,
+              "sortY": 24,
+              "cell": {
+                "column": "P",
+                "row": 4
+              },
+              "anchor": "P"
+            },
+            {
+              "id": "grid-Q1",
+              "code": "Q1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 64,
+              "gy": 1,
+              "sortX": 96,
+              "sortY": 6,
+              "cell": {
+                "column": "Q",
+                "row": 1
+              },
+              "anchor": "Q"
+            },
+            {
+              "id": "grid-Q2",
+              "code": "Q2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 64,
+              "gy": 7,
+              "sortX": 96,
+              "sortY": 12,
+              "cell": {
+                "column": "Q",
+                "row": 2
+              },
+              "anchor": "Q"
+            },
+            {
+              "id": "grid-Q3",
+              "code": "Q3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 64,
+              "gy": 13,
+              "sortX": 96,
+              "sortY": 18,
+              "cell": {
+                "column": "Q",
+                "row": 3
+              },
+              "anchor": "Q"
+            },
+            {
+              "id": "grid-Q4",
+              "code": "Q4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 64,
+              "gy": 19,
+              "sortX": 96,
+              "sortY": 24,
+              "cell": {
+                "column": "Q",
+                "row": 4
+              },
+              "anchor": "Q"
+            },
+            {
+              "id": "grid-R1",
+              "code": "R1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 68,
+              "gy": 1,
+              "sortX": 102,
+              "sortY": 6,
+              "cell": {
+                "column": "R",
+                "row": 1
+              },
+              "anchor": "R"
+            },
+            {
+              "id": "grid-R2",
+              "code": "R2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 68,
+              "gy": 7,
+              "sortX": 102,
+              "sortY": 12,
+              "cell": {
+                "column": "R",
+                "row": 2
+              },
+              "anchor": "R"
+            },
+            {
+              "id": "grid-R3",
+              "code": "R3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 68,
+              "gy": 13,
+              "sortX": 102,
+              "sortY": 18,
+              "cell": {
+                "column": "R",
+                "row": 3
+              },
+              "anchor": "R"
+            },
+            {
+              "id": "grid-R4",
+              "code": "R4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 68,
+              "gy": 19,
+              "sortX": 102,
+              "sortY": 24,
+              "cell": {
+                "column": "R",
+                "row": 4
+              },
+              "anchor": "R"
+            },
+            {
+              "id": "grid-S1",
+              "code": "S1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 72,
+              "gy": 1,
+              "sortX": 108,
+              "sortY": 6,
+              "cell": {
+                "column": "S",
+                "row": 1
+              },
+              "anchor": "S"
+            },
+            {
+              "id": "grid-S2",
+              "code": "S2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 72,
+              "gy": 7,
+              "sortX": 108,
+              "sortY": 12,
+              "cell": {
+                "column": "S",
+                "row": 2
+              },
+              "anchor": "S"
+            },
+            {
+              "id": "grid-S3",
+              "code": "S3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 72,
+              "gy": 13,
+              "sortX": 108,
+              "sortY": 18,
+              "cell": {
+                "column": "S",
+                "row": 3
+              },
+              "anchor": "S"
+            },
+            {
+              "id": "grid-S4",
+              "code": "S4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 72,
+              "gy": 19,
+              "sortX": 108,
+              "sortY": 24,
+              "cell": {
+                "column": "S",
+                "row": 4
+              },
+              "anchor": "S"
+            },
+            {
+              "id": "grid-T1",
+              "code": "T1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 76,
+              "gy": 1,
+              "sortX": 114,
+              "sortY": 6,
+              "cell": {
+                "column": "T",
+                "row": 1
+              },
+              "anchor": "T"
+            },
+            {
+              "id": "grid-T2",
+              "code": "T2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 76,
+              "gy": 7,
+              "sortX": 114,
+              "sortY": 12,
+              "cell": {
+                "column": "T",
+                "row": 2
+              },
+              "anchor": "T"
+            },
+            {
+              "id": "grid-T3",
+              "code": "T3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 76,
+              "gy": 13,
+              "sortX": 114,
+              "sortY": 18,
+              "cell": {
+                "column": "T",
+                "row": 3
+              },
+              "anchor": "T"
+            },
+            {
+              "id": "grid-T4",
+              "code": "T4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 76,
+              "gy": 19,
+              "sortX": 114,
+              "sortY": 24,
+              "cell": {
+                "column": "T",
+                "row": 4
+              },
+              "anchor": "T"
+            },
+            {
+              "id": "grid-U1",
+              "code": "U1",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 80,
+              "gy": 1,
+              "sortX": 120,
+              "sortY": 6,
+              "cell": {
+                "column": "U",
+                "row": 1
+              },
+              "anchor": "U"
+            },
+            {
+              "id": "grid-U2",
+              "code": "U2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 80,
+              "gy": 7,
+              "sortX": 120,
+              "sortY": 12,
+              "cell": {
+                "column": "U",
+                "row": 2
+              },
+              "anchor": "U"
+            },
+            {
+              "id": "grid-U3",
+              "code": "U3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 80,
+              "gy": 13,
+              "sortX": 120,
+              "sortY": 18,
+              "cell": {
+                "column": "U",
+                "row": 3
+              },
+              "anchor": "U"
+            },
+            {
+              "id": "grid-U4",
+              "code": "U4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 80,
+              "gy": 19,
+              "sortX": 120,
+              "sortY": 24,
+              "cell": {
+                "column": "U",
+                "row": 4
+              },
+              "anchor": "U"
+            },
+            {
+              "id": "grid-V1",
+              "code": "V2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 84,
+              "gy": 7,
+              "sortX": 126,
+              "sortY": 12,
+              "rowAnchor": 2,
+              "cell": {
+                "column": "V",
+                "row": 2
+              },
+              "anchor": "V"
+            },
+            {
+              "id": "grid-V2",
+              "code": "V3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 84,
+              "gy": 13,
+              "sortX": 126,
+              "sortY": 18,
+              "rowAnchor": 3,
+              "cell": {
+                "column": "V",
+                "row": 3
+              },
+              "anchor": "V"
+            },
+            {
+              "id": "grid-V3",
+              "code": "V4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 84,
+              "gy": 19,
+              "sortX": 126,
+              "sortY": 24,
+              "rowAnchor": 4,
+              "cell": {
+                "column": "V",
+                "row": 4
+              },
+              "anchor": "V"
+            },
+            {
+              "id": "grid-W1",
+              "code": "W2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 88,
+              "gy": 7,
+              "sortX": 132,
+              "sortY": 12,
+              "rowAnchor": 2,
+              "cell": {
+                "column": "W",
+                "row": 2
+              },
+              "anchor": "W"
+            },
+            {
+              "id": "grid-W2",
+              "code": "W3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 88,
+              "gy": 13,
+              "sortX": 132,
+              "sortY": 18,
+              "rowAnchor": 3,
+              "cell": {
+                "column": "W",
+                "row": 3
+              },
+              "anchor": "W"
+            },
+            {
+              "id": "grid-W3",
+              "code": "W4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 88,
+              "gy": 19,
+              "sortX": 132,
+              "sortY": 24,
+              "rowAnchor": 4,
+              "cell": {
+                "column": "W",
+                "row": 4
+              },
+              "anchor": "W"
+            },
+            {
+              "id": "grid-X1",
+              "code": "X2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 92,
+              "gy": 7,
+              "sortX": 138,
+              "sortY": 12,
+              "rowAnchor": 2,
+              "cell": {
+                "column": "X",
+                "row": 2
+              },
+              "anchor": "X"
+            },
+            {
+              "id": "grid-X2",
+              "code": "X3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 92,
+              "gy": 13,
+              "sortX": 138,
+              "sortY": 18,
+              "rowAnchor": 3,
+              "cell": {
+                "column": "X",
+                "row": 3
+              },
+              "anchor": "X"
+            },
+            {
+              "id": "grid-X3",
+              "code": "X4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 92,
+              "gy": 19,
+              "sortX": 138,
+              "sortY": 24,
+              "rowAnchor": 4,
+              "cell": {
+                "column": "X",
+                "row": 4
+              },
+              "anchor": "X"
+            },
+            {
+              "id": "grid-Y1",
+              "code": "Y2",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 96,
+              "gy": 7,
+              "sortX": 144,
+              "sortY": 12,
+              "rowAnchor": 2,
+              "cell": {
+                "column": "Y",
+                "row": 2
+              },
+              "anchor": "Y"
+            },
+            {
+              "id": "grid-Y2",
+              "code": "Y3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 96,
+              "gy": 13,
+              "sortX": 144,
+              "sortY": 18,
+              "rowAnchor": 3,
+              "cell": {
+                "column": "Y",
+                "row": 3
+              },
+              "anchor": "Y"
+            },
+            {
+              "id": "grid-Y3",
+              "code": "Y4",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": true,
+              "gx": 96,
+              "gy": 19,
+              "sortX": 144,
+              "sortY": 24,
+              "rowAnchor": 4,
+              "cell": {
+                "column": "Y",
+                "row": 4
+              },
+              "anchor": "Y"
+            },
+            {
+              "id": "grid-Z2",
+              "code": "Z3",
+              "kind": "student",
+              "capacity": 2,
+              "facing": "right",
+              "enabled": false,
+              "gx": 100,
+              "gy": 13,
+              "sortX": 150,
+              "sortY": 18,
+              "rowAnchor": 3,
+              "cell": {
+                "column": "Z",
+                "row": 3
+              },
+              "anchor": "Z"
+            },
+            {
+              "id": "teacher-71bb676d-57a7-4989-a10b-7ff13f054bc8",
+              "code": "L",
+              "kind": "teacher",
+              "capacity": 1,
+              "facing": "down",
+              "enabled": true,
+              "gx": 40,
+              "gy": 1,
+              "anchor": "K",
+              "sortX": 0,
+              "sortY": 0,
+              "rowAnchor": 1
+            }
+          ],
+          "nextManual": 1
+        },
+        "settings": {
+          "sections": [
+            {
+              "id": "area-AJ",
+              "from": "A",
+              "to": "J",
+              "enabled": true,
+              "builtin": true
+            },
+            {
+              "id": "area-LU",
+              "from": "L",
+              "to": "U",
+              "enabled": true,
+              "builtin": true
+            },
+            {
+              "id": "area-VY",
+              "from": "V",
+              "to": "Y",
+              "enabled": false,
+              "builtin": true
+            },
+            {
+              "id": "area-KK",
+              "from": "K",
+              "to": "K",
+              "enabled": false,
+              "builtin": true
+            },
+            {
+              "id": "area-ZZ",
+              "from": "Z",
+              "to": "Z",
+              "enabled": false,
+              "builtin": true
+            }
+          ],
+          "rows": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            1,
+            2
+          ],
+          "disabled": [],
+          "placementMode": "ordered",
+          "ordered": {
+            "axis": "columns",
+            "horizontal": "left",
+            "vertical": "top",
+            "seatSide": 0,
+            "startRows": {}
+          }
+        },
+        "assignments": {
+          "grid-B2:0": "d1ea0f18-aaac-4bf6-b95a-17df23b689b5",
+          "grid-E3:0": "b29eb986-286f-4ede-9c6f-bdf2111e2c3d",
+          "grid-D2:1": "897cd86b-8cdb-4936-8321-f227b1f3ff27",
+          "grid-E2:1": "479116d9-0320-4417-960b-89db7e478bb2",
+          "grid-C2:0": "5a2e39c5-26ab-43c8-b9cb-abb0b5a0d4b3",
+          "grid-C2:1": "4916bb9c-8bc8-48d4-9822-28cbd0611bc3"
+        },
+        "locks": [],
+        "hiddenWarnings": []
+      }
+    ],
+    "activeRoomId": "standaardlokaal",
+    "participatingRooms": [
+      "standaardlokaal"
+    ],
+    "studentRooms": {
+      "d1ea0f18-aaac-4bf6-b95a-17df23b689b5": "standaardlokaal",
+      "616a5ec7-4e07-4efa-9a78-20937a4a4cee": "standaardlokaal",
+      "78a2a4be-d6eb-4a7d-8cfd-05f967de5b66": "standaardlokaal",
+      "74dc7ffe-3e2b-49be-973a-b6e378973abd": "standaardlokaal",
+      "b29eb986-286f-4ede-9c6f-bdf2111e2c3d": "standaardlokaal",
+      "4916bb9c-8bc8-48d4-9822-28cbd0611bc3": "standaardlokaal",
+      "31c9b4e2-bf06-40ee-92e3-bc524a1be88a": "standaardlokaal",
+      "897cd86b-8cdb-4936-8321-f227b1f3ff27": "standaardlokaal",
+      "479116d9-0320-4417-960b-89db7e478bb2": "standaardlokaal",
+      "5a2e39c5-26ab-43c8-b9cb-abb0b5a0d4b3": "standaardlokaal",
+      "a562723f-cb75-4fbd-ac1c-401966254e80": "standaardlokaal",
+      "9a95300f-eaea-4ee2-b9ec-c676ea84fc8f": "standaardlokaal",
+      "3dfc89a3-6a9f-4fcd-9ee5-f09c2462f0d1": "standaardlokaal",
+      "ae17f01a-d0a2-48b4-a2fe-e70da9f6d37d": "standaardlokaal",
+      "8b5778f1-30f9-448e-b589-96d6b8133a27": "standaardlokaal",
+      "5100eb00-10d7-4ceb-874e-5f23faadb4ee": "standaardlokaal",
+      "332a0a0d-d897-4452-a488-1f57c8ac36a7": "standaardlokaal",
+      "924d9a82-6984-43ad-8705-22ed7c9b62dd": "standaardlokaal",
+      "6eb3b0f6-2676-4e7e-a636-4af5d9ec1fda": "standaardlokaal",
+      "ab5ead0e-0300-4f4a-807b-f9c83bfc7b7b": "standaardlokaal",
+      "083535ec-216d-4fd1-b41b-049b27520441": "standaardlokaal",
+      "92ff2f42-d9c6-49d3-bb7c-9b6f7ceba156": "standaardlokaal",
+      "1c7cf5ae-c62a-4b08-82fc-3f3368f1b095": "standaardlokaal",
+      "6b5c627a-cb8d-4afb-bc7e-e44270db14ce": "standaardlokaal",
+      "90d5404d-f6ae-42b0-9c07-64e572a137c4": "standaardlokaal",
+      "851a0391-c3b7-44f8-a738-ca5484f722fc": "standaardlokaal",
+      "4bc0aca8-f65f-42cf-a5d7-8a172c26cab6": "standaardlokaal",
+      "45406c32-a870-4bae-bbb2-6e7fd58b5442": "standaardlokaal",
+      "aac6e49f-2344-4408-9f01-3045aaa5f186": "standaardlokaal",
+      "94fd2887-c543-4a55-b8ec-3888c3959e67": "standaardlokaal",
+      "76e272df-581a-405b-ba40-175cbbabf8b3": "standaardlokaal",
+      "5061a151-ab33-424e-9c56-eea0bdb8ceae": "standaardlokaal",
+      "59cf2f40-dd11-455a-aeb3-71b213298054": "standaardlokaal",
+      "471d9adc-f858-4f8f-b9f7-e481394c5c20": "standaardlokaal",
+      "9f11322c-bbf7-46ba-9c0c-f0617e731768": "standaardlokaal",
+      "e649cf10-e6e1-4afd-9686-c2f06d0ef538": "standaardlokaal",
+      "87963df3-b80b-4f77-a7e6-48b2698627ca": "standaardlokaal",
+      "a69ff6d0-eda4-454f-af4b-0aaea214ca8d": "standaardlokaal",
+      "deb6c880-5af3-46a5-a8d5-22bee390630d": "standaardlokaal",
+      "b47a2d5f-6f5a-4252-a111-d8b9004343cc": "standaardlokaal",
+      "074c0a14-fd4a-4795-b8f5-64178698d09f": "standaardlokaal",
+      "16eae68c-2565-4970-a621-4b6cc0e3f956": "standaardlokaal",
+      "5d3a6518-b15f-4885-be6a-7f6209aa6dbc": "standaardlokaal",
+      "914cd636-a848-494d-b85d-c75a3248ae73": "standaardlokaal",
+      "0c8938b2-0a06-4509-acf9-705761876d34": "standaardlokaal",
+      "038f6804-763e-43b2-bbf6-3c1a275622af": "standaardlokaal",
+      "d445c079-a6dc-4cce-a00e-c3125e6dfad4": "standaardlokaal",
+      "57d51cc7-97cc-439e-bd46-b51a4470ce22": "standaardlokaal",
+      "3e5355c4-8b9b-4dd6-9226-bb73ec9ae1d9": "standaardlokaal",
+      "20136b9b-bac6-4b59-9923-0c43e1932c51": "standaardlokaal",
+      "0389ca36-88f1-4cea-b820-ba964d6cf3b9": "standaardlokaal",
+      "b537c44f-e26e-47d1-8bcf-dafb87b054a3": "standaardlokaal",
+      "7bd9ba44-6bf8-42a3-a7e5-39ec299fb0fb": "standaardlokaal",
+      "5f7492f5-902e-429b-b6c2-82e2a25d221b": "standaardlokaal",
+      "ae42bd89-4c61-4a79-bff5-c54f50059fa9": "standaardlokaal",
+      "037a68ca-1b4b-4029-bddb-e0662a0314f3": "standaardlokaal",
+      "dd03928b-f614-4bd3-90b6-b471fe8839e4": "standaardlokaal",
+      "1810eb72-d547-42ba-bf6a-e818578c6265": "standaardlokaal",
+      "119e7c16-70d6-431b-bc5a-13f6930bc66d": "standaardlokaal",
+      "d0590ce8-b42e-4962-ba53-ad55a8b8ad40": "standaardlokaal",
+      "3f37e5af-878b-4217-941e-cf3ade262875": "standaardlokaal",
+      "41958b2b-141f-4f92-86d5-8ee3d5cd229d": "standaardlokaal",
+      "9fb8d38d-0468-4e5b-a7a6-b6f0100230f4": "standaardlokaal",
+      "d71e254c-a934-40af-89ca-4fbc1b4ed4a7": "standaardlokaal",
+      "89739ce3-2e2e-4ccb-a0ae-93b68ab1e497": "standaardlokaal",
+      "85274871-7c73-45ba-8296-bd3cd1ab4bea": "standaardlokaal",
+      "d5267b5e-597c-41ef-b0a9-91b71c79d30b": "standaardlokaal",
+      "7a2fb7a1-8f25-49ec-8da5-f578d0d13b44": "standaardlokaal",
+      "75259dae-9b64-40af-a2d7-f16717b87eb0": "standaardlokaal",
+      "466e5363-ccda-437a-a917-df410dd4c373": "standaardlokaal",
+      "3432fc25-4940-4b10-8e2f-2803f90a70c4": "standaardlokaal",
+      "31402e82-e16a-40bc-ad84-115b10f09bb7": "standaardlokaal",
+      "986965d6-b81f-4207-b9ac-515a60da32ea": "standaardlokaal",
+      "2579be42-10fa-46c7-960c-8a56faa4d854": "standaardlokaal",
+      "bc880871-ec0a-4d9c-8183-197296dde56f": "standaardlokaal",
+      "34a19b08-2cc3-4a64-9a5a-2a5322ef2589": "standaardlokaal",
+      "8b811e86-5670-4274-8148-d99fa46f0dcf": "standaardlokaal",
+      "2593b2a5-ac75-4705-b13e-0134a7e84b13": "standaardlokaal",
+      "e9a4203a-ab28-42d2-b73e-5b4082fb552c": "standaardlokaal",
+      "1174b8d3-932b-449e-92e5-18e7537e7678": "standaardlokaal",
+      "e02baf41-6598-4a3f-8583-d1ee3c281d08": "standaardlokaal",
+      "d48e58f0-1dd1-44a5-b8f5-c0317cc07c30": "standaardlokaal",
+      "eab1b202-ba51-467f-8c63-f9dd0aff6e79": "standaardlokaal",
+      "6196aec2-b48d-442a-a2f2-4d377975caf4": "standaardlokaal",
+      "641a1931-16b3-4711-8da0-6ed781cd1b37": "standaardlokaal",
+      "a0b86944-485a-4570-8ac7-3892fd738d1f": "standaardlokaal",
+      "62d481c1-f56d-4453-ad67-6313f459875b": "standaardlokaal",
+      "a8316f91-f12b-4da8-985a-f291c3eaf73d": "standaardlokaal",
+      "3e897f6d-5558-40df-ba66-7f5c976a31a4": "standaardlokaal",
+      "f21a59ed-2c4c-41bf-aff8-ab2abfb39c2c": "standaardlokaal",
+      "e711be64-0e03-4e47-b2ea-79f7036b63c7": "standaardlokaal",
+      "0a2e70d5-2077-4dc4-99c5-e3c655881736": "standaardlokaal",
+      "9b083413-76f5-41ff-bdd5-922fe7b90faf": "standaardlokaal",
+      "0339fc44-aa6b-462d-aed8-4b8b870c7f43": "standaardlokaal",
+      "afdc4737-9699-4b9c-a424-bdd2c2218e6a": "standaardlokaal",
+      "6d788ec6-5bae-47c3-9891-f13036579090": "standaardlokaal",
+      "6054d54b-0f10-4ad7-b6e7-06776ab84c67": "standaardlokaal",
+      "aef63c88-1a06-492c-acce-41f36aca5348": "standaardlokaal",
+      "4a7cb5f6-2832-413d-b721-8fdeb2fda8dd": "standaardlokaal",
+      "3e740a82-4522-4d01-9e62-466ca0de34f6": "standaardlokaal",
+      "6df722a6-94bb-4ef8-9a7d-67e5deb19208": "standaardlokaal",
+      "88ea554a-148d-4aec-8a75-280d72648d62": "standaardlokaal",
+      "c63bc91a-c3b4-445a-a4e7-09acc35251a9": "standaardlokaal",
+      "3f672658-9a3b-4d5b-816e-57e0ef72e9e1": "standaardlokaal",
+      "12bc6e21-3883-4fe7-9d64-19cdbc885f93": "standaardlokaal",
+      "67dd560e-7f17-4835-b059-c82142cf78d5": "standaardlokaal",
+      "92b12175-51e7-47d4-95a9-597afefe667d": "standaardlokaal",
+      "2e568607-32b0-4c9d-8ec3-d00bac6dafa5": "standaardlokaal",
+      "52038669-4655-4313-b54d-df49997de55a": "standaardlokaal",
+      "5d48511b-c58b-4793-8956-8eb4778f3709": "standaardlokaal",
+      "eb3d5696-0f99-4722-85b5-c3ee6b0566a2": "standaardlokaal",
+      "b31cffb9-7880-4e4b-8faf-6e3ee6640676": "standaardlokaal",
+      "a75ff153-2204-4d3d-8f92-e58b3d9b8d2c": "standaardlokaal",
+      "2d16ce18-e507-467a-96dd-7223b67b9656": "standaardlokaal",
+      "7c36ee74-52f9-47ce-bcc2-ababa8eb6200": "standaardlokaal",
+      "2decca95-5f55-4cbe-937b-572032d9658f": "standaardlokaal",
+      "1f342b4e-37ba-4901-b218-cbbc9f9b5e53": "standaardlokaal",
+      "578ede6e-2ac5-40b6-bac1-23795af68407": "standaardlokaal",
+      "d42d5281-991e-4afc-a1a4-9efc7ef77480": "standaardlokaal",
+      "e76ef37c-7380-4441-a80a-d2e150381f41": "standaardlokaal",
+      "7d84c0f4-3172-4fb6-b291-2760302a5853": "standaardlokaal",
+      "110d48e3-f750-4723-b71f-d0c96a711e9a": "standaardlokaal",
+      "2c64f55d-412b-4c4a-aa05-e2a5323f1964": "standaardlokaal",
+      "074e1876-76e6-47ec-9e8b-c98a0ee9b49f": "standaardlokaal",
+      "dfd31266-c4e7-497a-b50c-01de11136bb7": "standaardlokaal",
+      "4ff31e75-61d9-4353-99ff-42abcfa50dbb": "standaardlokaal",
+      "11d089bb-e259-4328-b586-bee2883ccec7": "standaardlokaal",
+      "1b2ee199-6aee-45a3-9d7c-5fa791a5cfc8": "standaardlokaal",
+      "00bd22ea-5c1f-4605-95b8-c45c6a4a7bcb": "standaardlokaal",
+      "5a3006f4-f691-4d8f-a303-da339fa71f08": "standaardlokaal",
+      "deea61ac-04fc-4738-bd8a-9153edfcd86e": "standaardlokaal",
+      "9c0c7d6b-0061-44e0-a435-4d4e7a5c5201": "standaardlokaal",
+      "7a83041d-9998-45c6-ad37-42ecc3a26148": "standaardlokaal",
+      "4795c472-a9e4-426e-82f7-0f6b7a572e38": "standaardlokaal",
+      "5e627426-727f-42c6-85da-389f0284d937": "standaardlokaal",
+      "78d457a1-2ff8-4c9f-aa92-726b217c60d4": "standaardlokaal",
+      "00de0bdb-df9b-486e-a5e0-8613c12414f1": "standaardlokaal",
+      "dc3ce91a-5ed3-4bb9-9cfc-6a74084893e9": "standaardlokaal",
+      "2ecb0e37-3a01-495d-aa44-a8ce0ab6b69a": "standaardlokaal",
+      "41b6c933-2832-40fe-868a-a075329cca9d": "standaardlokaal",
+      "b7e82018-531e-4a1e-850f-6d111e4a8b14": "standaardlokaal",
+      "54f85005-ec7a-4ad4-beea-a7569c682f30": "standaardlokaal",
+      "62b863f6-9b4c-4f19-a812-ea13e5b5a1fe": "standaardlokaal",
+      "95dc838f-4323-45d6-9ff8-0183542f468a": "standaardlokaal",
+      "653517a1-5a28-41a3-a50d-a02d91fb497d": "standaardlokaal",
+      "c54d16f9-b84a-40f6-b344-2fdb05c7c727": "standaardlokaal",
+      "b29774ae-eada-440a-91d1-34ab79d40420": "standaardlokaal",
+      "2e602f4a-a64a-495b-b1c2-76ed6137b877": "standaardlokaal",
+      "6ccddb32-67b9-4a7e-908b-0ecb501b78d1": "standaardlokaal",
+      "9dc665ba-1b1d-423a-8203-95265f647f1c": "standaardlokaal",
+      "cf255bd1-0fd0-447f-ba06-365a88b8de3c": "standaardlokaal",
+      "f557bd93-bd0b-45f0-8e43-529e4acb3fc6": "standaardlokaal",
+      "28249fa9-8bac-4ce4-92fa-e88224d51e0b": "standaardlokaal",
+      "c5aa85aa-4153-43fe-9aba-b12cb1cb11dc": "standaardlokaal",
+      "917f8ba0-c0f1-4e5a-aa71-8a22fef58971": "standaardlokaal",
+      "7884f6e5-45b4-4d89-bd15-87460f63c391": "standaardlokaal",
+      "b4b35fdf-d7fa-45d1-9e1f-dbf7758e0f3b": "standaardlokaal",
+      "d0c2c406-9c31-40e0-9e7d-047eb87e5261": "standaardlokaal",
+      "24a63a5c-2ad8-464d-9202-811e5540a7fb": "standaardlokaal",
+      "e420a7a8-7158-4f05-89c4-55672bf9574b": "standaardlokaal",
+      "6cec2ded-fff8-4707-be76-0685307ab4b4": "standaardlokaal",
+      "0ab75f61-ad90-4e0c-b085-3eab48de5a30": "standaardlokaal",
+      "67405c47-729d-4446-a94b-e1e19ad7f1e6": "standaardlokaal",
+      "3d9fae34-2e75-4469-ad24-009a706436ec": "standaardlokaal",
+      "149dec11-c578-4af2-a835-3fe818b0696e": "standaardlokaal",
+      "76fb6e3a-2cf6-4288-b892-f054cf9d6171": "standaardlokaal",
+      "c03c2b74-a250-4903-be23-9a67c089f8d6": "standaardlokaal",
+      "95d277b7-e8ac-4f6a-ae13-df540e3fcf8a": "standaardlokaal",
+      "a8df332c-b6f8-4d3b-9b70-ca8a501b5a23": "standaardlokaal",
+      "04088e86-1dbc-49ef-84de-86bd3b17acf7": "standaardlokaal",
+      "b6362ba2-cba3-43a0-a26c-b88de65b3977": "standaardlokaal",
+      "e5e79df7-00de-43a2-a859-9b3f81781c00": "standaardlokaal",
+      "98624cc7-d654-4e9b-914c-b2dd40381db3": "standaardlokaal",
+      "d30e2e86-ce68-4893-b463-689d64863f28": "standaardlokaal",
+      "11f27ca6-f283-4d7c-b42e-b41d706326a7": "standaardlokaal",
+      "07a32448-5165-434a-9b94-8ade26384e8b": "standaardlokaal",
+      "ecd71da4-7203-4b36-b353-bf52e4e31565": "standaardlokaal",
+      "056c7675-9e8e-47bc-b8d1-15da7e5cd166": "standaardlokaal",
+      "8de73b1d-d17a-40f4-bb88-f13aeaef681a": "standaardlokaal",
+      "1d7e62ca-d8a5-4844-9fad-5cbea2a52000": "standaardlokaal"
+    },
+    "distribution": {
+      "mode": "balanced",
+      "keepFixed": true,
+      "reviewed": false
+    },
+    "classRooms": {},
+    "planId": null,
+    "studentRoomPins": {}
+  },
+  "plans": [],
+  "lists": []
+}

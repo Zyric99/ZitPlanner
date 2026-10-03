@@ -1,0 +1,38 @@
+{
+  "name": "klaslokaal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nederlandse desktopplanner voor zitplaatsen",
+  "type": "module",
+  "main": "desktop/desktop.cjs",
+  "scripts": {
+    "start": "electron .",
+    "preview": "node scripts/server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:desktop": "electron tests/desktop-smoke.cjs",
+    "test:dev": "node tests/developer-mode.cjs",
+    "test:rooms": "electron tests/desktop-rooms.cjs",
+    "test:projects": "electron tests/desktop-workspace.cjs",
+    "test:unplaced": "electron tests/desktop-unplaced.cjs",
+    "test:auto": "electron tests/desktop-auto-distribution.cjs",
+    "check": "node --check src/app.mjs && node --check src/bench-selection.mjs && node --check src/engine.mjs && node --check src/rooms.mjs && node --check src/location-rules.mjs && node --check src/auto-distribution.mjs && node --check src/room-ui.mjs && node --check src/layout.mjs && node --check src/seat-codes.mjs && node --check src/grid-room.mjs && node --check src/default-room.mjs && node --check src/grid-editor.mjs && node --check src/excel-export.mjs && node --check src/excel-import.mjs && node --check src/student-import.mjs && node --check src/student-list.mjs && node --check src/warning-state.mjs && node --check src/student-year.mjs && node --check src/weekly-planner.mjs && node --check src/weekly-ui.mjs && node --check src/planner-worker.mjs && node --check desktop/desktop.cjs && node --check desktop/project-store.cjs && node --check desktop/project-workspace.cjs && node --check src/project-session.mjs && node --check desktop/preload.cjs && node --check src/default-set.mjs && node --check src/project-validation.mjs && node --check src/starter-project.mjs && node --check scripts/server.mjs && node --check desktop/installation.cjs",
+    "test:defaults": "electron tests/desktop-workspace.cjs",
+    "test:selection": "electron tests/desktop-selection.cjs",
+    "test:grid": "electron tests/desktop-grid.cjs",
+    "test:grid-codes": "electron tests/desktop-grid-codes.cjs",
+    "test:tabs": "electron tests/desktop-tabs.cjs",
+    "test:excel": "electron tests/desktop-excel.cjs",
+    "test:years": "electron tests/desktop-student-years.cjs",
+    "test:weekly": "electron tests/desktop-weekly.cjs",
+    "test:ui": "electron tests/desktop-ui.cjs",
+    "dist:win": "electron-builder --config build/electron-builder.json --win nsis --x64 --publish never",
+    "test:packaged": "node tests/packaged-smoke.cjs",
+    "test:uninstaller": "node tests/uninstaller.cjs"
+  },
+  "devDependencies": {
+    "electron": "^41.0.0",
+    "electron-builder": "26.15.3"
+  },
+  "author": "Zyric99",
+  "license": "GPL-3.0-only"
+}

@@ -1,0 +1,11 @@
+node_modules/
+.npm-cache/
+artifacts/
+*.bundle
+ImportLayoutExample.xlsx
+dist/
+*.log
+projects/
+.env
+.env.*
+!.env.example

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; worker-src 'self'; connect-src 'self'">
+  <title>Zitplanner</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand"><strong>Zitplanner</strong></div>
+    <div class="header-plan"><span class="status-dot"></span><span id="plan-heading">Nieuwe indeling</span><span class="local-label" role="status">Automatisch opgeslagen</span></div>
+    <div class="header-history" role="group" aria-label="Wijzigingen"><button id="undo" class="icon-button" title="Ongedaan maken (Ctrl+Z)" aria-label="Ongedaan maken">↶</button><button id="redo" class="icon-button" title="Opnieuw (Ctrl+Y)" aria-label="Opnieuw">↷</button></div>
+    <button id="save" class="button">Naam wijzigen</button>
+    <button id="open-plans" class="button">▤ &nbsp; Projecten</button>
+  </header>
+  <div class="app-shell">
+    <aside class="left-sidebar">
+      <div class="sidebar-heading">WERKRUIMTE</div>
+      <nav id="navigation">
+        <button data-tab="rooms" class="nav-item"><span>▦</span>Lokalen</button>
+        <button data-tab="distribution" class="nav-item"><span>⇄</span>Verdeling over lokalen</button>
+        <button data-tab="room" class="nav-item active"><span>▦</span>Zitplaatsen</button>
+        <button data-tab="students" class="nav-item"><span>♙</span>Leerlingen <b id="student-count">0</b></button>
+        <button data-tab="rules" class="nav-item"><span>☷</span>Regels <b id="rule-count">0</b></button>
+      </nav>
+      <div id="sidebar-content"></div>
+      
+    </aside>
+    <main>
+      <div class="page-heading"><h1>Zitplaatsenplanner</h1><div class="active-room-bar"><label>Huidig lokaal <select id="active-room"></select></label><button class="button small" data-tab="distribution">← Lokaalverdeling</button><button class="button small" id="edit-active-room">Opstelling bewerken</button></div></div>
+      <section id="rooms-workspace" hidden></section>
+      <section id="task-workspace" hidden></section>
+      <div class="toolbar"><button id="generate" class="button primary">✦ &nbsp; Indeling maken…</button><span id="generation-summary" class="toolbar-hint"></span><span class="toolbar-space"></span><button id="export" class="button">↗ &nbsp; Exporteren</button></div>
+      <div class="weekly-bar" id="weekly-bar" hidden><div class="weekly-controls"><label>Studiedag <select id="weekly-day" aria-label="Studiedag" disabled><option>Zonder dagfilter</option></select></label></div><small id="weekly-note"></small><details class="weekly-warning" id="weekly-warning" hidden></details></div>
+      <div class="summary" id="summary"></div>
+      <section class="classroom-card">
+        <div class="layout-strip"><div id="layout-tabs" role="tablist" aria-label="Lokaalopstellingen"></div><button id="new-layout-tab" class="tab-tool" aria-label="Nieuw lokaal" title="Nieuw lokaal">＋</button><details class="layout-menu overflow-menu"><summary aria-label="Huidig lokaal beheren" title="Huidig lokaal beheren">⋯</summary><div class="menu-items"><button data-layout-action="edit">Opstelling bewerken</button><button data-layout-action="rename">Naam wijzigen</button><button data-layout-action="copy">Dupliceren</button><label class="layout-menu-participation"><input id="layout-participates" type="checkbox">Meedoen bij indelen</label><small id="layout-participation-note"></small><button class="danger" data-layout-action="delete">Lokaal verwijderen</button></div></details></div>
+        <div class="room-top"><div><strong>Het lokaal</strong><span id="capacity"></span></div><div class="room-controls"><button id="select-benches" class="button small" aria-pressed="false" title="Klik banken om een groep te selecteren; Ctrl voegt toe">Meerdere banken</button><button id="zoom-out" class="icon-button" aria-label="Uitzoomen">−</button><label class="zoom-field"><input id="zoom-label" type="text" inputmode="decimal" value="100" aria-label="Zoompercentage (10 tot 300 procent)"><span>%</span></label><button id="zoom-in" class="icon-button" aria-label="Inzoomen">＋</button><details class="view-menu overflow-menu"><summary class="button small">Weergave ▾</summary><div class="menu-items"><button id="overview">Alles passend tonen</button><button id="fit">Passend op hoogte</button><label>Kleurweergave<select id="color-mode" aria-label="Kleurweergave"><option value="neutral">Neutraal</option><option value="class">Per klas</option><option value="year">Per leerjaar</option></select></label></div></details><button id="expand-room" class="button small" aria-pressed="false" title="Vergroot de interactieve werkruimte">⛶ Werkruimte vergroten</button></div></div>
+        <div id="alternatives" class="alternatives" hidden></div>
+        <div id="room-viewport" tabindex="0" aria-label="Interactieve plattegrond"><svg id="room" viewBox="0 0 2800 810" role="group" aria-label="Interactief lokaal met selecteerbare banken, kolommen en stoelrijen"></svg></div>
+        <div class="room-bottom"><div class="legend"><span><i class="dot occupied"></i>Bezet</span><span><i class="dot empty"></i>Vrij</span><span><i class="dot disabled"></i>Uitgeschakeld</span><span><i class="dot warning-required"></i>Verplicht</span><span><i class="dot warning"></i>Voorkeur</span><span><i class="dot warning-soft"></i>Zachte voorkeur</span><span>⌑ Vastgezet</span><span>◆ Vaste positie</span></div></div>
+      </section>
+      <section id="unplaced" class="unplaced" hidden></section>
+    </main>
+    <aside class="right-sidebar"><label class="search-box"><span>⌕</span><input id="search" placeholder="Zoek leerling of plaats…" autocomplete="off"></label><div id="search-results"></div><div id="context"></div><div class="warnings-heading"><h2>Waarschuwingen <span id="warning-count">0</span></h2><button id="warnings-check" class="icon-button" title="Regels opnieuw controleren" aria-label="Regels opnieuw controleren">↻</button></div><div id="warning-list"></div><div id="rule-audit" class="audit"></div></aside>
+  </div>
+  <div id="toast" role="status" hidden></div>
+  <dialog id="modal"><div id="modal-content"></div></dialog>
+  <div id="print-root"></div>
+  <script type="module" src="app.mjs"></script>
+</body>
+</html>
+
