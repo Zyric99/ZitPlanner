@@ -117,6 +117,18 @@ app.whenReady().then(async()=>{
     assert.deepEqual(smaller.layout.benches.map(b=>b.id).sort(),large.layout.benches.filter(b=>['A','B','C'].includes(b.cell.column)&&b.cell.row<=3).map(b=>b.id).sort());
     await win.loadFile(path.join(root,'src','index.html'));assert.deepEqual((await state()).rooms.find(r=>r.id===large.id),smaller);
     await js(`document.querySelector('[data-tab="rooms"]').click();document.querySelector('[data-room-edit="${large.id}"]').click();`);assert.deepEqual(await canvasSize(),smallerSize);
+    // Same-area rules distinguish named sections in the live classroom UI.
+    await js(`(async()=>{const e=await import('./engine.mjs'),g=await import('./grid-room.mjs'),l=await import('./layout.mjs'),r=await import('./rooms.mjs');const s=e.defaults(),layout=g.generateGrid(g.emptyGridRoom(),{from:'A',to:'C',rows:1});for(const [id,after,name] of [['extra','A','Extra'],['computers','B','Computers']]){g.setSection(layout,{id,after,name,width:12});layout.benches.push(l.makeBench(layout,'student',{sectionId:id,gx:0,gy:1,sortX:g.visualBands(layout).find(b=>b.id===id).x,sortY:1}));layout.nextManual++;}s.settings.layout=layout;s.settings.studentRulesEnabled=true;s.settings.yearRulesEnabled=false;s.students=[{id:'anna',name:'Anna',class:'1A',year:'1',absent:false},{id:'bram',name:'Bram',class:'2B',year:'2',absent:false}];s.rules=[{id:'area',type:'area',students:['anna','bram'],priority:'Verplicht'}];s.assignments=Object.fromEntries(layout.benches.filter(b=>b.sectionId).map((b,i)=>[b.id+':0',s.students[i].id]));r.initializeRooms(s);localStorage.setItem('klaslokaal-v1',JSON.stringify(s));})()`);
+    await win.loadFile(path.join(root,'src','index.html'));
+    assert.match(await js(`document.querySelector('#active-warning-list').textContent`),/Anna en Bram.*In hetzelfde gebied/);
+    await js(`document.querySelector('[data-tab="rules"]').click();document.querySelector('[data-edit-rule="area"]').click()`);
+    assert.equal(await js(`document.querySelector('#rule-area-help').hidden`),false);
+    assert.match(await js(`document.querySelector('#rule-area-help').textContent`),/hetzelfde eigen vak.*buiten eigen vakken/s);
+    await js(`document.querySelector('#rule-type').value='together';document.querySelector('#rule-type').dispatchEvent(new Event('change'))`);
+    assert.equal(await js(`document.querySelector('#rule-area-help').hidden`),true);
+    await js(`document.querySelector('#rule-type').value='area';document.querySelector('#rule-type').dispatchEvent(new Event('change'));document.querySelector('#rule-submit').click()`);
+    await win.loadFile(path.join(root,'src','index.html'));
+    assert.match(await js(`document.querySelector('#active-warning-list').textContent`),/Anna en Bram.*In hetzelfde gebied/);
     if(errors.length)throw Error(errors.join('\n'));
     console.log(JSON.stringify({ok:true,checks:'A–F / 1–5, removal, movement, rotation, gap, named section, manual one/two-seat tables, teacher, undo/redo, regeneration, save/reload, visual feature edits, row/column canvas shrink'}));app.exit(0);
   }catch(error){console.error(error);app.exit(1);}

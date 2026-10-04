@@ -1,3 +1,4 @@
+import { ownValue } from './id-record.mjs';
 import { validState } from './project-validation.mjs';
 import { migrateState, defaults } from './engine.mjs';
 import { initializeRooms } from './rooms.mjs';
@@ -57,5 +58,5 @@ export function selectStarterRooms(input,roomIds) {
     document.state=prepared.state;clearedWeek=prepared.summary.clearedWeek;
   }
   if(!validState(document.state))throw Error('Deze lokaalkeuze vormt geen geldig startproject.');
-  return {document,preview:{...starterPreview(document),roomNames:document.state.rooms.map(room=>room.name),unassigned:document.state.students.filter(p=>!document.state.studentRooms[p.id]).length,clearedWeek}};
+  return {document,preview:{...starterPreview(document),roomNames:document.state.rooms.map(room=>room.name),unassigned:document.state.students.filter(p=>!ownValue(document.state.studentRooms,p.id)).length,clearedWeek}};
 }

@@ -1,8 +1,9 @@
-import { AREAS, PRIORITIES, RULE_TYPES, CLASS_RULE_TYPES, YEAR_RULE_TYPES, classRuleFor, yearRuleFor, yearPairKey, studentRulesFor, REMOVED_RULE_TYPES, defaults, sampleStudents, enabledSeats, seatBench as engineSeatBench, seatLabel as engineSeatLabel, validSeat as engineValidSeat, seatCode, benchCapacity, benchesFor, roomStudents, seatGeometry, evaluate, generate, parseStudents, sectionsFor, migrateState, sectionLabel, containsBench, letterRange } from './engine.mjs';
+import { ownValue } from './id-record.mjs';
+import { AREAS, PRIORITIES, RULE_TYPES, CLASS_RULE_TYPES, YEAR_RULE_TYPES, classRuleFor, yearRuleFor, yearPairKey, studentRulesFor, REMOVED_RULE_TYPES, defaults, sampleStudents, enabledSeats, seatBench as engineSeatBench, seatLabel as engineSeatLabel, validSeat as engineValidSeat, seatCode, benchCapacity, benchesFor, roomStudents, seatGeometry, evaluate, generate, sectionsFor, migrateState, sectionLabel, containsBench, letterRange } from './engine.mjs';
 import { warningKey, warningGroups, aggregateUnplacedWarnings, reconcileHiddenWarnings, warningPriorityClass, warningHighlights } from './warning-state.mjs';
 import { seatingWorkbook, studyWorkbook, weeklyWorkbook, exportColumns, EXCEL_MIME } from './excel-export.mjs';
 import { workbookSheets } from './excel-import.mjs';
-import { rowsText, parseStudentSheets, STUDY_DAYS } from './student-import.mjs';
+import { rowsText, textRows, parseStudentRows, parseStudentSheets, STUDY_DAYS } from './student-import.mjs';
 import { updateStudentList } from './student-list.mjs';
 import { evaluateCrossRoomRules } from './auto-distribution.mjs';
 import { inferYear, normalizeYear, manualYear, setManualYear, normalizeStudentYears, studentYearErrors } from './student-year.mjs';
@@ -102,7 +103,7 @@ function history(redo=false) {if(roomsUI.history(redo))return;const source=redo?
 const person = id => state.students.find(s=>s.id===id);
 const studentSeat = id => Object.keys(state.assignments).find(seat=>state.assignments[seat]===id);
 const activeStudents = () => roomStudents(state).filter(s=>!s.absent);
-const unplacedStudents = () => {const seated=new Set(Object.values(state.assignments));return state.students.filter(p=>!p.absent&&(!state.rooms.some(room=>room.id===state.studentRooms[p.id])||state.studentRooms[p.id]===state.activeRoomId&&!seated.has(p.id)));};
+const unplacedStudents = () => {const seated=new Set(Object.values(state.assignments));return state.students.filter(p=>!p.absent&&(!state.rooms.some(room=>room.id===ownValue(state.studentRooms,p.id))||ownValue(state.studentRooms,p.id)===state.activeRoomId&&!seated.has(p.id)));};
 const fixedLabel=rule=>{const room=state.rooms.find(r=>r.id===rule.roomId);return room?(!rule.seat?`${room.name} · vast lokaal`:`${room.name} · ${engineSeatBench(rule.seat,roomState(state,room.id).settings)?engineSeatLabel(rule.seat,roomState(state,room.id).settings):rule.positionCode?rule.positionCode+' · deze plaats bestaat niet meer':'Onbekende positie'}`):rule.roomId?'Verwijderd lokaal · vaste positie niet actief':seatLabel(rule.seat);};
 const roomViews=new Map();
 const rulesSectionOpen=new Map();
@@ -113,11 +114,11 @@ function openRoom(id) {
   const view=roomViews.get(id)??{zoom:1,zoomMode:'custom',left:0,top:0};zoom=view.zoom;zoomMode=view.zoomMode;
   switchRoom(state,id);write(KEY,state);render();viewport.scrollTo({left:view.left,top:view.top});
 }
-function selectStudent(id, focus=true) {const destination=state.studentRooms[id];if(destination&&destination!==state.activeRoomId)openRoom(destination);benchSelection=[];benchSelectionMode=false;warningFocus=null;pendingMove=null;selected=id;selectedBench=seatBench(studentSeat(id))?.id || null;highlight=selectedBench?[selectedBench]:[]; renderRoom();renderContext();renderUnplaced(); if(focus && selectedBench)focusBench(selectedBench); }
+function selectStudent(id, focus=true) {const destination=ownValue(state.studentRooms,id);if(destination&&destination!==state.activeRoomId)openRoom(destination);benchSelection=[];benchSelectionMode=false;warningFocus=null;pendingMove=null;selected=id;selectedBench=seatBench(studentSeat(id))?.id || null;highlight=selectedBench?[selectedBench]:[]; renderRoom();renderContext();renderUnplaced(); if(focus && selectedBench)focusBench(selectedBench); }
 function focusBench(id) { const b=BY_BENCH[id],viewport=$('#room-viewport'); if(b)viewport.scrollTo({left:Math.max(0,(b.x+32+roomGutter())*zoom-viewport.clientWidth/2),top:Math.max(0,(b.y+55)*zoom-viewport.clientHeight/2),behavior:'smooth'}); }
 function move(id,target) {
   const p=person(id);if(!p||p.absent)return toast('Een afwezige leerling kan niet worden geplaatst.');
-  const assignedRoom=state.rooms.find(room=>room.id===state.studentRooms[id]);
+  const assignedRoom=state.rooms.find(room=>room.id===ownValue(state.studentRooms,id));
   if(assignedRoom&&assignedRoom.id!==state.activeRoomId)return toast('Wijs deze leerling eerst aan dit lokaal toe via Verdeling over lokalen.');
   let prepared=null;
   if(!assignedRoom){prepared=clone(state);try{assignRoom(prepared,id,state.activeRoomId);}catch(error){return toast(error.message);}}
@@ -255,7 +256,7 @@ function renderSidebar() {
     container.innerHTML='';
   } else if(tab==='students') {
     const classes=[...new Set(state.students.map(s=>s.class))].sort(),years=[...new Set(state.students.map(s=>s.year))].sort();
-    container.innerHTML=`<div class="task-heading"><div><h2>Leerlingen</h2><p>${state.students.length} leerlingen · ${classes.length} klassen · ${years.length} leerjaren${state.weeklyPlans?.activeDay?' · '+dayLabel(state.weeklyPlans.activeDay):''}</p></div><div class="task-actions"><button class="button primary" id="import-top" data-action="import">＋ Leerlingen toevoegen</button><details class="overflow-menu"><summary class="button">Lijsten ▾</summary><div class="menu-items"><button data-action="save-list">Lijst bewaren</button><button data-action="lists">Bewaarde lijsten openen</button><button class="danger" data-action="clear">Lijst leegmaken</button></div></details><button class="button" data-action="export-students">Exporteren</button></div></div><div class="student-filters"><label>Zoeken<input id="student-filter" placeholder="Naam, klas of leerjaar…" value="${esc(studentFilter)}"></label><span id="student-filter-count" role="status"></span></div><div class="student-list">${state.students.map(s=>`<div class="person-row" data-student-row="${esc(s.id)}"><button data-person="${esc(s.id)}" title="Leerling aanpassen">${esc(s.name)}<small>${esc(s.class)} · leerjaar ${esc(s.year)} · ${esc(state.rooms.find(r=>r.id===state.studentRooms[s.id])?.name??'Nog geen lokaal')}</small></button><button class="button small" data-student-room="${esc(s.id)}">Zitplaats bekijken</button><button class="button small danger" data-delete-student="${esc(s.id)}" aria-label="${esc(s.name)} verwijderen">Verwijderen</button></div>`).join('')||'<p class="muted">Geen leerlingen.</p>'}</div>`;
+    container.innerHTML=`<div class="task-heading"><div><h2>Leerlingen</h2><p>${state.students.length} leerlingen · ${classes.length} klassen · ${years.length} leerjaren${state.weeklyPlans?.activeDay?' · '+dayLabel(state.weeklyPlans.activeDay):''}</p></div><div class="task-actions"><button class="button primary" id="import-top" data-action="import">＋ Leerlingen toevoegen</button><details class="overflow-menu"><summary class="button">Lijsten ▾</summary><div class="menu-items"><button data-action="save-list">Lijst bewaren</button><button data-action="lists">Bewaarde lijsten openen</button><button class="danger" data-action="clear">Lijst leegmaken</button></div></details><button class="button" data-action="export-students">Exporteren</button></div></div><div class="student-filters"><label>Zoeken<input id="student-filter" placeholder="Naam, klas of leerjaar…" value="${esc(studentFilter)}"></label><span id="student-filter-count" role="status"></span></div><div class="student-list">${state.students.map(s=>`<div class="person-row" data-student-row="${esc(s.id)}"><button data-person="${esc(s.id)}" title="Leerling aanpassen">${esc(s.name)}<small>${esc(s.class)} · leerjaar ${esc(s.year)} · ${esc(state.rooms.find(r=>r.id===ownValue(state.studentRooms,s.id))?.name??'Nog geen lokaal')}</small></button><button class="button small" data-student-room="${esc(s.id)}">Zitplaats bekijken</button><button class="button small danger" data-delete-student="${esc(s.id)}" aria-label="${esc(s.name)} verwijderen">Verwijderen</button></div>`).join('')||'<p class="muted">Geen leerlingen.</p>'}</div>`;
     $('#student-filter').oninput=event=>{studentFilter=event.target.value;filterStudents();};filterStudents();
   } else {
     container.innerHTML=`<div class="task-heading"><div><h2>Regels</h2></div><button class="button" data-tab="room">Zitplaatsen bekijken →</button></div><div class="rules-grid">${rulesPage()}</div>`;
@@ -395,8 +396,8 @@ function renderContext() {
   const p=person(selected),b=BY_BENCH[selectedBench];
   if(!p&&!b) { $('#context').innerHTML='';return; }
   let content='<button class="close-context" data-action="close-context" aria-label="Selectie sluiten">×</button>';
-  const moveControl=p&&!p.absent&&(state.studentRooms[p.id]===state.activeRoomId||!state.rooms.some(room=>room.id===state.studentRooms[p.id]))?`<button class="button ${pendingMove===p.id?'primary':''}" data-action="move-student" aria-pressed="${pendingMove===p.id}">Verplaatsen / wisselen</button>`:'';
-  if(p) { const seat=studentSeat(p.id),fixed=locationRule(state,p.id);content+=`<div class="eyebrow">GESELECTEERDE LEERLING</div><h3>${esc(p.name)}</h3><small>${esc(p.class)} · leerjaar ${esc(p.year)}<br>${p.absent?'Afwezig':esc(state.rooms.find(room=>room.id===state.studentRooms[p.id])?.name||'Nog geen lokaal')+' · '+(seat?esc(seatLabel(seat)):'Nog niet geplaatst')}</small>${moveControl}<button class="button" data-action="edit-student">Gegevens aanpassen</button><button class="button" data-action="fixed-position">⌑ ${fixed?'Vaste locatie aanpassen':'Vaste locatie instellen'}</button>${seat?'<button class="button" data-action="remove">Uit indeling halen</button>':''}<button class="button" data-action="add-rule">＋ Regel voor deze leerling</button>`;
+  const moveControl=p&&!p.absent&&(ownValue(state.studentRooms,p.id)===state.activeRoomId||!state.rooms.some(room=>room.id===ownValue(state.studentRooms,p.id)))?`<button class="button ${pendingMove===p.id?'primary':''}" data-action="move-student" aria-pressed="${pendingMove===p.id}">Verplaatsen / wisselen</button>`:'';
+  if(p) { const seat=studentSeat(p.id),fixed=locationRule(state,p.id);content+=`<div class="eyebrow">GESELECTEERDE LEERLING</div><h3>${esc(p.name)}</h3><small>${esc(p.class)} · leerjaar ${esc(p.year)}<br>${p.absent?'Afwezig':esc(state.rooms.find(room=>room.id===ownValue(state.studentRooms,p.id))?.name||'Nog geen lokaal')+' · '+(seat?esc(seatLabel(seat)):'Nog niet geplaatst')}</small>${moveControl}<button class="button" data-action="edit-student">Gegevens aanpassen</button><button class="button" data-action="fixed-position">⌑ ${fixed?'Vaste locatie aanpassen':'Vaste locatie instellen'}</button>${seat?'<button class="button" data-action="remove">Uit indeling halen</button>':''}<button class="button" data-action="add-rule">＋ Regel voor deze leerling</button>`;
     const rules=state.rules.filter(r=>r.students.includes(p.id));content+=rules.map(r=>`<div class="rule-chip">${esc(RULE_TYPES[r.type])}<small>${r.type==='fixed'?esc(fixedLabel(r)):r.students.filter(id=>id!==p.id).map(id=>esc(person(id)?.name)).join(', ')} · ${esc(r.priority)}</small>${r.type==='fixed'?`<button class="button small" data-delete-rule="${esc(r.id)}">Vaste locatie verwijderen</button>`:''}</div>`).join('');
   }
   if(b){
@@ -477,23 +478,24 @@ function makeRoomPlans({fromMain=false,openSeating=false}={}) {
   if(fromMain){
     if(!state.students.some(p=>!p.absent))return toast('Voeg eerst aanwezige leerlingen toe.');
     const targets=new Set(participatingRoomIds(state));
-    if(!state.distribution.reviewed||state.students.some(p=>!p.absent&&!targets.has(state.studentRooms[p.id]))){distributeRooms(prepared,prepared.distribution.mode,{keepFixed:prepared.distribution.keepFixed});prepared.distribution.reviewed=true;}
+    if(!state.distribution.reviewed||state.students.some(p=>!p.absent&&!targets.has(ownValue(state.studentRooms,p.id)))){distributeRooms(prepared,prepared.distribution.mode,{keepFixed:prepared.distribution.keepFixed});prepared.distribution.reviewed=true;}
   }
   busy=true;const startRevision=revision,worker=new Worker('./planner-worker.mjs',{type:'module'});
   $('#generate').disabled=true;$('#generate').textContent='Alle lokalen indelen…';
   const finish=()=>{busy=false;worker.terminate();$('#generate').disabled=false;$('#generate').textContent='✦  Indeling maken…';};
   toast('Zitplaatsen maken per lokaal…');
   worker.onmessage=({data})=>{if(data.progress){toast(`Zitplaatsen maken: lokaal ${data.progress} van ${data.total}…`);return;}finish();if(startRevision!==revision){render();return toast('De verdeling is intussen aangepast. Maak opnieuw zitplaatsen.');}
-    commit(()=>{const visible=state.activeRoomId;for(const result of data.rooms)prepared.rooms.find(r=>r.id===result.roomId).assignments=result.assignments;prepared.assignments=clone(prepared.rooms.find(r=>r.id===prepared.activeRoomId).assignments);switchRoom(prepared,visible);state=prepared;});if(openSeating)openGeneratedSeats(data.rooms.map(room=>room.roomId));else {if(!fromMain)tab='distribution';render();}const unassigned=state.students.filter(p=>!p.absent&&!state.studentRooms[p.id]).length;toast(`Zitplaatsen gemaakt in ${data.rooms.length} lokalen. ${unassigned+data.rooms.reduce((sum,r)=>sum+r.unplaced.length,0)} leerlingen wachten nog op een plaats.`);
+    commit(()=>{const visible=state.activeRoomId;for(const result of data.rooms)prepared.rooms.find(r=>r.id===result.roomId).assignments=result.assignments;prepared.assignments=clone(prepared.rooms.find(r=>r.id===prepared.activeRoomId).assignments);switchRoom(prepared,visible);state=prepared;});if(openSeating)openGeneratedSeats(data.rooms.map(room=>room.roomId));else {if(!fromMain)tab='distribution';render();}const unassigned=state.students.filter(p=>!p.absent&&!ownValue(state.studentRooms,p.id)).length;toast(`Zitplaatsen gemaakt in ${data.rooms.length} lokalen. ${unassigned+data.rooms.reduce((sum,r)=>sum+r.unplaced.length,0)} leerlingen wachten nog op een plaats.`);
   };
   worker.onerror=()=>{finish();render();toast('Zitplaatsen maken is niet gelukt. De bestaande indelingen blijven bewaard.');};worker.postMessage({state:prepared,rooms:true});
 }
 function makeAutomaticRoomPlan() {
-  if(busy||!participatingRoomIds(state).length)return;
+  const targets=participatingRoomIds(state);
+  if(busy||!targets.length)return;
   if(studentYearErrors(state.students).length)return yearErrorsDialog();
   const prepared=clone(state);if(prepared.weeklyPlans){leaveWeeklyDay(prepared);delete prepared.weeklyPlans;}captureRoom(prepared);
   const startRevision=revision,worker=new Worker('./planner-worker.mjs',{type:'module'});
-  busy=true;roomsUI.clearAutoResult();render();toast('Lokaalverdeling en zitplaatsen samen controleren…');
+  busy=true;roomsUI.clearAutoResult();render();toast(targets.length===1?'Alle leerlingen aan het lokaal toewijzen en zitplaatsen maken…':'Lokaalverdeling en zitplaatsen samen controleren…');
   const finish=()=>{busy=false;worker.terminate();};
   worker.onmessage=({data})=>{
     if(data.progress){toast(`Automatisch indelen: poging ${data.progress} van ${data.total}.`);return;}
@@ -543,13 +545,14 @@ function yearErrorsDialog() {
   };
 }
 function importDialog() {
-  modal('Leerlingen toevoegen',`<label class="field">Excel-, CSV- of tekstbestand<input type="file" id="import-file" accept=".xlsx,.csv,.tsv,.txt"></label><label class="field" id="import-sheet-field" hidden>Werkblad<select id="import-sheet"></select></label><label class="field" id="import-text-field">Leerlingenlijst<textarea id="import-text" placeholder="Naam;Klas&#10;Emma Peeters;3A&#10;Noah Janssens;4B"></textarea></label><label class="toggle-line"><input type="checkbox" id="replace-list">Huidige leerlingenlijst vervangen</label><div id="import-preview"></div>`,`<button class="button" data-close>Annuleren</button><button class="button primary" id="import-submit">Lijst controleren</button>`);
+  modal('Leerlingen toevoegen',`<label class="field">Excel-, CSV- of tekstbestand<input type="file" id="import-file" accept=".xlsx,.csv,.tsv,.txt"></label><div id="import-class-options" hidden><label class="toggle-line"><input type="checkbox" id="import-class-from-sheet">Werkbladnamen als klassen gebruiken als de kolom Klas ontbreekt</label><p class="muted">Voor Excelbestanden met een apart werkblad per klas. Controleer de klasnamen in de voorvertoning: werkbladnamen kunnen ingekort of aangepast zijn. Alleen de leerlingenlijst wordt geïmporteerd, geen zitplaatsen.</p></div><label class="field" id="import-sheet-field" hidden>Werkblad<select id="import-sheet"></select></label><label class="field" id="import-text-field">Leerlingenlijst<textarea id="import-text" placeholder="Naam;Klas&#10;Emma Peeters;3A&#10;Noah Janssens;4B"></textarea></label><label class="toggle-line"><input type="checkbox" id="replace-list">Huidige leerlingenlijst vervangen</label><div id="import-preview"></div>`,`<button class="button" data-close>Annuleren</button><button class="button primary" id="import-submit">Lijst controleren</button>`);
   let preview=null,sheets=[],fileRevision=0;
   const reset=()=>{preview=null;$('#import-submit').textContent='Lijst controleren';$('#import-preview').innerHTML='';};
   $('#import-text').oninput=reset;$('#replace-list').onchange=reset;
+  const sheetOptions=()=>({classFromSheetName:$('#import-class-from-sheet').checked});
   const sheetNotice=()=>{
     if(!sheets.length)return;
-    const result=parseStudentSheets(sheets,$('#replace-list').checked?[]:state.students);
+    const result=parseStudentSheets(sheets,$('#replace-list').checked?[]:state.students,sheetOptions());
     $('#import-preview').innerHTML=`<p>Werkbladen: ${result.sheets.filter(sheet=>sheet.valid).map(sheet=>esc(sheet.name)).join(', ')||'geen geldige werkbladen'}</p>${result.errors.length?`<div class="inline-errors" role="alert">${result.errors.map(esc).join('<br>')}</div>`:''}`;
   };
   const chooseSheet=()=>{
@@ -559,36 +562,56 @@ function importDialog() {
     reset();sheetNotice();
   };
   $('#import-sheet').onchange=chooseSheet;
+  const refreshSheetOptions=()=>{
+    const select=$('#import-sheet'),previous=select.value,checked=parseStudentSheets(sheets,[],sheetOptions());
+    select.innerHTML=`<option value="all">Alle geldige werkbladen</option>`+sheets.map((s,i)=>`<option value="${i}" ${checked.sheets[i].valid?'':'disabled'}>${esc(s.name)}${checked.sheets[i].valid?'':' · overgeslagen'}</option>`).join('');
+    select.value=sheets.length===1&&checked.sheets[0].valid?'0':previous&&previous!=='all'&&checked.sheets[Number(previous)]?.valid?previous:'all';
+    $('#import-sheet-field').hidden=sheets.length<2;
+  };
+  $('#import-class-from-sheet').onchange=()=>{
+    const previous=$('#import-sheet').value;refreshSheetOptions();
+    if($('#import-sheet').value!==previous)chooseSheet();else {reset();sheetNotice();}
+  };
   const fileInput=$('#import-file');
   fileInput.onchange=async event=>{
     const file=event.target.files[0];if(!file)return;
-    const revision=++fileRevision;sheets=[];reset();$('#import-submit').disabled=true;$('#import-text').value='';$('#import-text-field').hidden=false;$('#import-sheet-field').hidden=true;
+    const revision=++fileRevision;sheets=[];reset();$('#import-submit').disabled=true;$('#import-text').value='';$('#import-text-field').hidden=false;$('#import-sheet-field').hidden=true;$('#import-class-options').hidden=true;$('#import-class-from-sheet').checked=false;
     try {
       if(/\.xlsx$/i.test(file.name)) {
         const loaded=await workbookSheets(await file.arrayBuffer());
         if(revision!==fileRevision||$('#import-file')!==fileInput)return;
-        sheets=loaded;const checked=parseStudentSheets(sheets);$('#import-sheet').innerHTML=`<option value="all">Alle geldige werkbladen</option>`+sheets.map((s,i)=>`<option value="${i}" ${checked.sheets[i].valid?'':'disabled'}>${esc(s.name)}${checked.sheets[i].valid?'':' · overgeslagen'}</option>`).join('');$('#import-sheet').value=sheets.length===1&&checked.sheets[0].valid?'0':'all';$('#import-sheet-field').hidden=sheets.length<2;chooseSheet();
+        sheets=loaded;$('#import-class-options').hidden=false;$('#import-sheet').value='all';refreshSheetOptions();chooseSheet();
       }else {const text=await file.text();if(revision!==fileRevision||$('#import-file')!==fileInput)return;$('#import-text').value=text;}
     }catch(error){if(revision===fileRevision&&$('#import-file')===fileInput)$('#import-preview').innerHTML=`<div class="inline-errors">${esc(error.message)}</div>`;}
     finally{if(revision===fileRevision&&$('#import-file')===fileInput)$('#import-submit').disabled=false;}
   };
   $('#import-submit').onclick=()=>{
-    if(!preview){preview=sheets.length&&$('#import-sheet').value==='all'?parseStudentSheets(sheets,$('#replace-list').checked?[]:state.students):parseStudents($('#import-text').value,$('#replace-list').checked?[]:state.students);$('#import-preview').innerHTML=`<p><strong>${preview.students.length} geldige leerlingen</strong>${preview.yearErrors.length?' · leerjaren nog controleren':' klaar om toe te voegen'}.</p>${preview.students.length?`<table><thead><tr><th>Naam</th><th>Klas</th><th>Leerjaar</th></tr></thead><tbody>${preview.students.slice(0,5).map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.class)}</td><td>${esc(p.year||'Niet herkend')}</td></tr>`).join('')}</tbody></table>`:''}${preview.errors.length?`<div class="inline-errors">${preview.errors.map(esc).join('<br>')}<br>Ongeldige werkbladen en regels worden niet toegevoegd.</div>`:''}${preview.yearErrors.length?yearCorrectionFields(preview.yearErrors):''}`;if(preview.yearErrors.length)bindYearCorrections();$('#import-submit').textContent=`${preview.students.length} leerlingen toevoegen`;return;}
+    if(!preview){
+      const existing=$('#replace-list').checked?[]:state.students;
+      if(sheets.length&&$('#import-sheet').value==='all')preview=parseStudentSheets(sheets,existing,sheetOptions());
+      else {
+        const defaultClass=sheets.length&&sheetOptions().classFromSheetName?sheets[Number($('#import-sheet').value)].name:'';
+        preview=parseStudentRows(textRows($('#import-text').value),existing,{defaultClass});
+      }
+      $('#import-preview').innerHTML=`<p><strong>${preview.students.length} geldige leerlingen</strong>${preview.yearErrors.length?' · leerjaren nog controleren':' klaar om toe te voegen'}.</p>${preview.students.length?`<table><thead><tr><th>Naam</th><th>Klas</th><th>Leerjaar</th></tr></thead><tbody>${preview.students.slice(0,5).map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.class)}</td><td>${esc(p.year||'Niet herkend')}</td></tr>`).join('')}</tbody></table>`:''}${preview.errors.length?`<div class="inline-errors">${preview.errors.map(esc).join('<br>')}<br>Ongeldige werkbladen en regels worden niet toegevoegd.</div>`:''}${preview.yearErrors.length?yearCorrectionFields(preview.yearErrors):''}`;if(preview.yearErrors.length)bindYearCorrections();$('#import-submit').textContent=`${preview.students.length} leerlingen toevoegen`;return;}
     if(!preview.students.length)return toast('Er zijn geen geldige leerlingen om toe te voegen.');
     if(preview.yearErrors.length){const years=correctedYears();if(!years)return;for(const p of preview.yearErrors)setManualYear(p,years.get(p.id));}
     commit(()=>updateStudentList(state,preview.students,{replace:$('#replace-list').checked}));selected=null;selectedBench=null;tab='students';closeModal();render();toast(`${preview.students.length} leerlingen toegevoegd.`);
   };
 }
 function ruleDialog(existing=null,{fixed=false,apply=false,pupilId=selected,roomOnly=false}={}) {
-  const initialType=fixed?'fixed':existing?.type||'separate',initialRoom=existing?.roomId||state.studentRooms[pupilId]||state.activeRoomId;
+  const initialType=fixed?'fixed':existing?.type||'separate',initialRoom=existing?.roomId||ownValue(state.studentRooms,pupilId)||state.activeRoomId;
   const view=roomState(state,state.rooms.some(r=>r.id===initialRoom)?initialRoom:state.activeRoomId),initialSeat=existing?.seat||Object.keys(view.assignments).find(seat=>view.assignments[seat]===pupilId)||enabledSeats(view.settings)[0];
   modal(existing?'Regel aanpassen':'Zitregel toevoegen',`<label class="field">Regel<select id="rule-type">${Object.entries(RULE_TYPES).map(([key,label])=>`<option value="${key}" ${initialType===key?'selected':''}>${esc(label)}</option>`).join('')}</select></label><label class="field" id="rule-priority-field">Belangrijkheid<select id="rule-priority">${priorityOptions(existing?.priority||'Verplicht')}</select></label><div id="rule-position-fields" hidden><label class="field">Lokaal<select id="rule-room">${state.rooms.map(r=>`<option value="${esc(r.id)}" ${r.id===view.activeRoomId?'selected':''}>${esc(r.name)}</option>`).join('')}</select></label><label class="field">Vaste locatie (verplicht)<select id="rule-location-scope"><option value="room" ${existing&&!existing.seat||roomOnly?'selected':''}>Alleen het lokaal</option><option value="seat" ${existing?.seat||!existing&&!roomOnly?'selected':''}>Exacte zitplaats</option></select></label><div id="rule-seat-fields" class="range-fields"><label class="field">Bank<select id="rule-bench"></select></label><label class="field">Zitplaats<select id="rule-seat"></select></label></div></div><div class="member-picker">${state.students.map(p=>`<label><input type="checkbox" name="rule-member" value="${esc(p.id)}" ${(existing?.students || [pupilId]).includes(p.id)?'checked':''}>${esc(p.name)} <span class="muted">${esc(p.class)}</span></label>`).join('')}</div><div id="rule-errors" role="alert"></div>`,`${existing?.type==='fixed'?'<button class="button danger" id="rule-remove">Vaste locatie verwijderen</button>':''}<button class="button" data-close>Annuleren</button><button class="button primary" id="rule-submit">${apply?'Toepassen en bewaren':'Regel bewaren'}</button>`);
   if($('#rule-remove'))$('#rule-remove').onclick=()=>{commit(()=>state.rules=state.rules.filter(r=>r.id!==existing.id));closeModal();};
+  const areaHelp=document.createElement('p');areaHelp.id='rule-area-help';areaHelp.className='muted';
+  areaHelp.textContent=view.settings.layout?.kind==='custom'?'Leerlingen moeten in hetzelfde lokaal en hetzelfde eigen vak zitten. Banken buiten eigen vakken vormen samen één gebied.':'Leerlingen moeten in hetzelfde lokaal en hetzelfde gebied van de plattegrond zitten.';
+  $('#rule-type').closest('label').after(areaHelp);
   const locationSettings=()=>roomState(state,$('#rule-room').value).settings;
   const updateSeats=(side=0)=>{const b=benchesFor(locationSettings()).find(b=>b.id===$('#rule-bench').value);$('#rule-seat').innerHTML=b?Array.from({length:benchCapacity(b)},(_,i)=>`<option value="${i}" ${i===side?'selected':''}>${esc(seatCode(`${b.id}:${i}`,locationSettings()))}</option>`).join(''):'';};
   const updateRoom=(seat=null)=>{const benches=benchesFor(locationSettings());$('#rule-bench').innerHTML=benches.map(b=>`<option value="${esc(b.id)}" ${b.id===seat?.split(':')[0]?'selected':''}>${esc(b.label)}</option>`).join('');updateSeats(Number(seat?.split(':')[1]||0));};
   $('#rule-room').onchange=()=>updateRoom();$('#rule-bench').onchange=()=>updateSeats();updateRoom(initialSeat);
-  const update=()=>{const type=$('#rule-type').value;$('#rule-position-fields').hidden=type!=='fixed';$('#rule-priority-field').hidden=type==='fixed';$('#rule-seat-fields').hidden=$('#rule-location-scope').value==='room';};$('#rule-type').onchange=update;$('#rule-location-scope').onchange=update;update();
+  const update=()=>{const type=$('#rule-type').value;areaHelp.hidden=type!=='area';$('#rule-position-fields').hidden=type!=='fixed';$('#rule-priority-field').hidden=type==='fixed';$('#rule-seat-fields').hidden=$('#rule-location-scope').value==='room';};$('#rule-type').onchange=update;$('#rule-location-scope').onchange=update;update();
   $('#rule-submit').onclick=()=>{
     const type=$('#rule-type').value,students=[...document.querySelectorAll('[name=rule-member]:checked')].map(e=>e.value);
     if(type==='fixed'?students.length!==1:type==='group'?students.length<2:students.length!==2){$('#rule-errors').textContent='Kies het gevraagde aantal leerlingen.';return;}
@@ -744,7 +767,8 @@ function exportSVG(detail) {
 function exportDialog(options={}) {
   const formats={xlsx:'Zitplaatsen · Excel (.xlsx)',pdf:'Plattegrond · PDF',print:'Plattegrond · Afdrukken',png:'Plattegrond · PNG',svg:'Plattegrond · SVG','study-xlsx':'Leerlingen · Excel in voorbeeldlayout',csv:'Leerlingen · CSV',json:'Volledig projectbestand (.json)'};
   modal('Exporteren',`<label class="field">Bestand / uitvoer<select id="export-format">${Object.entries(formats).map(([value,label])=>`<option value="${value}" ${value===(options.format??'xlsx')?'selected':''}>${label}</option>`).join('')}</select></label><label class="field" id="export-scope-field">Omvang<select id="export-scope"><option value="room" ${!options.scope||options.scope==='room'?'selected':''}>Dit lokaal · ${esc(currentRoom(state).name)}</option><option value="all" ${options.scope==='all'?'selected':''}>Alle lokalen</option><option value="week" ${options.scope==='week'?'selected':''} ${weeklyCurrent(state)?'':'disabled'}>Hele week · alle deelnemende lokalen</option></select></label><label class="field" id="export-detail-field">Gegevens op de plattegrond<select id="export-detail"><option value="names">Alleen namen</option><option value="class" selected>Namen + klas</option><option value="year">Namen + leerjaar</option></select></label><fieldset id="export-columns-field" class="export-columns" hidden><legend>Kolommen en volgorde</legend><p>Sleep de kolommen met het handvat naar de gewenste volgorde.</p><div id="export-columns-list"></div></fieldset><div id="export-sheet-options" hidden><strong>Werkbladopties</strong><label class="toggle-line"><input type="checkbox" id="export-separate-classes" checked>Een apart werkblad per klas</label></div><div id="export-error" role="alert"></div>`,`<button class="button" data-close>Annuleren</button><button class="button primary" id="export-submit">Exporteren</button>`);
-  const columnChoices={xlsx:new Map(exportColumns('xlsx',{allRooms:true,week:true}).map(c=>[c.id,c.id==='name'||c.id==='seat'])),'study-xlsx':new Map()};
+  const multipleRooms=state.rooms.length>1;
+  const columnChoices={xlsx:new Map(exportColumns('xlsx',{allRooms:true,week:true}).map(c=>[c.id,c.id==='name'||c.id==='seat'||c.id==='room'&&multipleRooms])),'study-xlsx':new Map([['room',multipleRooms]])};
   const columnOrder={xlsx:exportColumns('xlsx',{allRooms:true,week:true}).map(c=>c.id),'study-xlsx':exportColumns('study-xlsx').map(c=>c.id)};
   const selectedColumnIds=()=>[...$('#export-columns-list').querySelectorAll('input:checked')].map(input=>input.dataset.exportColumn);
   const orderedColumns=()=>{
@@ -1014,7 +1038,7 @@ $('#select-benches').onclick=()=>{benchSelectionMode=!benchSelectionMode;selecte
 $('#search').oninput=event=>{
   const query=event.target.value.trim().toLocaleLowerCase('nl'),positions=new Map();
   for(const room of state.rooms){const view=roomState(state,room.id);for(const [seat,id] of Object.entries(view.assignments))positions.set(id,seatCode(seat,view.settings));}
-  const roomName=id=>state.rooms.find(r=>r.id===state.studentRooms[id])?.name||'Nog geen lokaal';
+  const roomName=id=>state.rooms.find(r=>r.id===ownValue(state.studentRooms,id))?.name||'Nog geen lokaal';
   const matches=state.students.filter(p=>[p.name,p.class,roomName(p.id),positions.get(p.id)||''].some(value=>value.toLocaleLowerCase('nl').includes(query)));
   $('#search-results').innerHTML=query?matches.slice(0,20).map(p=>`<button class="search-result" data-person="${esc(p.id)}">${esc(p.name)} · ${esc(p.class)}<small>${esc(roomName(p.id))} · ${esc(positions.get(p.id)||'Nog niet geplaatst')}${p.absent?' · afwezig':''}</small></button>`).join('')||'<p class="muted">Geen leerling of plaats gevonden.</p>':'';if(query&&matches.length===1)selectStudent(matches[0].id);
 };

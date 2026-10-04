@@ -1,5 +1,6 @@
-// Grid cells determine chair codes and logical positions. Gaps and sections
-// affect only drawing coordinates; bench ids survive a move to another cell.
+// Grid cells determine chair codes and logical positions. Gaps and section
+// widths affect only drawing coordinates; section membership identifies rule
+// areas. Bench ids survive a move to another cell or section.
 // FIRST_ROW remains the legacy/logical origin so saved positions and ordering
 // stay stable. New classrooms explicitly start at 1, with only chair clearance.
 import { sectionSeatNames } from './seat-codes.mjs';
@@ -145,7 +146,8 @@ export function setSection(layout,section) {
   const index=layout.sections.findIndex(s=>s.id===next.id);if(index>=0)layout.sections[index]=next;else layout.sections.push(next);return next;
 }
 export function removeSection(layout,id) {
-  // Removing a visual section preserves all tables at their displayed positions.
+  // Removing a section preserves tables at their displayed positions. Their
+  // rule areas follow the resulting section membership.
   const names=sectionSeatNames(layout);
   const positions=layout.benches.filter(b=>b.sectionId===id).map(b=>[b,visualPosition(layout,b)]);
   layout.sections=layout.sections.filter(s=>s.id!==id);

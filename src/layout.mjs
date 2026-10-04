@@ -23,7 +23,9 @@ export function customSeatGeometry(bench,index) {
 const cache=new WeakMap();
 export function customBenches(layout) {
   if(!layout||layout.kind!=='custom')return null;
-  if(!cache.has(layout)){const names=sectionSeatNames(layout);cache.set(layout,layout.benches.map(b=>{const p=visualPosition(layout,b),named={...b,...names.get(b.id)};return {...named,custom:true,layoutVersion:layout.version,logicalX:b.sortX??b.gx,logicalY:b.sortY??b.gy,x:40+p.gx*GRID,y:64+p.gy*GRID,col:b.sortX??b.gx,block:b.sortY??b.gy,letter:b.cell?.column??alphabet(Math.floor(b.gx/4)),area:'Lokaal',label:benchSeatCodes(named,layout.version).join(' / '),aisle:false};}));}
+  // Named sections are rule areas by stable identity. Grid/manual tables
+  // outside a section share the main area, regardless of visual gaps or names.
+  if(!cache.has(layout)){const names=sectionSeatNames(layout);cache.set(layout,layout.benches.map(b=>{const p=visualPosition(layout,b),named={...b,...names.get(b.id)};return {...named,custom:true,layoutVersion:layout.version,logicalX:b.sortX??b.gx,logicalY:b.sortY??b.gy,x:40+p.gx*GRID,y:64+p.gy*GRID,col:b.sortX??b.gx,block:b.sortY??b.gy,letter:b.cell?.column??alphabet(Math.floor(b.gx/4)),area:b.sectionId?`section:${b.sectionId}`:'Lokaal',label:benchSeatCodes(named,layout.version).join(' / '),aisle:false};}));}
   return cache.get(layout);
 }
 export function layoutSize(layout) { const extra=layout.version===2?[...layout.gaps,...layout.sections].reduce((n,s)=>n+s.width,0):0,extraY=(layout.rowGaps??[]).reduce((n,s)=>n+s.width,0);return {width:(layout.columns+extra)*GRID+80,height:(layout.rows+extraY)*GRID+112}; }

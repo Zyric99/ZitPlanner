@@ -118,3 +118,80 @@ test('separate standard name columns import and preserve compound surnames used 
   assert.deepEqual(result.errors,[]);assert.deepEqual(result.students.map(p=>[p.name,p.firstName,p.lastName]),[['Anna Van den Berg','Anna','Van den Berg'],['Solo','','Solo']]);
   assert.deepEqual(studyRows(result.students).map(row=>row.slice(0,3)),[['Van den Berg','Anna','3A'],['Solo','','3A']]);
 });
+
+test('conflicting full and split names are reported by row and never added or reserved as duplicates',()=>{
+  const result=parseStudents('Naam;Voornaam;Achternaam;Klas\nAlice Original;Bob;Different;1A\nAlice Original;Alice;Original;1A');
+  assert.equal(result.errors.length,1);assert.match(result.errors[0],/Regel 2:.*Naam.*voornaam en achternaam.*Corrigeer/);
+  assert.deepEqual(result.students.map(p=>[p.name,p.firstName,p.lastName]),[['Alice Original','Alice','Original']]);
+  assert.deepEqual(studyRows(result.students),[['Original','Alice','1A','','','','']]);
+});
+
+test('matching redundant names retain compound first and last names with one display identity',()=>{
+  const result=parseStudentRows([['Achternaam','name','Klas','Voornaam'],
+    ['Van den Berg','  ANNA\t MARIA   van den berg  ','3A','Anna Maria'],
+    ['Solo','','3A',''],['','Noah','3A','Noah']]);
+  assert.deepEqual(result.errors,[]);
+  assert.deepEqual(result.students.map(p=>[p.name,p.firstName,p.lastName]),[['Anna Maria Van den Berg','Anna Maria','Van den Berg'],['Solo','','Solo'],['Noah','Noah','']]);
+  assert.deepEqual(studyRows(JSON.parse(JSON.stringify(result.students))).map(row=>row.slice(0,3)),[['Van den Berg','Anna Maria','3A'],['Solo','','3A'],['','Noah','3A']]);
+});
+
+test('name comparison retains accents and punctuation instead of accepting a different spelling',()=>{
+  const result=parseStudentRows([['Naam','Voornaam','Achternaam','Klas'],
+    ['Zoe Maes','Zoë','Maes','3A'],['Anne Marie Maes','Anne-Marie','Maes','3A'],['Zoë Maes','Zoë','Maes','3A']]);
+  assert.deepEqual(result.students.map(p=>p.name),['Zoë Maes']);assert.equal(result.errors.length,2);
+});
+
+test('study imports also validate a redundant Naam or name column without losing attendance',()=>{
+  for(const label of ['Naam','name']) {
+    const result=parseStudentRows([[...STUDY_HEADERS,label],[...rows[1],'Other Pupil'],[...rows[2],'BERT BIBBER']]);
+    assert.equal(result.errors.length,1);assert.match(result.errors[0],/Regel 2:.*komt niet overeen/);
+    assert.deepEqual(studyRows(result.students),[rows[2]]);assert.equal(result.students[0].name,'Bert Bibber');
+  }
+});
+
+test('workbook name conflicts identify the sheet and row while keeping valid pupils and class fallback',()=>{
+  const result=parseStudentSheets([
+    {name:'1A',rows:[['Naam','Voornaam','Achternaam'],['Alice Original','Bob','Different'],['Anna Maes','Anna','Maes']]},
+    {name:'2B',rows:[['name','Voornaam','Achternaam','Klas'],['Wrong Name','Noah','Jacobs','2B']]}
+  ],[],{classFromSheetName:true});
+  assert.deepEqual(result.students.map(p=>[p.name,p.class]),[['Anna Maes','1A']]);
+  assert.equal(result.errors.length,2);assert.match(result.errors[0],/Werkblad “1A”: Regel 2:.*komt niet overeen/);
+  assert.match(result.errors[1],/Werkblad “2B” overgeslagen: Regel 2:.*komt niet overeen/);
+});
+
+test('worksheet names supply missing classes only when explicitly enabled',()=>{
+  const sheets=[{name:'1A',rows:[['Naam','Plaats'],['Ada','A1']]},{name:'2B',rows:[[],['Plaats','Name'],['B2','Noah']]}];
+  const before=structuredClone(sheets),strict=parseStudentSheets(sheets);
+  assert.equal(strict.students.length,0);assert.ok(strict.errors.every(error=>error.includes('Ontbrekende kolommen: Klas')));
+  const result=parseStudentSheets(sheets,[],{classFromSheetName:true});
+  assert.deepEqual(result.errors,[]);assert.deepEqual(result.students.map(p=>[p.name,p.class,p.year]),[['Ada','1A','1'],['Noah','2B','2']]);
+  assert.deepEqual(result.sheets.map(s=>[s.valid,s.students]),[[true,1],[true,1]]);assert.deepEqual(sheets,before);
+});
+
+test('worksheet class fallback preserves explicit classes and still rejects empty class cells',()=>{
+  const result=parseStudentSheets([{name:'1A',rows:[['Naam','Klas'],['Ada','4B'],['Noah','']]}],[],{classFromSheetName:true});
+  assert.deepEqual(result.students.map(p=>[p.name,p.class,p.year]),[['Ada','4B','4']]);
+  assert.equal(result.errors.length,1);assert.match(result.errors[0],/naam en klas zijn verplicht/);
+});
+
+test('worksheet class fallback supports split names, unknown years, and existing duplicates',()=>{
+  const sheets=[{name:'  Groep speciaal  ',rows:[['Achternaam','Voornaam'],['Van den Berg','Anna'],['Beta','Bram']]},
+    {name:'3A',rows:[STUDY_HEADERS.filter(h=>h!=='Klas'),['Alpha','Ada','Ja','Nee','Ja','Nee']]}];
+  const result=parseStudentSheets(sheets,[{name:'Anna Van den Berg',class:'Groep speciaal'}],{classFromSheetName:true});
+  assert.deepEqual(result.students.map(p=>[p.name,p.class,p.year]),[['Bram Beta','Groep speciaal',''],['Ada Alpha','3A','3']]);
+  assert.deepEqual(result.yearErrors.map(p=>p.name),['Bram Beta']);assert.equal(result.students[1].eveningStudy.maandag,'Ja');
+  assert.equal(result.errors.length,1);assert.match(result.errors[0],/al in de lijst/);
+});
+
+test('worksheet class fallback keeps header and file validation and never invents missing sheet names',()=>{
+  const result=parseStudentSheets([
+    {name:'Overzicht',rows:[['Omschrijving','Aantal'],['Totaal','48']]},
+    {name:'3A',rows:[['Naam','Naam'],['Ada','Other']]},
+    {name:'4B',rows:[['Naam'],['Noah']],error:'Ongeldige XML.'},
+    {rows:[['Naam'],['Emma']]},
+    {name:'5C',rows:[['Naam'],['Valid']]}
+  ],[],{classFromSheetName:true});
+  assert.deepEqual(result.students.map(p=>[p.name,p.class]),[['Valid','5C']]);assert.equal(result.errors.length,4);
+  const edited=parseStudentRows(textRows('Naam;Plaats\nEdited;B2'),[],{defaultClass:'2B'});
+  assert.deepEqual(edited.students.map(p=>[p.name,p.class]),[['Edited','2B']]);
+});

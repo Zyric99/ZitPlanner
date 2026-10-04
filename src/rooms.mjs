@@ -1,3 +1,4 @@
+import { ownValue, setOwnValue } from './id-record.mjs';
 import { BENCHES, defaults, enabledSeats, validSeat, disabledSeatsValid, evaluate, generate, studentRulesFor } from './engine.mjs';
 import { locationRoomId, locationRule, setLocationRule } from './location-rules.mjs';
 import { layoutValid, roomTemplate } from './layout.mjs';
@@ -29,12 +30,12 @@ export function initializeRooms(state) {
   return state;
 }
 export const classRoomId=(state,klass)=>Object.hasOwn(state.classRooms??{},klass)?state.classRooms[klass]:null;
-export const studentLocationRoomId=(state,id)=>state.studentRoomPins?.[id]||locationRoomId(state,id);
+export const studentLocationRoomId=(state,id)=>ownValue(state.studentRoomPins,id)||locationRoomId(state,id);
 export const participatingRoomIds=state=>[...new Set([...state.participatingRooms,...Object.values(state.classRooms??{}),...Object.values(state.studentRoomPins??{}),...studentRulesFor(state).filter(r=>r.type==='fixed').map(r=>r.roomId)])].filter(id=>state.rooms.some(r=>r.id===id));
 export function applyClassAssignments(state) {
   captureRoom(state);
   const moved=new Set();
-  for(const p of state.students){const id=classRoomId(state,p.class)||studentLocationRoomId(state,p.id);if(id&&state.rooms.some(r=>r.id===id)&&state.studentRooms[p.id]!==id){state.studentRooms[p.id]=id;moved.add(p.id);}}
+  for(const p of state.students){const id=classRoomId(state,p.class)||studentLocationRoomId(state,p.id);if(id&&state.rooms.some(r=>r.id===id)&&ownValue(state.studentRooms,p.id)!==id){setOwnValue(state.studentRooms,p.id,id);moved.add(p.id);}}
   if(moved.size){for(const room of state.rooms){room.assignments=Object.fromEntries(Object.entries(room.assignments).filter(([,id])=>!moved.has(id)));room.locks=room.locks.filter(id=>!moved.has(id));}state.distribution.reviewed=false;}
   state.participatingRooms=participatingRoomIds(state);loadRoom(state,state.activeRoomId);
 }
@@ -70,7 +71,7 @@ export function normalizeRooms(state) {
   state.participatingRooms=[...new Set(state.participatingRooms)].filter(id=>rooms.has(id));
   for(const [id,room] of Object.entries(state.studentRooms))if(!ids.has(id)||room!==null&&!rooms.has(room))delete state.studentRooms[id];
   for(const p of state.students)if(!Object.hasOwn(state.studentRooms,p.id)) {
-    state.studentRooms[p.id]=state.participatingRooms.length===1?state.participatingRooms[0]:null;
+    setOwnValue(state.studentRooms,p.id,state.participatingRooms.length===1?state.participatingRooms[0]:null);
     state.distribution.reviewed=false;
   }
   for(const room of state.rooms) {
@@ -78,7 +79,7 @@ export function normalizeRooms(state) {
     room.settings.disabledSeats=(room.settings.disabledSeats??[]).filter(seat=>validSeat(seat,settings));
     const seated=new Set();
     room.assignments=Object.fromEntries(Object.entries(room.assignments).filter(([seat,id])=>{
-      if(!ids.has(id)||state.studentRooms[id]!==room.id||state.students.find(p=>p.id===id)?.absent||!validSeat(seat,settings)||seated.has(id))return false;
+      if(!ids.has(id)||ownValue(state.studentRooms,id)!==room.id||state.students.find(p=>p.id===id)?.absent||!validSeat(seat,settings)||seated.has(id))return false;
       seated.add(id);return true;
     }));
     room.locks=room.locks.filter(id=>Object.values(room.assignments).includes(id));
@@ -90,7 +91,7 @@ export function roomStats(state,room) {
   const view=roomState(state,room.id),seats=enabledSeats(view.settings);
   const benches=room.layout.kind==='builtin'?BENCHES:room.layout.benches.filter(b=>b.kind==='student');
   const enabled=new Set(seats.map(s=>s.split(':')[0]));
-  const people=state.students.filter(p=>!p.absent&&state.studentRooms[p.id]===room.id);
+  const people=state.students.filter(p=>!p.absent&&ownValue(state.studentRooms,p.id)===room.id);
   return {benches:benches.length,seats:benches.reduce((sum,b)=>sum+(b.capacity??2),0),capacity:seats.length,enabled:enabled.size,disabled:benches.length-enabled.size,assigned:people.length,seated:Object.values(view.assignments).length,warnings:evaluate(view).warnings.length,overflow:Math.max(0,people.length-seats.length)};
 }
 export function newRoom(state,name,template='empty') {
@@ -111,7 +112,7 @@ export function deleteRoom(state,id,{replacementId=null}={}) {
   for(const klass of classes)assignClassRoom(state,klass,replacementId);
   captureRoom(state);state.rooms=state.rooms.filter(r=>r.id!==id);
   state.participatingRooms=state.participatingRooms.filter(x=>x!==id);
-  for(const [student,room] of Object.entries(state.studentRooms))if(room===id)state.studentRooms[student]=null;
+  for(const [student,room] of Object.entries(state.studentRooms))if(room===id)setOwnValue(state.studentRooms,student,null);
   // Seat-specific rules stay traceable after deleting a room, but are inactive.
   state.distribution.reviewed=false;
   loadRoom(state,state.activeRoomId===id?state.rooms[0].id:state.activeRoomId);
@@ -121,10 +122,10 @@ export function assignRoom(state,studentId,roomId) {
   const target=classRoomId(state,state.students.find(p=>p.id===studentId).class);
   if(target&&target!==roomId)throw Error('Deze klas heeft een vast lokaal. Pas eerst de klastoewijzing aan.');
   if(studentLocationRoomId(state,studentId)&&state.rooms.some(r=>r.id===studentLocationRoomId(state,studentId))&&studentLocationRoomId(state,studentId)!==roomId)throw Error('Deze leerling is vastgezet in een lokaal. Pas eerst de vaste locatie (lokaalpin) aan.');
-  if(state.studentRooms[studentId]===(roomId||null))return;
+  if(ownValue(state.studentRooms,studentId)===(roomId||null))return;
   captureRoom(state);
   for(const room of state.rooms){room.assignments=Object.fromEntries(Object.entries(room.assignments).filter(([,id])=>id!==studentId));room.locks=room.locks.filter(id=>id!==studentId);}
-  state.studentRooms[studentId]=roomId||null;state.distribution.reviewed=false;
+  setOwnValue(state.studentRooms,studentId,roomId||null);state.distribution.reviewed=false;
   loadRoom(state,state.activeRoomId);
 }
 export function pinStudentRoom(state,studentId,roomId=null) {
@@ -148,26 +149,26 @@ export function distributeRooms(state,mode='balanced',{keepFixed=true}={}) {
   applyClassAssignments(state);
   const rooms=participatingRoomIds(state).map(id=>state.rooms.find(r=>r.id===id)).filter(Boolean);
   const capacity=new Map(rooms.map(r=>[r.id,roomStats(state,r).capacity])),counts=new Map(rooms.map(r=>[r.id,0])),groups=new Map(rooms.map(r=>[r.id,new Map()]));
-  const previous={...state.studentRooms},assignment={},protectedIds=new Set();
+  const previous={...state.studentRooms},assignment=new Map(),protectedIds=new Set();
   if(keepFixed) {
     for(const room of rooms)for(const id of room.locks)protectedIds.add(id);
     for(const rule of studentRulesFor(state))if(rule.type==='fixed'&&rooms.some(r=>r.id===rule.roomId))protectedIds.add(rule.students[0]);
   }
   const active=state.students.filter(p=>!p.absent),groupKey=p=>mode==='yearsSpread'?p.year:p.class;
-  const add=(p,room)=>{assignment[p.id]=room.id;counts.set(room.id,counts.get(room.id)+1);const g=groups.get(room.id);g.set(groupKey(p),(g.get(groupKey(p))||0)+1);};
+  const add=(p,room)=>{assignment.set(p.id,room.id);counts.set(room.id,counts.get(room.id)+1);const g=groups.get(room.id);g.set(groupKey(p),(g.get(groupKey(p))||0)+1);};
   for(const p of active){const room=rooms.find(r=>r.id===(classRoomId(state,p.class)||studentLocationRoomId(state,p.id)));if(room)add(p,room);}
-  for(const p of active.filter(p=>protectedIds.has(p.id)&&!assignment[p.id])) {
+  for(const p of active.filter(p=>protectedIds.has(p.id)&&!assignment.has(p.id))) {
     const fixed=studentRulesFor(state).find(r=>r.type==='fixed'&&r.students.includes(p.id)&&rooms.some(room=>room.id===r.roomId));
-    const room=rooms.find(r=>r.id===(fixed?.roomId||previous[p.id]));if(room)add(p,room);
+    const room=rooms.find(r=>r.id===(fixed?.roomId||ownValue(previous,p.id)));if(room)add(p,room);
   }
-  const remaining=active.filter(p=>!assignment[p.id]),grouped=new Map();
+  const remaining=active.filter(p=>!assignment.has(p.id)),grouped=new Map();
   for(const p of remaining){const key=groupKey(p);if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(p);}
   const batches=[...grouped.values()].sort((a,b)=>b.length-a.length||groupKey(a[0]).localeCompare(groupKey(b[0]),'nl',{numeric:true}));
   const sequence=mode==='classesTogether'?batches.flat():remaining;
   for(const p of sequence) {
     const available=rooms.filter(r=>counts.get(r.id)<capacity.get(r.id));
-    if(!available.length){assignment[p.id]=null;continue;}
-    const key=groupKey(p),batchSize=grouped.get(key).filter(p=>!Object.hasOwn(assignment,p.id)).length;
+    if(!available.length){assignment.set(p.id,null);continue;}
+    const key=groupKey(p),batchSize=grouped.get(key).filter(p=>!assignment.has(p.id)).length;
     available.sort((a,b)=>{
       const ca=counts.get(a.id),cb=counts.get(b.id),ga=groups.get(a.id).get(key)||0,gb=groups.get(b.id).get(key)||0;
       if(mode==='capacity')return rooms.indexOf(a)-rooms.indexOf(b);
@@ -177,9 +178,9 @@ export function distributeRooms(state,mode='balanced',{keepFixed=true}={}) {
     });
     add(p,available[0]);
   }
-  for(const p of active)assignRoom(state,p.id,assignment[p.id]||null);
+  for(const p of active)assignRoom(state,p.id,assignment.get(p.id)||null);
   state.distribution={mode,keepFixed,reviewed:false};captureRoom(state);
-  return {unassigned:active.filter(p=>!state.studentRooms[p.id]).map(p=>p.id),overflow:rooms.filter(r=>roomStats(state,r).overflow).map(r=>r.id)};
+  return {unassigned:active.filter(p=>!ownValue(state.studentRooms,p.id)).map(p=>p.id),overflow:rooms.filter(r=>roomStats(state,r).overflow).map(r=>r.id)};
 }
 export function generateAllRooms(state,options={}) {
   applyClassAssignments(state);const results=[];
@@ -199,5 +200,5 @@ export function roomSystemValid(state) {
   if(state.distribution!==undefined&&(!state.distribution||!Object.hasOwn(DISTRIBUTION_MODES,state.distribution.mode)||typeof state.distribution.keepFixed!=='boolean'||typeof state.distribution.reviewed!=='boolean'))return false;
   const settingsValid=settings=>settings&&roomKeys.every(key=>key==='disabledSeats'||Object.hasOwn(settings,key))&&['rows','disabled','sections'].every(key=>Array.isArray(settings[key]))&&settings.rows.every(r=>Number.isInteger(r)&&r>=1&&r<=8)&&settings.disabled.every(id=>typeof id==='string')&&settings.sections.every(s=>s&&typeof s.id==='string'&&typeof s.enabled==='boolean'&&/^[A-Z]$/.test(s.from)&&/^[A-Z]$/.test(s.to)&&s.from<=s.to)&&['random','ordered'].includes(settings.placementMode)&&settings.ordered&&['columns','rows'].includes(settings.ordered.axis)&&['left','right'].includes(settings.ordered.horizontal)&&['top','bottom'].includes(settings.ordered.vertical)&&[0,1].includes(settings.ordered.seatSide);
   if(state.roomTemplates!==undefined&&(!Array.isArray(state.roomTemplates)||!state.roomTemplates.every(t=>t&&typeof t.id==='string'&&typeof t.name==='string'&&t.name.trim()&&layoutValid(t.layout)&&settingsValid(t.settings)&&disabledSeatsValid({...t.settings,layout:t.layout.kind==='custom'?t.layout:undefined}))))return false;
-  return state.rooms.every(room=>typeof room.name==='string'&&room.name.trim()&&layoutValid(room.layout)&&settingsValid(room.settings)&&disabledSeatsValid({...room.settings,layout:room.layout.kind==='custom'?room.layout:undefined})&&typeof room.assignments==='object'&&room.assignments!==null&&!Array.isArray(room.assignments)&&Array.isArray(room.locks)&&room.locks.every(id=>ids.has(id))&&Array.isArray(room.hiddenWarnings)&&room.hiddenWarnings.every(key=>typeof key==='string')&&Object.entries(room.assignments).every(([seat,id])=>ids.has(id)&&state.studentRooms[id]===room.id&&validSeat(seat,{...room.settings,layout:room.layout.kind==='custom'?room.layout:undefined}))&&new Set(Object.values(room.assignments)).size===Object.values(room.assignments).length);
+  return state.rooms.every(room=>typeof room.name==='string'&&room.name.trim()&&layoutValid(room.layout)&&settingsValid(room.settings)&&disabledSeatsValid({...room.settings,layout:room.layout.kind==='custom'?room.layout:undefined})&&typeof room.assignments==='object'&&room.assignments!==null&&!Array.isArray(room.assignments)&&Array.isArray(room.locks)&&room.locks.every(id=>ids.has(id))&&Array.isArray(room.hiddenWarnings)&&room.hiddenWarnings.every(key=>typeof key==='string')&&Object.entries(room.assignments).every(([seat,id])=>ids.has(id)&&ownValue(state.studentRooms,id)===room.id&&validSeat(seat,{...room.settings,layout:room.layout.kind==='custom'?room.layout:undefined}))&&new Set(Object.values(room.assignments)).size===Object.values(room.assignments).length);
 }

@@ -33,7 +33,7 @@ app.whenReady().then(async()=>{
     // Editing one day survives switching days and reopening the app.
     const oldSeat=Object.keys(s.assignments).find(seat=>s.assignments[seat]===bert);
     const target=await js(`document.querySelector('#room .seat.empty').dataset.seat`);
-    await js(`document.querySelector('[data-seat="${oldSeat}"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));document.querySelector('[data-seat="${target}"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));`);
+    await js(`document.querySelector('[data-seat="${oldSeat}"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));document.querySelector('[data-action="move-student"]').click();document.querySelector('[data-seat="${target}"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));`);
     assert.equal((await state()).assignments[target],bert);
     await select('dinsdag');s=await select('maandag');assert.equal(s.assignments[target],bert);
     await win.loadFile(path.join(root,'src','index.html'));s=await state();assert.equal(s.weeklyPlans.activeDay,'maandag');assert.equal(s.assignments[target],bert);

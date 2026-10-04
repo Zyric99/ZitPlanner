@@ -27,7 +27,7 @@ function worksheetFixture(input,id,from,to) {
 app.whenReady().then(async()=>{
   try {
     const win=new BrowserWindow({show:false,width:1600,height:1000,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false}});
-    const js=code=>win.webContents.executeJavaScript(code),errors=[];win.webContents.on('console-message',event=>{if(event.level==='error')errors.push(event.message);});
+    const errors=[],js=code=>win.webContents.executeJavaScript(code).catch(error=>{console.error('Renderer test failed:',code,errors);throw error;});win.webContents.on('console-message',event=>{if(event.level==='error')errors.push(event.message);});
     await win.loadFile(path.join(root,'src','index.html'));
     await js(`(async()=>{const e=await import('./engine.mjs');localStorage.setItem('klaslokaal-v1',JSON.stringify(e.defaults()));})()`);
     await win.loadFile(path.join(root,'src','index.html'));
@@ -68,6 +68,8 @@ app.whenReady().then(async()=>{
     assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','seat']);
     await js(`document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
     assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','seat']);
+    assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]')].slice(-2).map(el=>el.dataset.exportColumn)`),['room','seat']);
     assert.equal(await js(`document.querySelector('#export-separate-classes').checked`),true);
     await js(`document.querySelectorAll('[data-export-column]:checked').forEach(el=>el.click())`);
     assert.equal(await js(`document.querySelector('#export-submit').disabled`),true);assert.match(await js(`document.querySelector('#export-error').textContent`),/minstens één/);
@@ -76,6 +78,7 @@ app.whenReady().then(async()=>{
     await js(`document.querySelector('#export-separate-classes').click()`);
     await setFormat('csv');assert.equal(await js(`document.querySelector('#export-columns-field').hidden`),true);assert.equal(await js(`document.querySelector('#export-submit').disabled`),false);
     await setFormat('study-xlsx');assert.equal(await js(`document.querySelectorAll('[data-export-column]:checked').length`),7);
+    assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
     assert.equal(await js(`document.querySelector('[data-export-column=seat]').checked`),false);
     await js(`document.querySelector('[data-export-column=seat]').click()`);
     await setFormat('csv');await setFormat('study-xlsx');
@@ -125,7 +128,27 @@ app.whenReady().then(async()=>{
       win.webContents.sendInputEvent({type:'mouseUp',...points.to,button:'left',clickCount:1});
       await js(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
     };
-    await js(`document.querySelector('#export').click();document.querySelector('[data-export-column=room]').click();`);
+    await js(`document.querySelector('#export').click()`);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
+    // An explicit room deselection survives scope/format changes.
+    await js(`document.querySelector('[data-export-column=room]').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
+    assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
+    await setFormat('study-xlsx');
+    assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),true);
+    assert.equal(await js(`document.querySelectorAll('[data-export-column]:checked').length`),8);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]')].slice(-2).map(el=>el.dataset.exportColumn)`),['room','seat']);
+    await js(`document.querySelector('[data-export-column=room]').click()`);
+    await setFormat('xlsx');assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
+    await setFormat('study-xlsx');assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
+    await js(`document.querySelector('[data-close]').click();document.querySelector('#export').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
+    // Download unchanged defaults: identical seat codes retain their room names.
+    const multiRoomDefaultPath=path.join(root,'artifacts','desktop-excel-room-defaults.xlsx');
+    const multiRoomDefaultDownload=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{item.setSavePath(multiRoomDefaultPath);item.once('done',(_e,status)=>status==='completed'?resolve():reject(Error(status)));}));
+    await js(`document.querySelector('#export-submit').click()`);await multiRoomDefaultDownload;
+    const multiRoomDefaultBytes=Array.from(await fs.readFile(multiRoomDefaultPath));
+    const multiRoomDefaultSheets=await js(`(async()=>{const x=await import('./excel-import.mjs');return x.workbookSheets(new Uint8Array(${JSON.stringify(multiRoomDefaultBytes)}));})()`);
+    assert.deepEqual(multiRoomDefaultSheets[0].rows,[['Naam','Lokaal','Plaats'],['Anna Alpha','Zaal Oost','A1'],['Zoe Beta','Zaal West','A1']]);
+    await js(`document.querySelector('#export').click()`);
     assert.equal(await js(`document.querySelector('#export-columns-field').contains(document.querySelector('#export-separate-classes'))`),false);
     assert.ok(await js(`document.querySelector('#export-sheet-options').getBoundingClientRect().top-document.querySelector('#export-columns-field').getBoundingClientRect().bottom>=20`));
     await dragColumn('room','seat',true);
@@ -201,6 +224,50 @@ app.whenReady().then(async()=>{
     await js(`document.querySelector('#replace-list').click();document.querySelector('#import-submit').click();document.querySelector('#import-submit').click()`);
     assert.match(await js(`document.querySelector('#import-preview').textContent`),/overgeslagen/);
     assert.deepEqual(await js(`JSON.parse(localStorage.getItem('klaslokaal-v1')).students`),imported.students);
+    await js(`document.querySelector('[data-close]').click()`);
+    // Actual default seating download round-trips after opting into class tabs.
+    await js(`document.querySelector('#export').click()`);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
+    const defaultPath=path.join(root,'artifacts','desktop-excel-default-roundtrip.xlsx');
+    const defaultDownload=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{item.setSavePath(defaultPath);item.once('done',(_e,status)=>status==='completed'?resolve():reject(Error(status)));}));
+    await js(`document.querySelector('#export-submit').click()`);await defaultDownload;
+    const defaultBytes=Array.from(await fs.readFile(defaultPath));
+    await uploadWorkbook(defaultBytes);
+    assert.equal(await js(`document.querySelector('#import-class-options').hidden`),false);
+    assert.equal(await js(`document.querySelector('#import-class-from-sheet').checked`),false);
+    assert.equal(await js(`document.querySelectorAll('#import-sheet option:disabled').length`),2);
+    await js(`document.querySelector('#replace-list').click();document.querySelector('#import-submit').click()`);
+    assert.match(await js(`document.querySelector('#import-preview').textContent`),/0 geldige leerlingen/);
+    await js(`document.querySelector('#import-class-from-sheet').click()`);
+    assert.equal(await js(`document.querySelector('#import-submit').textContent`),'Lijst controleren');
+    assert.equal(await js(`document.querySelectorAll('#import-sheet option:disabled').length`),0);
+    // Selected sheets use the same fallback and preserve textarea edits.
+    await js(`document.querySelector('#import-sheet').value='1';document.querySelector('#import-sheet').dispatchEvent(new Event('change'));document.querySelector('#import-text').value='Naam;Plaats\\nEdited;A1';document.querySelector('#import-text').dispatchEvent(new Event('input'));document.querySelector('#import-submit').click()`);
+    assert.match(await js(`document.querySelector('#import-preview').textContent`),/1 geldige leerlingen/);
+    assert.match(await js(`document.querySelector('#import-preview tbody').textContent`),/Edited4B4/);
+    await js(`document.querySelector('#import-sheet').value='all';document.querySelector('#import-sheet').dispatchEvent(new Event('change'));document.querySelector('#import-submit').click()`);
+    assert.match(await js(`document.querySelector('#import-preview').textContent`),/2 geldige leerlingen/);
+    await js(`document.querySelector('#import-class-from-sheet').click();document.querySelector('#import-submit').click()`);
+    assert.match(await js(`document.querySelector('#import-preview').textContent`),/0 geldige leerlingen/);
+    await js(`document.querySelector('#import-class-from-sheet').click();document.querySelector('#import-submit').click();document.querySelector('#import-submit').click()`);
+    const defaultImported=await js(`JSON.parse(localStorage.getItem('klaslokaal-v1'))`);
+    assert.deepEqual(defaultImported.students.map(p=>[p.name,p.class,p.year]),[['Anna Alpha','3A','3'],['Bram Beta','4B','4']]);
+    await win.loadFile(path.join(root,'src','index.html'));
+    assert.deepEqual(await js(`JSON.parse(localStorage.getItem('klaslokaal-v1')).students`),defaultImported.students);
+    // The same opt-in is available for a single sheet and resets for text files.
+    const singleSheet=await js(`(async()=>{const x=await import('./excel-export.mjs');return Array.from(x.tableWorkbook(['Naam','Plaats'],[['Solo','A1']],{sheetName:'5C'}));})()`);
+    await uploadWorkbook(singleSheet);
+    assert.equal(await js(`document.querySelector('#import-sheet-field').hidden`),true);
+    await js(`document.querySelector('#import-class-from-sheet').click();document.querySelector('#import-submit').click()`);
+    assert.equal(await js(`document.querySelector('#import-sheet').value`),'0');
+    assert.equal(await js(`document.querySelector('#import-text-field').hidden`),false);
+    assert.match(await js(`document.querySelector('#import-preview tbody').textContent`),/Solo5C5/);
+    await js(`(()=>{const transfer=new DataTransfer();transfer.items.add(new File(['Naam;Plaats\\nText;A1'],'leerlingen.csv'));const input=document.querySelector('#import-file');input.files=transfer.files;input.dispatchEvent(new Event('change'));})()`);
+    await js(`new Promise((resolve,reject)=>{const start=Date.now(),timer=setInterval(()=>{if(!document.querySelector('#import-submit').disabled){clearInterval(timer);resolve();}else if(Date.now()-start>10000){clearInterval(timer);reject(Error('Text import timeout'));}},20);})`);
+    assert.equal(await js(`document.querySelector('#import-class-options').hidden`),true);
+    assert.equal(await js(`document.querySelector('#import-class-from-sheet').checked`),false);
+    await js(`document.querySelector('#import-submit').click()`);
+    assert.match(await js(`document.querySelector('#import-preview').textContent`),/Ontbrekende kolommen: Klas/);
     await js(`document.querySelector('[data-close]').click()`);
     if(errors.length)throw Error(errors.join('\n'));
     console.log(JSON.stringify({ok:true,checks:'real compressed example, file import and preview, persistence, split-name and attendance editing, XLSX round trip, Excel default, optional class tabs, combined download, column checklist, empty-selection validation, format and scope switching, actual selected-column download, per-class tabs and surname sorting, legacy seating import, invalid file'}));app.exit(0);

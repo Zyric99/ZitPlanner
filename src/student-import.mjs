@@ -3,6 +3,7 @@ export { inferYear } from './student-year.mjs';
 export const STUDY_DAYS=['maandag','dinsdag','donderdag','vrijdag'];
 export const STUDY_HEADERS=['Naam hoofdaccount','Voornaam hoofdaccount','Klas',...STUDY_DAYS.map(day=>`Avondstudie op ${day}`)];
 const normalized=value=>String(value??'').trim().toLocaleLowerCase('nl');
+const normalizedName=value=>normalized(value).replace(/\s+/g,' ');
 const studentKey=(name,klass)=>JSON.stringify([normalized(name),normalized(klass)]);
 
 // CSV/TSV records may contain quoted delimiters, escaped quotes and newlines.
@@ -45,7 +46,8 @@ export function textRows(text) {
 export function rowsText(rows) {
   return rows.map(row=>Array.from(row,value=>`"${String(value??'').replaceAll('"','""')}"`).join('\t')).join('\n');
 }
-export function parseStudentRows(rows,existing=[]) {
+export function parseStudentRows(rows,existing=[],{defaultClass=''}={}) {
+  defaultClass=String(defaultClass??'').trim();
   const students=[],errors=[],seen=new Set(existing.map(s=>studentKey(s.name,s.class)));
   const firstIndex=rows.findIndex(row=>row.some(value=>String(value??'').trim()));
   if(firstIndex<0)return {students,errors,yearErrors:[]};
@@ -59,17 +61,22 @@ export function parseStudentRows(rows,existing=[]) {
   const duplicate=headers.find((label,index)=>recognized.has(label)&&headers.indexOf(label)!==index);
   if(hasHeader&&(duplicate||headers.includes('naam')&&headers.includes('name')))return {students,errors:[`Dubbele naam of kolomkop: ${duplicate||'Naam / name'}.`],yearErrors:[]};
   const required=study?STUDY_HEADERS:standard?(splitNames?['Klas']:['Naam','Klas']):[];
-  const missing=required.filter(label=>column(label)<0&&!(label==='Naam'&&headers.includes('name')));
+  const missing=required.filter(label=>column(label)<0&&!(label==='Naam'&&headers.includes('name'))&&!(label==='Klas'&&defaultClass));
   if(missing.length)return {students,errors:[`Ontbrekende kolommen: ${missing.join(', ')}.`],yearErrors:[]};
   for(let i=firstIndex+(hasHeader?1:0);i<rows.length;i++) {
     const row=rows[i];if(!row.some(value=>String(value??'').trim()))continue;
     const get=index=>String(row[index]??'').trim();
     const lastName=study?get(column(STUDY_HEADERS[0])):splitNames?get(column('Achternaam')):'',firstName=study?get(column(STUDY_HEADERS[1])):splitNames?get(column('Voornaam')):'';
     const fullNameColumn=column('Naam')>=0?column('Naam'):column('name');
-    const name=study||splitNames&&fullNameColumn<0?[firstName,lastName].filter(Boolean).join(' '):get(standard?fullNameColumn:0);
-    const klass=get(hasHeader?column('Klas'):1);
+    // Split fields define the displayed name too. A redundant full-name cell
+    // must agree before we retain the row, so exports cannot identify someone else.
+    const name=study||splitNames?[firstName,lastName].filter(Boolean).join(' '):get(standard?fullNameColumn:0);
+    const klass=hasHeader&&column('Klas')<0?defaultClass:get(hasHeader?column('Klas'):1);
     const year=inferYear(klass);
     if(row.invalidQuotes||!name||!klass){errors.push(`Regel ${i+1}: ${row.invalidQuotes?'controleer de aanhalingstekens':'naam en klas zijn verplicht'}.`);continue;}
+    if((study||splitNames)&&fullNameColumn>=0&&get(fullNameColumn)&&normalizedName(get(fullNameColumn))!==normalizedName(name)) {
+      errors.push(`Regel ${i+1}: de volledige naam (${column('Naam')>=0?'Naam':'name'}) komt niet overeen met de voornaam en achternaam. Corrigeer de naamkolommen.`);continue;
+    }
     const eveningStudy={};let invalid=false;
     if(study)for(const day of STUDY_DAYS){const value=get(column(`Avondstudie op ${day}`)),key=normalized(value);if(!['ja','nee',''].includes(key)){errors.push(`Regel ${i+1}: avondstudie op ${day} moet Ja, Nee of leeg zijn.`);invalid=true;}eveningStudy[day]=key==='ja'?'Ja':key==='nee'?'Nee':'';}
     if(invalid)continue;
@@ -81,20 +88,21 @@ export function parseStudentRows(rows,existing=[]) {
 }
 export function parseStudents(text,existing=[]) {return parseStudentRows(textRows(text),existing);}
 
-export function parseStudentSheets(sheets,existing=[]) {
+export function parseStudentSheets(sheets,existing=[],{classFromSheetName=false}={}) {
   const students=[],errors=[],reports=[];
   for(const sheet of sheets) {
     const name=String(sheet.name??'Werkblad'),rows=sheet.rows??[];
+    const options={defaultClass:classFromSheetName?sheet.name:''};
     const header=rows.find(row=>row.some(value=>String(value??'').trim()))?.map(normalized)??[];
     const recognized=['naam','name','naam hoofdaccount','voornaam hoofdaccount'].some(label=>header.includes(label))||header.includes('achternaam')&&header.includes('voornaam');
-    const checked=sheet.error||!recognized?null:parseStudentRows(rows);
+    const checked=sheet.error||!recognized?null:parseStudentRows(rows,[],options);
     const valid=!!checked?.students.length;
     if(!valid) {
       const reason=sheet.error||(!header.length?'Het werkblad is leeg.':!recognized?'Geen herkenbare leerlingenlijst met kolomkoppen.':checked.errors.join(' ')||'Geen geldige leerlingen.');
       const message=`Werkblad “${name}” overgeslagen: ${reason}`;
       errors.push(message);reports.push({name,valid:false,students:0,errors:[message]});continue;
     }
-    const parsed=parseStudentRows(rows,[...existing,...students]);
+    const parsed=parseStudentRows(rows,[...existing,...students],options);
     const sheetErrors=parsed.errors.map(error=>`Werkblad “${name}”: ${error}`);
     students.push(...parsed.students);errors.push(...sheetErrors);
     reports.push({name,valid:true,students:parsed.students.length,errors:sheetErrors});

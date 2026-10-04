@@ -29,6 +29,52 @@ function roomyFixture(count=8) {
   return {state,a,b};
 }
 
+for(const mode of ['balanced','capacity','classesSpread','classesTogether','yearsSpread'])test(`single-room ${mode} assigns all present pupils and seats them without distribution attempts`,()=>{
+  const {state,a,b}=roomyFixture();state.distribution.mode=mode;
+  state.participatingRooms=[b.id];state.students[7].absent=true;
+  state.rules=[{id:'fixed',type:'fixed',students:['s0'],roomId:b.id,seat:'grid-A1:0',priority:'Verplicht'},
+    {id:'pair',type:'together',students:['s1','s2'],priority:'Verplicht'}];
+  const before=structuredClone(state),progress=[];
+  const result=autoDistributeRooms(state,{random:rng(),onProgress:(...args)=>progress.push(args)});
+  assert.equal(result.complete,true);assert.deepEqual(progress,[]);
+  assert.ok(result.state.students.filter(p=>!p.absent).every(p=>result.state.studentRooms[p.id]===b.id));
+  assert.equal(result.state.studentRooms.s7,a.id);assert.equal(result.state.activeRoomId,a.id);
+  assert.deepEqual(result.state.assignments,{});assert.equal(roomState(result.state,b.id).assignments['grid-A1:0'],'s0');
+  assert.equal(Object.keys(roomState(result.state,b.id).assignments).length,7);
+  assert.equal(result.state.distribution.reviewed,true);assert.equal(result.state.distribution.mode,mode);
+  assert.ok(validState(result.state));assert.deepEqual(state,before);
+});
+
+test('single-room overflow keeps every pupil in the room and reports missing seats',()=>{
+  const {state,a}=fixture(3);state.participatingRooms=[a.id];
+  state.rules=[{id:'apart',type:'separate',students:['s0','s1'],priority:'Verplicht'}];
+  const progress=[],result=autoDistributeRooms(state,{random:rng(),onProgress:(...args)=>progress.push(args)});
+  assert.equal(result.complete,false);assert.deepEqual(progress,[]);
+  assert.ok(state.students.every(p=>result.state.studentRooms[p.id]===a.id));
+  assert.equal(Object.keys(result.state.assignments).length,2);assert.equal(result.unplaced.length,1);
+  assert.ok(result.warnings.length);assert.ok(validState(result.state));
+});
+
+for(const seed of [100000,1000000])test(`single-room Auto replaces waiting pupils to repair class separation (seed ${seed})`,()=>{
+  const {state,a}=fixture(3);state.participatingRooms=[a.id];
+  state.students.forEach((p,i)=>{p.class=i<2?'1A':'2B';p.year=i<2?'1':'2';});
+  state.settings.classRulesEnabled=true;state.settings.classRules.default={type:'separate',priority:'Verplicht'};
+  const before=structuredClone(state),result=autoDistributeRooms(state,{iterations:100,random:rng(seed)});
+  assert.equal(Object.keys(result.state.assignments).length,2);assert.equal(result.unplaced.length,1);
+  assert.ok(Object.values(result.state.assignments).includes('s2'));assert.equal(result.score[1],0);
+  assert.ok(!result.warnings.some(w=>w.type==='class'));assert.ok(result.warnings.some(w=>w.type==='unplaced'));
+  assert.ok(state.students.every(p=>result.state.studentRooms[p.id]===a.id));
+  assert.ok(validState(result.state));assert.deepEqual(state,before);
+});
+
+test('default multi-room search stops after attempt four when overflow cannot be resolved',()=>{
+  const {state}=fixture(5),progress=[];
+  const result=autoDistributeRooms(state,{iterations:0,random:rng(),onProgress:(...args)=>progress.push(args)});
+  assert.deepEqual(progress,[[1,4],[2,4],[3,4],[4,4]]);
+  assert.equal(result.complete,false);assert.equal(result.unplaced.length,1);
+  assert.ok(validState(result.state));
+});
+
 test('selected capacity and balanced modes produce different rule-free room occupancies',()=>{
   for(const [mode,expected] of [['capacity',[8,0]],['balanced',[4,4]]]) {
     const {state,a,b}=roomyFixture();state.distribution.mode=mode;

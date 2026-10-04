@@ -36,7 +36,11 @@ app.whenReady().then(async () => {
     assert.deepEqual(saved.rules, []);
     assert.ok(saved.rooms.every(room => !Object.keys(room.assignments).length && !room.locks.length));
     assert.deepEqual(saved.assignments, {});
-    assert.equal(await js("Number(document.querySelector('#warning-count').textContent)"), 2);
+    // Both unplaced students appear in one grouped warning.
+    assert.equal(await js("Number(document.querySelector('#warning-count').textContent)"), 1);
+    assert.equal(await js("document.querySelectorAll('#active-warning-list [data-warning-group=unplaced]').length"), 1);
+    assert.match(await js("document.querySelector('#active-warning-list').textContent"), /2 leerlingen hebben nog geen geldige zitplaats/);
+    assert.deepEqual(await js("Array.from(document.querySelectorAll('[data-unplaced]'), button => button.dataset.unplaced).sort()"), ['a', 'b']);
     // Compact JSON exports must reopen through the actual legacy import input.
     const packed = await js(`(async()=>{const g=await import('./grid-room.mjs');return JSON.stringify({version:1,state:JSON.parse(localStorage.getItem('klaslokaal-v1')),plans:[],lists:[]},(_key,item)=>g.packGridRoom(item));})()`);
     await js(`(()=>{document.querySelector('#open-plans').click();const transfer=new DataTransfer();transfer.items.add(new File([${JSON.stringify(packed)}],'backup.json'));const input=document.querySelector('#project-file');input.files=transfer.files;input.dispatchEvent(new Event('change'));})()`);

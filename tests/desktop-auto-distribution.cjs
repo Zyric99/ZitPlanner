@@ -92,6 +92,33 @@ app.whenReady().then(async()=>{
       assert.match(await js("document.querySelector('#distribution-auto-result').textContent"),/alle ingeschakelde regels zijn gevolgd/);
     }
     await fs.writeFile(path.join(root,'artifacts','desktop-combined-distribution.png'),(await win.webContents.capturePage()).toPNG());
+    // The combined Auto action assigns everyone to the only participating
+    // room and creates seats without running the room-distribution search.
+    await js(`(()=>{const s=JSON.parse(localStorage.getItem('klaslokaal-v1'));s.participatingRooms=[s.rooms[0].id];localStorage.setItem('klaslokaal-v1',JSON.stringify(s));})()`);
+    await load();await js("document.querySelector('[data-tab=distribution]').click()");
+    const singleRoom=await state();
+    await js(`window.autoProgress=[];const NativeWorker=window.Worker;window.Worker=class extends NativeWorker {constructor(...args){super(...args);this.addEventListener('message',({data})=>{if(data.progress)window.autoProgress.push(data);});}};document.querySelector('[data-room-action=auto-distribute]').click()`);
+    await js(`new Promise((resolve,reject)=>{const started=Date.now(),timer=setInterval(()=>{if(!document.querySelector('[data-room-action=auto-distribute]').disabled){clearInterval(timer);resolve();}else if(Date.now()-started>20000){clearInterval(timer);reject(Error('Single-room Auto timeout'));}},25);})`);
+    const singlePlanned=await state();
+    assert.ok(singlePlanned.students.every(p=>singlePlanned.studentRooms[p.id]===singlePlanned.participatingRooms[0]));
+    assert.deepEqual(singlePlanned.rooms.map(room=>Object.keys(room.assignments).length),[8,0]);
+    assert.deepEqual(await js('window.autoProgress'),[]);
+    assert.match(await js("document.querySelector('#distribution-auto-result').textContent"),/alle ingeschakelde regels zijn gevolgd/);
+    await js("document.querySelector('#undo').click()");assert.deepEqual((await state()).studentRooms,singleRoom.studentRooms);
+    await js("document.querySelector('#redo').click()");assert.deepEqual((await state()).studentRooms,singlePlanned.studentRooms);
+    // Legal imported student IDs must survive the actual worker and autosave.
+    for(const roomCount of [1,2]) {
+      await js(`(async()=>{const e=await import('./engine.mjs'),r=await import('./rooms.mjs'),g=await import('./grid-room.mjs'),v=await import('./project-validation.mjs'),s=e.defaults();s.settings.classRulesEnabled=false;s.settings.yearRulesEnabled=false;s.students=['constructor','toString','__proto__'].map((id,i)=>({id,name:'Leerling '+i,class:'1A',year:'1',absent:false}));r.initializeRooms(s);if(${roomCount}===2)r.newRoom(s,'Tweede lokaal');for(const room of s.rooms)room.layout=g.generateGrid(g.emptyGridRoom(),{from:'A',to:'B',rows:1});s.settings.layout=s.rooms[0].layout;s.participatingRooms=s.rooms.map(room=>room.id);s.studentRooms={};if(!v.validProjectBackup({version:2,state:s}))throw Error('Invalid imported ID fixture');localStorage.setItem('klaslokaal-v1',JSON.stringify(s));})()`);
+      await load();await js("document.querySelector('[data-tab=distribution]').click();document.querySelector('[data-room-action=auto-distribute]').click()");
+      await js(`new Promise((resolve,reject)=>{const started=Date.now(),timer=setInterval(()=>{if(!document.querySelector('[data-room-action=auto-distribute]').disabled){clearInterval(timer);resolve();}else if(Date.now()-started>20000){clearInterval(timer);reject(Error('Imported student ID Auto timeout'));}},25);})`);
+      const importedPlan=await state(),expected=['constructor','toString','__proto__'];
+      assert.deepEqual(importedPlan.rooms.flatMap(room=>Object.values(room.assignments)).sort(),expected.sort());
+      for(const id of expected)assert.ok(Object.hasOwn(importedPlan.studentRooms,id));
+      assert.match(await js("document.querySelector('#distribution-auto-result').textContent"),/alle ingeschakelde regels zijn gevolgd/);
+      await load();await js("document.querySelector('[data-tab=distribution]').click();document.querySelector('[data-room-pupil=__proto__]').click()");
+      assert.equal(await js("document.querySelector('#manual-destination').value"),importedPlan.studentRooms.__proto__);
+      assert.deepEqual((await state()).studentRooms,importedPlan.studentRooms);
+    }
     if(errors.length)throw Error(errors.join('\n'));
     console.log('PASS: joint Auto worker, visible conflicts, per-room student search, unified location rules, class location editing, real pupil clicks and panel dismissal, retained active tab, autosave, restart, undo and redo.');app.exit(0);
   }catch(error){console.error(error);app.exit(1);}

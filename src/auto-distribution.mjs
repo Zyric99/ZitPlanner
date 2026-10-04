@@ -1,3 +1,4 @@
+import { ownValue, setOwnValue } from './id-record.mjs';
 import { enabledSeats, evaluate, generate, PRIORITIES, studentRulesFor } from './engine.mjs';
 import { applyClassAssignments, captureRoom, classRoomId, distributeRooms, normalizeRooms, participatingRoomIds, roomState } from './rooms.mjs';
 
@@ -39,7 +40,7 @@ function distributionPreference(base,targets,forced) {
   for(const [key,size] of groupSizes){const minimum=fixedGroups.get(key),maximum=limits.map((capacity,i)=>capacity-fixed[i]+minimum[i]);spreadBound+=squares(balancedCounts(size,minimum,maximum));}
   return state=>{
     const counts=targets.map(()=>0),groups=new Map();
-    for(const p of active){const i=roomIndex.get(state.studentRooms[p.id]);if(i===undefined)continue;counts[i]++;const key=groupKey(p);if(!groups.has(key))groups.set(key,targets.map(()=>0));groups.get(key)[i]++;}
+    for(const p of active){const i=roomIndex.get(ownValue(state.studentRooms,p.id));if(i===undefined)continue;counts[i]++;const key=groupKey(p);if(!groups.has(key))groups.set(key,targets.map(()=>0));groups.get(key)[i]++;}
     if(mode==='capacity')return counts.map((count,i)=>ideal[i]-count);
     if(mode==='classesTogether') {
       let fragments=0,splitPairs=0;
@@ -55,13 +56,13 @@ function distributionPreference(base,targets,forced) {
 // between rooms. Distance/separation rules are satisfied by different rooms.
 export function evaluateCrossRoomRules(state,detailed=true) {
   const score=[0,0,0],warnings=[],people=new Map(state.students.filter(p=>!p.absent).map(p=>[p.id,p]));
-  for(const student of people.values())if(!state.rooms.some(room=>room.id===state.studentRooms[student.id])) {
+  for(const student of people.values())if(!state.rooms.some(room=>room.id===ownValue(state.studentRooms,student.id))) {
     if(detailed)warnings.push({type:'unplaced',priority:'Verplicht',students:[student.id],benches:[],ruleId:'lokaal',crossRoom:true,message:`${student.name} heeft nog geen lokaal of zitplaats.`});
   }
   for(const rule of studentRulesFor(state)) {
     const members=rule.students.map(id=>people.get(id));
     if(members.some(p=>!p))continue;
-    const rooms=members.map(p=>state.studentRooms[p.id]);
+    const rooms=members.map(p=>ownValue(state.studentRooms,p.id));
     const fixed=rule.type==='fixed'&&rule.roomId&&rooms[0]!==rule.roomId;
     const missingRoom=rooms.some(id=>!state.rooms.some(room=>room.id===id));
     const split=['together','near','area'].includes(rule.type)&&(missingRoom||new Set(rooms).size>1);
@@ -85,28 +86,38 @@ export function autoDistributeRooms(source,{attempts=4,iterations=4500,random=Ma
   // Auto always respects existing seat pins and enabled fixed positions.
   base.participatingRooms=[...new Set([...participatingRoomIds(base),...pinnedRooms.values(),...rules.filter(r=>r.type==='fixed'&&base.rooms.some(room=>room.id===r.roomId)).map(r=>r.roomId)])];
   const targets=participatingRoomIds(base);if(!targets.length)throw Error('Kies minstens één deelnemend lokaal.');
+  const singleRoom=targets.length===1;
+  if(singleRoom)attempts=1;
   const forced=new Map();
   for(const p of active) {
     const fixed=rules.find(r=>r.type==='fixed'&&r.students[0]===p.id&&targets.includes(r.roomId));
-    const room=base.studentRoomPins?.[p.id]||classRoomId(base,p.class)||pinnedRooms.get(p.id)||fixed?.roomId;
+    const room=ownValue(base.studentRoomPins,p.id)||classRoomId(base,p.class)||pinnedRooms.get(p.id)||fixed?.roomId;
     if(room)forced.set(p.id,room);
   }
   let best=null,bestScore=null;
-  const distributionScore=distributionPreference(base,targets,forced);
+  const distributionScore=singleRoom?()=>[0]:distributionPreference(base,targets,forced);
   const distributionLength=distributionScore(base).length;
   const optimal=score=>score.slice(0,4+distributionLength).every(value=>Math.abs(value)<1e-8);
   const modes=[base.distribution.mode,...['balanced','classesSpread','yearsSpread','classesTogether','capacity'].filter(mode=>mode!==base.distribution.mode)];
   for(let attempt=0;attempt<attempts;attempt++) {
-    const state=clone(base);state.students=shuffle(state.students,random);
-    distributeRooms(state,modes[attempt%modes.length],{keepFixed:true});
+    const state=clone(base);
+    if(singleRoom) {
+      // There is no room choice, even when the room has too few seats.
+      // Assign everyone first; only the ordinary seat planner needs to search.
+      for(const p of active)setOwnValue(state.studentRooms,p.id,targets[0]);
+      normalizeRooms(state);
+    } else {
+      state.students=shuffle(state.students,random);
+      distributeRooms(state,modes[attempt%modes.length],{keepFixed:true});
+    }
     // A fixed position belongs to its named room even when an unpinned pupil
     // previously had a different membership.
-    for(const [id,room] of forced)state.studentRooms[id]=room;
+    for(const [id,room] of forced)setOwnValue(state.studentRooms,id,room);
     const views=targets.map(id=>roomState(state,id));
     for(const view of views) {
       view.settings={...view.settings,placementMode:'random'};
       const preferredSeats=Object.fromEntries(Object.entries(preferredPositions).filter(([,position])=>position.roomId===view.activeRoomId).map(([id,position])=>[id,position.seat]));
-      view.assignments=generate(view,{random,iterations:250,preferredSeats}).assignments;
+      view.assignments=generate(view,{random,iterations:singleRoom?iterations:250,preferredSeats}).assignments;
       state.rooms.find(r=>r.id===view.activeRoomId).assignments=view.assignments;
     }
     const positions=new Map(),slots=[],locked=new Set();
@@ -123,7 +134,7 @@ export function autoDistributeRooms(source,{attempts=4,iterations=4500,random=Ma
       const totals=evaluateCrossRoomRules(state,false).score;
       let sharing=0;
       for(const view of views){const result=evaluate(view,view.assignments,false);for(let i=0;i<3;i++)totals[i]+=result.score[i];sharing+=result.score[3];}
-      const changed=active.filter(p=>preferredPositions[p.id]&&positions.has(p.id)&&(positions.get(p.id).view.activeRoomId!==preferredPositions[p.id].roomId||positions.get(p.id).seat!==preferredPositions[p.id].seat)).length;
+      const changed=active.filter(p=>ownValue(preferredPositions,p.id)&&positions.has(p.id)&&(positions.get(p.id).view.activeRoomId!==ownValue(preferredPositions,p.id).roomId||positions.get(p.id).seat!==ownValue(preferredPositions,p.id).seat)).length;
       return [active.length-positions.size,...totals,...distributionScore(state),changed,sharing];
     };
     const remember=candidateScore=>{
@@ -132,15 +143,15 @@ export function autoDistributeRooms(source,{attempts=4,iterations=4500,random=Ma
       best=clone(state);bestScore=[...candidateScore];
     };
     let current=score();remember(current);
-    for(let step=0;step<iterations&&movable.length&&slots.length;step++) {
+    for(let step=0;!singleRoom&&step<iterations&&movable.length&&slots.length;step++) {
       if(optimal(bestScore))break;
       const id=movable[Math.floor(random()*movable.length)].id,target=slots[Math.floor(random()*slots.length)],from=positions.get(id),other=target.view.assignments[target.seat];
       const destination=target.view.activeRoomId;
       if(other===id||locked.has(other)||forced.has(id)&&forced.get(id)!==destination||other&&forced.has(other)&&forced.get(other)!==from?.view.activeRoomId)continue;
-      const oldRoom=state.studentRooms[id],otherRoom=other?state.studentRooms[other]:null;
+      const oldRoom=ownValue(state.studentRooms,id),otherRoom=other?ownValue(state.studentRooms,other):null;
       if(from){if(other)from.view.assignments[from.seat]=other;else delete from.view.assignments[from.seat];}
-      target.view.assignments[target.seat]=id;state.studentRooms[id]=destination;positions.set(id,target);
-      if(other){state.studentRooms[other]=from?.view.activeRoomId??null;if(from)positions.set(other,from);else positions.delete(other);}
+      target.view.assignments[target.seat]=id;setOwnValue(state.studentRooms,id,destination);positions.set(id,target);
+      if(other){setOwnValue(state.studentRooms,other,from?.view.activeRoomId??null);if(from)positions.set(other,from);else positions.delete(other);}
       const candidate=score(),difference=candidate.findIndex((value,i)=>Math.abs(value-current[i])>1e-8);
       const temperature=.4*(1-step/Math.max(1,iterations))+.015;
       const accept=compare(candidate,current)<=0||difference>0&&random()<Math.exp(-(candidate[difference]-current[difference])/temperature);
@@ -148,11 +159,11 @@ export function autoDistributeRooms(source,{attempts=4,iterations=4500,random=Ma
       else {
         if(from)from.view.assignments[from.seat]=id;
         if(other)target.view.assignments[target.seat]=other;else delete target.view.assignments[target.seat];
-        state.studentRooms[id]=oldRoom;if(from)positions.set(id,from);else positions.delete(id);
-        if(other){state.studentRooms[other]=otherRoom;positions.set(other,target);}
+        setOwnValue(state.studentRooms,id,oldRoom);if(from)positions.set(id,from);else positions.delete(id);
+        if(other){setOwnValue(state.studentRooms,other,otherRoom);positions.set(other,target);}
       }
     }
-    onProgress(attempt+1,attempts);
+    if(!singleRoom)onProgress(attempt+1,attempts);
     if(optimal(bestScore))break;
   }
   best.students=clone(source.students);

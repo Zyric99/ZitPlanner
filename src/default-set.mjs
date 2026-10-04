@@ -1,3 +1,4 @@
+import { ownValue } from './id-record.mjs';
 import { defaults, validSeat, seatCode } from './engine.mjs';
 import { initializeRooms, captureRoom, normalizeRooms, roomSystemValid } from './rooms.mjs';
 import { leaveWeeklyDay } from './weekly-planner.mjs';
@@ -49,7 +50,7 @@ export function restoreDefaultSet(source,template) {
   state.participatingRooms=template.participatingRooms.filter(id=>ids.has(id));
   for(const room of state.rooms) {
     const old=oldRooms.find(r=>r.id===room.id),settings={...state.settings,...room.settings,layout:room.layout};
-    room.assignments=Object.fromEntries(Object.entries(old?.assignments??{}).filter(([seat,id])=>state.studentRooms[id]===room.id&&validSeat(seat,settings)));
+    room.assignments=Object.fromEntries(Object.entries(old?.assignments??{}).filter(([seat,id])=>ownValue(state.studentRooms,id)===room.id&&validSeat(seat,settings)));
     room.locks=(old?.locks??[]).filter(id=>Object.values(room.assignments).includes(id));
     room.hiddenWarnings=clone(old?.hiddenWarnings??[]);
   }

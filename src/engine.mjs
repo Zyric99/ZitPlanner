@@ -1,3 +1,4 @@
+import { ownValue } from './id-record.mjs';
 import { customBenches, customSeatGeometry, tableBounds, GRID, benchSeatCode } from './layout.mjs';
 import { defaultClassroom } from './default-room.mjs';
 import { migrateLocationPins } from './location-rules.mjs';
@@ -86,7 +87,7 @@ export function seatLabel(seat,settings) {
   if(!validSeat(seat,settings))return b?.custom&&Number.isInteger(i)&&i>=0?`${customSeatCode(b,i)} · deze plaats bestaat niet meer`:'Onbekende positie';
   return seatCode(seat,settings);
 }
-export const roomStudents = state => state.students.filter(s=>!state.studentRooms||state.studentRooms[s.id]===state.activeRoomId);
+export const roomStudents = state => state.students.filter(s=>!state.studentRooms||ownValue(state.studentRooms,s.id)===state.activeRoomId);
 const seatRow = seat => seatBench(seat).block*2+Number(seat.split(':')[1])+1;
 function columnStartOrder(settings,seats) {
   const direction=settings.ordered?.vertical==='bottom'?-1:1,columns=new Map();
@@ -205,6 +206,14 @@ function ruleCost(type, a, b, area) {
   }
 }
 const relationCost=(rule,a,b,settings)=>rule.type==='adjacent'?+adjacentSeats(a.seat,b.seat,rule.acrossBenches!==false,settings):ruleCost(rule.type,a.bench,b.bench,rule.area);
+function unresolvedRuleCost(rule,active,placed) {
+  if(rule.type==='fixed'||REMOVED_RULE_TYPES.includes(rule.type))return 0;
+  const members=rule.students.filter(id=>active.has(id));
+  if(rule.type==='group'?members.length<2:members.length!==rule.students.length)return 0;
+  const seated=members.filter(id=>placed.has(id)).length;
+  // Each relationship with a waiting member is unresolved, rather than free.
+  return (members.length*(members.length-1)-seated*(seated-1))/2;
+}
 export function evaluate(state, assignments = state.assignments, detailed = true, layoutRanks = null) {
   const benchFor=seat=>seatBench(seat,state.settings),labelFor=seat=>seatLabel(seat,state.settings);
   const placed = entries(state, assignments), lookup = new Map(placed.map(e => [e.student.id, e]));
@@ -278,6 +287,7 @@ export function evaluate(state, assignments = state.assignments, detailed = true
     // A present pupil awaiting a valid seat still makes the rule unresolved.
     const missing=rule.students.map(id=>byId.get(id)).filter(student=>student&&!lookup.has(student.id));
     const relevant=rule.type==='group'?rule.students.filter(id=>byId.has(id)).length>=2:rule.students.every(id=>byId.has(id));
+    score[Math.max(0,PRIORITIES.indexOf(rule.priority))]+=unresolvedRuleCost(rule,byId,lookup);
     if(detailed&&relevant&&missing.length)warnings.push({id:`${rule.id}-unplaced`,type:rule.type,priority:rule.priority,students:[...new Set([...members.map(member=>member.student.id),...missing.map(student=>student.id)])],benches:[...new Set(members.map(member=>member.bench.id))],message:`${missing.map(student=>student.name).join(', ')} ${missing.length===1?'heeft':'hebben'} nog geen geldige plaats. De regel ‘${RULE_TYPES[rule.type]}’ kan nog niet worden gevolgd.`,ruleId:rule.id});
     if (rule.type === 'group') {
       if (members.length < 2) { inactive++; continue; }
@@ -320,8 +330,14 @@ export function generate(state, { random = Math.random, iterations = 1800, prefe
   // A weekly seat preference follows seating rules, but precedes packing and
   // random filling. It is deliberately not a pin: the search may move it.
   const preferred=preferredSeats?new Map(Object.entries(preferredSeats).filter(([id,seat])=>activeIds.has(id)&&seats.includes(seat))):null;
-  const scoreFor=(candidate,ranks)=>{
+  const scoreFor=(candidate,ranks,partial=false)=>{
     const score=evaluate(state,candidate,false,ranks).score;
+    // Missing-member costs can fall as a partial exact-search plan is filled.
+    // Remove them from its lower bound so feasible completions are not pruned.
+    if(partial) {
+      const placed=new Set(Object.values(candidate));
+      for(const rule of studentRulesFor(state))score[Math.max(0,PRIORITIES.indexOf(rule.priority))]-=unresolvedRuleCost(rule,activeIds,placed);
+    }
     if(!preferred)return score;
     const positions=new Map(Object.entries(candidate).map(([seat,id])=>[id,seat]));
     return [...score.slice(0,3),[...preferred].reduce((n,[id,seat])=>n+(positions.get(id)!==seat),0),...score.slice(3)];
@@ -361,10 +377,20 @@ export function generate(state, { random = Math.random, iterations = 1800, prefe
     }
   } else remaining.slice(0,order.length).forEach((student,i) => { assignments[order[i]] = student.id; });
   let bestScore = scoreFor(assignments,ranks);
+  const waiting=new Set(active.filter(student=>!Object.values(assignments).includes(student.id)).map(student=>student.id));
   const movable = free;
-  for (let k = 0; k < iterations && movable.length > 1; k++) {
+  for (let k = 0; k < iterations && movable.length && (movable.length>1||waiting.size); k++) {
     const occupiedMovable = Object.keys(assignments).filter(seat => !lockedSeats.has(seat) && free.includes(seat));
     if (!occupiedMovable.length) break;
+    if(waiting.size&&random()<.25) {
+      const seat=occupiedMovable[Math.floor(random()*occupiedMovable.length)],id=[...waiting][Math.floor(random()*waiting.size)],previous=assignments[seat];
+      assignments[seat]=id;const score=scoreFor(assignments,ranks);
+      // Keep the current seated group on ties; only better rule scores admit
+      // a waiting pupil. Cardinality, pins and fixed positions stay unchanged.
+      if(compare(score.slice(0,3),bestScore.slice(0,3))<0){waiting.delete(id);waiting.add(previous);bestScore=score;}
+      else assignments[seat]=previous;
+      continue;
+    }
     let a = occupiedMovable[Math.floor(random()*occupiedMovable.length)], b = movable[Math.floor(random()*movable.length)];
     const sharingRules = studentRulesFor(state).filter(r => r.type === 'together');
     if (sharingRules.length && random() < .2) {
@@ -387,49 +413,66 @@ export function generate(state, { random = Math.random, iterations = 1800, prefe
     } else bestScore=score;
   }
   // Random proposals can miss an available correction. Check every move and
-  // swap involving a pupil with a remaining rule violation before accepting it.
+  // swap or waiting-list replacement with a remaining rule violation.
   // A bounded scan keeps large, contradictory plans responsive.
   let repairBudget=Math.min(6000,Math.max(600,iterations*3));
   if(iterations>0)for(let pass=0;pass<4&&repairBudget>0&&bestScore.slice(0,3).some(value=>value>1e-8);pass++) {
     const affected=new Set(evaluate(state,assignments).warnings.flatMap(warning=>warning.students));
-    const sources=Object.keys(assignments).filter(seat=>!lockedSeats.has(seat)&&free.includes(seat)&&affected.has(assignments[seat]));
+    const sources=Object.keys(assignments).filter(seat=>!lockedSeats.has(seat)&&free.includes(seat));
     let correction=null,correctionScore=bestScore;
-    scan:for(const a of sources)for(const b of movable) {
-      if(a===b)continue;
-      if(--repairBudget<0)break scan;
-      const va=assignments[a],vb=assignments[b];
-      if(vb)assignments[a]=vb;else delete assignments[a];assignments[b]=va;
-      const score=scoreFor(assignments,ranks);
-      assignments[a]=va;if(vb)assignments[b]=vb;else delete assignments[b];
-      if(compare(score.slice(0,3),correctionScore.slice(0,3))<0){correction={a,b,va,vb};correctionScore=score;}
+    scan:for(const a of sources) {
+      // A missing rule member may need to replace an otherwise unconstrained
+      // seated pupil, so replacements consider every unlocked occupant.
+      for(const id of waiting) {
+        if(--repairBudget<0)break scan;
+        const previous=assignments[a];assignments[a]=id;
+        const score=scoreFor(assignments,ranks);assignments[a]=previous;
+        if(compare(score.slice(0,3),correctionScore.slice(0,3))<0){correction={seat:a,id,previous};correctionScore=score;}
+      }
+      if(!affected.has(assignments[a]))continue;
+      for(const b of movable) {
+        if(a===b)continue;
+        if(--repairBudget<0)break scan;
+        const va=assignments[a],vb=assignments[b];
+        if(vb)assignments[a]=vb;else delete assignments[a];assignments[b]=va;
+        const score=scoreFor(assignments,ranks);
+        assignments[a]=va;if(vb)assignments[b]=vb;else delete assignments[b];
+        if(compare(score.slice(0,3),correctionScore.slice(0,3))<0){correction={a,b,va,vb};correctionScore=score;}
+      }
     }
     if(!correction)break;
-    const {a,b,va,vb}=correction;if(vb)assignments[a]=vb;else delete assignments[a];assignments[b]=va;bestScore=correctionScore;
+    if(correction.seat){const {seat,id,previous}=correction;assignments[seat]=id;waiting.delete(id);waiting.add(previous);}
+    else {const {a,b,va,vb}=correction;if(vb)assignments[a]=vb;else delete assignments[a];assignments[b]=va;}
+    bestScore=correctionScore;
   }
   // Some corrections require several simultaneous moves, with no improving
   // intermediate swap. Search small seating problems exhaustively up to a
   // work limit, while retaining all pins and exact-position rules.
-  const searchIds=Object.entries(assignments).filter(([seat])=>!lockedSeats.has(seat)).map(([,id])=>id);
+  const seatedIds=Object.entries(assignments).filter(([seat])=>!lockedSeats.has(seat)).map(([,id])=>id);
+  const searchIds=[...seatedIds,...waiting],targetCount=seatedIds.length;
   if(iterations>0&&searchIds.length<=6&&movable.length<=12&&bestScore.slice(0,3).some(value=>value>1e-8)) {
     const candidate=Object.fromEntries(Object.entries(assignments).filter(([seat])=>lockedSeats.has(seat))),oldSeats=new Map(Object.entries(assignments).map(([seat,id])=>[id,seat]));
     const sequence=ordered?orderedSeats(state.settings).filter(seat=>movable.includes(seat)):movable;
     let work=50000,solution=null;
-    const search=index=>{
+    const search=(index,count)=>{
       if(--work<0)return;
-      if(compare(scoreFor(candidate,ranks).slice(0,3),bestScore.slice(0,3))>0)return;
+      if(count>targetCount||count+searchIds.length-index<targetCount)return;
+      if(compare(scoreFor(candidate,ranks,true).slice(0,3),bestScore.slice(0,3))>0)return;
       if(index===searchIds.length) {
         const score=scoreFor(candidate,ranks);
-        if(compare(score,bestScore)<0){solution={...candidate};bestScore=score;}
+        const substitution=Object.values(solution??assignments).some(id=>!Object.values(candidate).includes(id));
+        if(compare(score,bestScore)<0&&(!substitution||compare(score.slice(0,3),bestScore.slice(0,3))<0)){solution={...candidate};bestScore=score;}
         return;
       }
       const id=searchIds[index],current=oldSeats.get(id);
-      for(const seat of [current,...sequence.filter(seat=>seat!==current)]) {
+      if(count<targetCount)for(const seat of current?[current,...sequence.filter(seat=>seat!==current)]:sequence) {
         if(candidate[seat])continue;
-        candidate[seat]=id;search(index+1);delete candidate[seat];
+        candidate[seat]=id;search(index+1,count+1);delete candidate[seat];
         if(work<0||bestScore.slice(0,3).every(value=>value<=1e-8))break;
       }
+      if(work>=0&&count+searchIds.length-index-1>=targetCount)search(index+1,count);
     };
-    search(0);
+    search(0,0);
     if(solution){for(const seat of Object.keys(assignments))delete assignments[seat];Object.assign(assignments,solution);}
   }
   // Use one consistent seat side on singly occupied benches, unless pinned or fixed.

@@ -1,3 +1,4 @@
+import { ownValue } from './id-record.mjs';
 import { seatCode, roomStudents } from './engine.mjs';
 import { roomState } from './rooms.mjs';
 import { STUDY_DAYS, STUDY_HEADERS, studentNameParts } from './student-import.mjs';
@@ -43,7 +44,7 @@ function studentPositions(state,{allRooms=false}={}) {
   else for(const [seat,id] of Object.entries(state.assignments))positions.set(id,seatCode(seat,state.settings));
   return positions;
 }
-const studentRoomName=(state,student)=>state.rooms?.find(r=>r.id===state.studentRooms?.[student.id])?.name||'Nog geen lokaal';
+const studentRoomName=(state,student)=>state.rooms?.find(r=>r.id===ownValue(state.studentRooms,student.id))?.name||'Nog geen lokaal';
 function seatingRecords(state,{allRooms=false}={}) {
   const positions=studentPositions(state,{allRooms}),multiple=allRooms&&state.rooms;
   return (multiple?state.students:roomStudents(state)).filter(p=>!p.absent).map(student=>({student,room:studentRoomName(state,student),seat:positions.get(student.id)||'Nog niet geplaatst'}));
