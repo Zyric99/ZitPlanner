@@ -9,6 +9,8 @@ import {starterFixture} from './starter-fixture.mjs';
 import {createProjectSession,blankProjectState} from '../src/project-session.mjs';
 import {validState} from '../src/project-validation.mjs';
 import {factoryDefaultSet} from '../src/default-set.mjs';
+import {setCalendarEnabled,saveCalendarPeriod,openCalendarDate,calendarDraft} from '../src/calendar-model.mjs';
+import {setStudentAttendance} from '../src/attendance.mjs';
 const require=createRequire(import.meta.url),{ProjectWorkspace}=require('../desktop/project-workspace.cjs'),{ProjectStore}=require('../desktop/project-store.cjs');
 const KEY='klaslokaal-v1';
 const api=store=>Object.fromEntries(['startup','bootstrap','save','list','load','activate','create','createEmpty','duplicate','rename','resetPreview','reset','delete'].map(m=>[m,arg=>store[m](arg)]));
@@ -30,6 +32,31 @@ test('new projects start with a blank tab and no inherited layouts, rules, lists
   for(const key of ['assignments','classRooms','studentRooms'])assert.deepEqual(s[key],{});
   assert.deepEqual(s.settings.yearRules,[]);assert.equal(s.settings.classRules.default.type,'none');assert.deepEqual(document.lists,[]);assert.deepEqual(document.plans,[]);assert.equal(s.weeklyPlans,undefined);
   assert.ok(validState(blankProjectState()));
+});
+
+test('project sessions isolate saved calendar days and drafts when creating and reopening projects',async t=>{
+  const {store,boot}=await fresh(t),session=await createProjectSession(api(store),{getItem:()=>null},KEY);
+  const first=await session.open(boot.document.id,validState),a=first.state;
+  setCalendarEnabled(a,true,'2026-10-05');
+  const student=a.students[0].id;setStudentAttendance(a,student,true);
+  saveCalendarPeriod(a,'2026-10-05','day');
+  openCalendarDate(a,'2026-10-06',{fresh:true});
+  openCalendarDate(a,'2026-10-08',{fresh:true});
+  assert.ok(a.calendar.days['2026-10-06']);
+  setCalendarEnabled(a,false);
+  const archive=structuredClone(a.calendar);
+  assert.ok(calendarDraft(a,'2026-10-08'));
+  await session.save(KEY,a);
+  const second=await session.create('Tweede project',{valid:validState});
+  assert.equal(second.state.calendar,undefined);
+  setCalendarEnabled(second.state,true,'2026-10-09');saveCalendarPeriod(second.state,'2026-10-09','day');
+  await session.save(KEY,second.state);
+  const reopened=await session.open(first.id,validState);
+  assert.deepEqual(reopened.state.calendar,archive);
+  assert.deepEqual(reopened.state.calendar.days['2026-10-05'].absentIds,[student]);
+  const other=await session.open(second.id,validState);
+  assert.deepEqual(Object.keys(other.state.calendar.days),['2026-10-09']);
+  assert.equal(other.state.calendar.drafts,undefined);
 });
 
 test('duplicate any project copies full data, chooses unique numbered names, and remains independent',async t=>{

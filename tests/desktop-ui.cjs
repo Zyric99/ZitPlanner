@@ -103,11 +103,11 @@ app.whenReady().then(async()=>{
   assert.equal(await js("document.querySelector('#distribution-reviewed')"),null);
   assert.equal(await js("document.querySelectorAll('.distribution-controls button').length"),1);
   assert.equal(await js("document.querySelector('#navigation [data-tab=distribution]').classList.contains('active')"),true);
-  await js("document.querySelector('[data-room-action=export-all]').click()");
+  await js("document.querySelector('[data-tab=export]').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'))");
   assert.equal(await js("document.querySelector('#export-scope').value"),'all');assert.equal(await js("document.querySelector('#export-format').value"),'xlsx');await shot('ui-export.png');
-  await choose('export-format','study-xlsx');assert.equal(await js("document.querySelector('#export-scope-field').hidden"),true);
+  await choose('export-format','csv');assert.equal(await js("document.querySelector('#export-scope-field').hidden"),true);
   await choose('export-format','pdf');assert.equal(await js("document.querySelector('#export-scope').value"),'room');
-  await js("document.querySelector('[data-close]').click();document.querySelector('[data-tab=room]').click()");
+  await js("document.querySelector('[data-tab=room]').click()");
   win.setSize(1024,768);await frame();await shot('ui-seating-compact.png');
   assert.equal(await js("document.documentElement.scrollWidth<=innerWidth"),true);
   await js("document.querySelector('[data-tab=students]').click()");await shot('ui-students-compact.png');

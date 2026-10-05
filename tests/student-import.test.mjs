@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {parseStudents,parseStudentRows,parseStudentSheets,textRows,rowsText,inferYear,studyRows,STUDY_HEADERS} from '../src/student-import.mjs';
+import {normalizeStudentYears} from '../src/student-year.mjs';
+import {compareStudentNames} from '../src/excel-export.mjs';
 const rows=[STUDY_HEADERS,['Anoniem','Piet','DEMO-1BASa1','Nee','Nee','Nee','Nee'],['Bibber','Bert','DEMO-1BASa1','Ja','Nee','Ja','Nee'],['Claeys','Mirthe','DEMO-1BASa1','Ja','Ja','Ja','Ja']];
 test('example layout preserves separate names, class and evening attendance with inferred year',()=>{
   const result=parseStudentRows(rows);assert.deepEqual(result.errors,[]);assert.equal(result.students.length,3);
@@ -32,15 +34,31 @@ test('blank attendance remains blank and unstructured names have predictable exp
   assert.deepEqual(studyRows([{name:'Jan van den Berg',class:'3A',absent:true},{name:'Solo',class:'4A'}]),[['van den Berg','Jan','3A','','','',''],['Solo','','4A','','','','']]);
 });
 
-test('every import format uses the first class number instead of a supplied year',()=>{
-  for(const text of ['Naam;Klas;Leerjaar\nAda;4B;2','Naam;Klas\nAda;4B','Ada;4B;','Ada;4B;wrong']) {
+test('imports infer missing years and preserve supplied years as class-bound manual corrections',()=>{
+  for(const text of ['Naam;Klas\nAda;4B','Naam;Klas;Leerjaar\nAda;4B;','Ada;4B;']) {
     const result=parseStudents(text);assert.deepEqual(result.errors,[]);assert.deepEqual(result.yearErrors,[]);assert.equal(result.students[0].year,'4');
   }
-  const result=parseStudentRows([[...STUDY_HEADERS,'Leerjaar'],[...rows[1],'6']]);assert.equal(result.students[0].year,'1');
+  for(const result of [parseStudents('Naam;Klas;Leerjaar\nAda;4B;02'),parseStudents('Ada;4B;2'),parseStudentRows([['Leerjaar','Klas','Naam'],['2','4B','Ada']])]) {
+    assert.deepEqual(result.errors,[]);assert.deepEqual(result.yearErrors,[]);
+    assert.equal(result.students[0].year,'2');assert.deepEqual(result.students[0].yearOverride,{class:'4B',year:'2'});
+    const reopened=JSON.parse(JSON.stringify(result.students));normalizeStudentYears(reopened);assert.equal(reopened[0].year,'2');
+    reopened[0].class='5A';normalizeStudentYears(reopened);assert.equal(reopened[0].year,'5');assert.equal(reopened[0].yearOverride,undefined);
+  }
+  const result=parseStudentRows([[...STUDY_HEADERS,'Leerjaar'],[...rows[1],'6']]);assert.equal(result.students[0].year,'6');assert.deepEqual(result.yearErrors,[]);
+  const unknown=parseStudents('Naam;Klas;Leerjaar\nAda;Onbekend;3');assert.equal(unknown.students[0].year,'3');assert.deepEqual(unknown.yearErrors,[]);
+});
+
+test('invalid and duplicate supplied year columns are reported without silently inferring a year',()=>{
+  for(const value of ['wrong','0','-1','2.5','9007199254740992']) {
+    for(const text of [`Naam;Klas;Leerjaar\nAda;4B;${value}`,`Ada;4B;${value}`]) {
+      const result=parseStudents(text);assert.deepEqual(result.students,[]);assert.match(result.errors[0],/Regel 2:.*positief geheel|Regel 1:.*positief geheel/);
+    }
+  }
+  assert.match(parseStudentRows([['Naam','Klas','Leerjaar','leerjaar'],['Ada','4B','2','3']]).errors[0],/Dubbele.*leerjaar/);
 });
 
 test('all unrecognized class codes remain available for correction beyond the preview limit',()=>{
-  const result=parseStudentRows([['Naam','Klas','Leerjaar'],...Array.from({length:9},(_,i)=>[`Pupil ${i}`,'Onbekend','3']),['Detected','4B','1']]);
+  const result=parseStudentRows([['Naam','Klas','Leerjaar'],...Array.from({length:9},(_,i)=>[`Pupil ${i}`,'Onbekend','']),['Detected','4B','']]);
   assert.equal(result.students.length,10);assert.equal(result.yearErrors.length,9);assert.deepEqual(result.errors,[]);assert.equal(result.students.at(-1).year,'4');
 });
 
@@ -194,4 +212,67 @@ test('worksheet class fallback keeps header and file validation and never invent
   assert.deepEqual(result.students.map(p=>[p.name,p.class]),[['Valid','5C']]);assert.equal(result.errors.length,4);
   const edited=parseStudentRows(textRows('Naam;Plaats\nEdited;B2'),[],{defaultClass:'2B'});
   assert.deepEqual(edited.students.map(p=>[p.name,p.class]),[['Edited','2B']]);
+});
+
+
+test('combined Excel headers retain optional evening-study days with ordinary name columns',()=>{
+  for(const [headers,values] of [
+    [['Naam','Klas','Avondstudie op dinsdag'],['Anna Alpha','3A','Ja']],
+    [['Achternaam','Voornaam','Klas','Avondstudie op dinsdag'],['Alpha','Anna','3A','Ja']]
+  ]){
+    const result=parseStudentRows([headers,values]);assert.deepEqual(result.errors,[]);
+    assert.equal(result.students[0].name,'Anna Alpha');
+    assert.deepEqual(result.students[0].eveningStudy,{maandag:'',dinsdag:'Ja',donderdag:'',vrijdag:''});
+    assert.match(parseStudentRows([headers,[...values.slice(0,-1),'Onbekend']]).errors[0],/Ja, Nee/);
+  }
+});
+
+test('Dutch surname headers and Naam + Voornaam preserve compound name fields regardless of column order',()=>{
+  for(const surname of ['Naam','Achternaam','Familienaam']) {
+    const result=parseStudentSheets([{name:'3A',rows:[['Voornaam','Klas',surname],['Anne Marie','3A','Van den Berg'],['Emma','3A','Peeters']]}],[],{fullNameOrder:'last-first'});
+    assert.deepEqual(result.errors,[]);
+    assert.deepEqual(result.students.map(p=>[p.name,p.firstName,p.lastName]),[['Anne Marie Van den Berg','Anne Marie','Van den Berg'],['Emma Peeters','Emma','Peeters']]);
+    assert.deepEqual(studyRows(result.students).map(row=>row.slice(0,3)),[['Van den Berg','Anne Marie','3A'],['Peeters','Emma','3A']]);
+  }
+});
+
+test('full name headers keep the existing first-name-first behavior unless surname-first is selected',()=>{
+  for(const label of ['Naam','name','Volledige naam','Full name']) {
+    const original=parseStudents(`${label};Klas\nEmma Van den Berg;3A`);
+    assert.deepEqual(original.errors,[]);assert.equal(original.students[0].name,'Emma Van den Berg');
+    const result=parseStudents(`${label};Klas\nVan den Berg Emma;3A\nPeeters Noah;3A\nSolo;3A`,[],{fullNameOrder:'last-first'});
+    assert.deepEqual(result.errors,[]);
+    assert.deepEqual(result.students.map(p=>[p.name,p.firstName,p.lastName]),[['Emma Van den Berg','Emma','Van den Berg'],['Noah Peeters','Noah','Peeters'],['Solo','','Solo']]);
+    assert.deepEqual([...result.students].sort(compareStudentNames).map(p=>p.name),['Noah Peeters','Solo','Emma Van den Berg']);
+    assert.deepEqual(studyRows(JSON.parse(JSON.stringify(result.students))).map(row=>row.slice(0,2)),[['Van den Berg','Emma'],['Peeters','Noah'],['Solo','']]);
+  }
+  const headerless=parseStudents('Van den Berg Emma;3A',[],{fullNameOrder:'last-first'});
+  assert.equal(headerless.students[0].lastName,'Van den Berg');
+});
+
+test('explicit fields take precedence over full-name order and validate either display order',()=>{
+  const result=parseStudentRows([['Volledige naam','Naam','Voornaam','Klas'],
+    ['Van den Berg Anne Marie','Van den Berg','Anne Marie','3A'],
+    ['Noah Peeters','Peeters','Noah','3A'],['Some Other Person','Jacobs','Emma','3A']],[],{fullNameOrder:'last-first'});
+  assert.deepEqual(result.students.map(p=>[p.name,p.firstName,p.lastName]),[['Anne Marie Van den Berg','Anne Marie','Van den Berg'],['Noah Peeters','Noah','Peeters']]);
+  assert.equal(result.errors.length,1);assert.match(result.errors[0],/Regel 4:.*Volledige naam.*komt niet overeen/);
+});
+
+test('mixed workbook formats and blank split fields use the same full-name order and duplicate identity',()=>{
+  const sheets=[{name:'3A',rows:[['Volledige naam','Voornaam','Familienaam'],['Van den Berg Emma','',''],['Zulu Anne Marie','Anne Marie','Zulu']]},
+    {name:'4B',rows:[['Naam','Voornaam'],['Van den Berg','Emma']]},
+    {name:'Kopie',rows:[['Naam','Klas'],['Van den Berg Emma','3A']]}];
+  const before=structuredClone(sheets),result=parseStudentSheets(sheets,[],{classFromSheetName:true,fullNameOrder:'last-first'});
+  assert.deepEqual(result.students.map(p=>[p.name,p.firstName,p.lastName,p.class]),[['Emma Van den Berg','Emma','Van den Berg','3A'],['Anne Marie Zulu','Anne Marie','Zulu','3A'],['Emma Van den Berg','Emma','Van den Berg','4B']]);
+  assert.equal(result.errors.length,1);assert.match(result.errors[0],/Werkblad “Kopie”:.*al in de lijst/);
+  assert.deepEqual(sheets,before);
+});
+
+test('name aliases retain duplicate-header validation and report incomplete split headers',()=>{
+  for(const headers of [['Naam','Volledige naam','Klas'],['Voornaam','Achternaam','Familienaam','Klas'],['Naam','Voornaam','Voornaam','Klas']]) {
+    const result=parseStudentRows([headers,headers.map(()=> '3A')]);
+    assert.deepEqual(result.students,[]);assert.match(result.errors[0],/Dubbele/);
+  }
+  const result=parseStudentRows([['Voornaam','Klas'],['Emma','3A']]);
+  assert.deepEqual(result.students,[]);assert.match(result.errors[0],/Ontbrekende kolommen: Achternaam/);
 });

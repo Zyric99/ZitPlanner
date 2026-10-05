@@ -22,6 +22,8 @@
         <button data-tab="room" class="nav-item active"><span>▦</span>Zitplaatsen</button>
         <button data-tab="students" class="nav-item"><span>♙</span>Leerlingen <b id="student-count">0</b></button>
         <button data-tab="rules" class="nav-item"><span>☷</span>Regels <b id="rule-count">0</b></button>
+        <button data-tab="attendance" class="nav-item"><span>✓</span>Aanwezigheden</button>
+        <button data-tab="export" class="nav-item"><span>↗</span>Export</button>
       </nav>
       <div id="sidebar-content"></div>
       
@@ -30,7 +32,8 @@
       <div class="page-heading"><h1>Zitplaatsenplanner</h1><div class="active-room-bar"><label>Huidig lokaal <select id="active-room"></select></label><button class="button small" data-tab="distribution">← Lokaalverdeling</button><button class="button small" id="edit-active-room">Opstelling bewerken</button></div></div>
       <section id="rooms-workspace" hidden></section>
       <section id="task-workspace" hidden></section>
-      <div class="toolbar"><button id="generate" class="button primary">✦ &nbsp; Indeling maken…</button><span id="generation-summary" class="toolbar-hint"></span><span class="toolbar-space"></span><button id="export" class="button">↗ &nbsp; Exporteren</button></div>
+      <div class="toolbar"><button id="generate" class="button primary">✦ &nbsp; Indeling maken…</button><span id="generation-summary" class="toolbar-hint"></span><span class="toolbar-space"></span><div id="seating-calendar-controls"></div></div>
+      <div id="seating-calendar-date" hidden></div>
       <div class="weekly-bar" id="weekly-bar" hidden><div class="weekly-controls"><label>Studiedag <select id="weekly-day" aria-label="Studiedag" disabled><option>Zonder dagfilter</option></select></label></div><small id="weekly-note"></small><details class="weekly-warning" id="weekly-warning" hidden></details></div>
       <div class="summary" id="summary"></div>
       <section class="classroom-card">

@@ -1,6 +1,6 @@
 {
   "name": "klaslokaal",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Nederlandse desktopplanner voor zitplaatsen",
   "type": "module",
@@ -15,7 +15,7 @@
     "test:projects": "electron tests/desktop-workspace.cjs",
     "test:unplaced": "electron tests/desktop-unplaced.cjs",
     "test:auto": "electron tests/desktop-auto-distribution.cjs",
-    "check": "node --check src/id-record.mjs && node --check src/app.mjs && node --check src/bench-selection.mjs && node --check src/engine.mjs && node --check src/rooms.mjs && node --check src/location-rules.mjs && node --check src/auto-distribution.mjs && node --check src/room-ui.mjs && node --check src/layout.mjs && node --check src/seat-codes.mjs && node --check src/grid-room.mjs && node --check src/default-room.mjs && node --check src/grid-editor.mjs && node --check src/excel-export.mjs && node --check src/excel-import.mjs && node --check src/student-import.mjs && node --check src/student-list.mjs && node --check src/warning-state.mjs && node --check src/student-year.mjs && node --check src/weekly-planner.mjs && node --check src/weekly-ui.mjs && node --check src/planner-worker.mjs && node --check desktop/desktop.cjs && node --check desktop/project-store.cjs && node --check desktop/project-workspace.cjs && node --check src/project-session.mjs && node --check desktop/preload.cjs && node --check src/default-set.mjs && node --check src/project-validation.mjs && node --check src/starter-project.mjs && node --check scripts/server.mjs && node --check desktop/installation.cjs",
+    "check": "node --check src/id-record.mjs && node --check src/app.mjs && node --check src/bench-selection.mjs && node --check src/engine.mjs && node --check src/rooms.mjs && node --check src/location-rules.mjs && node --check src/auto-distribution.mjs && node --check src/room-ui.mjs && node --check src/layout.mjs && node --check src/seat-codes.mjs && node --check src/grid-room.mjs && node --check src/default-room.mjs && node --check src/grid-editor.mjs && node --check src/excel-export.mjs && node --check src/excel-import.mjs && node --check src/student-import.mjs && node --check src/student-list.mjs && node --check src/attendance.mjs && node --check src/attendance-status.mjs && node --check src/calendar-dates.mjs && node --check src/calendar-model.mjs && node --check src/calendar-ui.mjs && node --check src/calendar-export.mjs && node --check src/calendar-preference.mjs && node --check src/warning-state.mjs && node --check src/student-year.mjs && node --check src/weekly-planner.mjs && node --check src/weekly-ui.mjs && node --check src/planner-worker.mjs && node --check desktop/desktop.cjs && node --check desktop/project-store.cjs && node --check desktop/project-workspace.cjs && node --check src/project-session.mjs && node --check desktop/preload.cjs && node --check src/default-set.mjs && node --check src/project-validation.mjs && node --check src/starter-project.mjs && node --check scripts/server.mjs && node --check desktop/installation.cjs",
     "test:defaults": "electron tests/desktop-workspace.cjs",
     "test:selection": "electron tests/desktop-selection.cjs",
     "test:grid": "electron tests/desktop-grid.cjs",
@@ -25,6 +25,9 @@
     "test:years": "electron tests/desktop-student-years.cjs",
     "test:weekly": "electron tests/desktop-weekly.cjs",
     "test:ui": "electron tests/desktop-ui.cjs",
+    "test:attendance": "electron tests/desktop-attendance.cjs",
+    "test:calendar": "electron tests/desktop-calendar.cjs",
+    "test:export": "electron tests/desktop-export.cjs",
     "dist:win": "electron-builder --config build/electron-builder.json --win nsis --x64 --publish never",
     "test:packaged": "node tests/packaged-smoke.cjs",
     "test:uninstaller": "node tests/uninstaller.cjs"

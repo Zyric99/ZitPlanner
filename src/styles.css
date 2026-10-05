@@ -418,6 +418,117 @@ body:not(.room-management) .page-heading { display:none; }
 .student-filters label { display:flex; align-items:center; gap:12px; font-size:13px; flex:1; }
 .student-filters input { width:min(100%,420px); padding:9px 12px; }
 #student-filter-count { font-size:12px; color:#52685b; }
+.attendance-filters { flex-wrap:wrap; }
+.attendance-filters > label { min-width:min(100%,220px); }
+.attendance-controls { display:flex; align-items:center; gap:18px; flex-wrap:wrap; flex:0 0 auto; max-width:100%; }
+.attendance-filters input { min-width:0; border:1px solid var(--line); border-radius:6px; color:#435b50; background:white; }
+.attendance-filters .attendance-status-filter { flex:0 1 auto; }
+#attendance-filter-count { font-size:12px; color:#52685b; }
+.attendance-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr)); gap:12px; margin-top:18px; }
+.attendance-card { display:flex; flex-direction:column; align-items:flex-start; gap:7px; min-width:0; padding:16px; border:1px solid #a0c4af; border-radius:8px; background:#bddcc9; color:#245b44; text-align:left; cursor:pointer; }
+.attendance-card:hover { background:#afd3bd; border-color:#87b59b; }
+.attendance-card:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+.attendance-card strong { font-size:14px; overflow-wrap:anywhere; }
+.attendance-card small { font-size:12px; }
+.attendance-badge { font-size:12px; font-weight:600; margin-top:5px; }
+.attendance-card.is-absent { background:#e9beb3; border-color:#d69a8c; color:#81392d; }
+.attendance-card.is-absent:hover { background:#e2afa2; border-color:#c78676; }
+.attendance-card.is-unexpected { background:#eef0ef; border-color:#c9cfcc; color:#65736c; }
+.attendance-card.is-unexpected:hover { background:#e3e7e5; border-color:#97a59d; }
+.attendance-card.is-present.is-unrecorded { background:#eaf2ed; border-color:#a9c7b5; color:#276b51; }
+.attendance-card.is-present.is-unrecorded:hover { background:#dcebe2; border-color:var(--green); }
+.attendance-card.is-absent.is-unrecorded { background:#fbece8; border-color:#ddb4aa; color:#963f30; }
+.attendance-card.is-absent.is-unrecorded:hover { background:#f5ddd6; border-color:#b05b43; }
+.attendance-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+#attendance-save,#attendance-reset { flex-shrink:0; }
+.attendance-color-toggle { display:flex; align-items:center; justify-content:flex-end; gap:10px; margin-left:auto; color:#435b50; font-size:12px; cursor:pointer; }
+.attendance-color-toggle input { appearance:none; position:relative; width:34px; height:20px; border:1px solid #b5c9bc; border-radius:12px; background:#dce5df; transition:background .15s; flex-shrink:0; }
+.attendance-color-toggle input::before { content:''; position:absolute; top:2px; left:2px; width:14px; height:14px; background:white; border-radius:50%; transition:transform .15s; }
+.attendance-color-toggle input:checked { background:var(--green); border-color:var(--green); }
+.attendance-color-toggle input:checked::before { transform:translateX(14px); }
+.attendance-color-toggle input:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+.context-attendance { margin-top:18px; padding-top:12px; border-top:1px solid var(--line); }
+.context-attendance.is-present small { color:#276b51; }
+.context-attendance.is-absent small { color:#963f30; }
+.context-attendance.is-unexpected small { color:#65736c; }
+.context-attendance.is-unrecorded small { color:#65736c; }
+.attendance-heading-actions,.calendar-controls { display:flex; align-items:center; justify-content:flex-end; gap:16px; flex-wrap:wrap; }
+.attendance-heading-actions { margin-left:auto; }
+.calendar-controls { gap:10px; }
+.calendar-enable { margin-left:0; }
+.calendar-icon { width:19px; height:19px; flex-shrink:0; vertical-align:middle; }
+.calendar-open-button { display:inline-flex; align-items:center; gap:8px; }
+.calendar-date-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; border:1px solid #d8e5dc; background:#eef5f0; border-radius:8px; padding:10px 12px; margin-bottom:16px; }
+.calendar-date-label { display:flex; align-items:center; gap:7px; font-size:12px; color:#276b51; margin-right:8px; }
+.calendar-active-date { font-weight:600; text-transform:capitalize; }
+.calendar-auto-note { color:#6d8375; font-size:11px; margin-left:auto; }
+#seating-calendar-date { flex-shrink:0; }
+#seating-calendar-date .calendar-date-bar { margin-top:10px; }
+.calendar-date-slide { display:grid; grid-template-rows:0fr; opacity:0; transform:translateY(-8px); overflow:hidden; }
+.calendar-date-slide.is-open { grid-template-rows:1fr; opacity:1; transform:translateY(0); }
+.calendar-date-clip { min-height:0; overflow:hidden; }
+.task-mode #seating-calendar-date,.room-management #seating-calendar-date { display:none; }
+.calendar-modal { width:1120px; max-width:94vw; }
+.calendar-modal[open] { display:flex; flex-direction:column; overflow:hidden; }
+.calendar-modal #modal-content { display:flex; flex-direction:column; min-height:0; max-height:calc(90dvh - 2px); }
+.calendar-modal .modal-head,.calendar-modal .modal-actions { flex-shrink:0; }
+.calendar-modal .modal-body { padding:20px 24px; min-height:0; overflow:auto; }
+.calendar-topbar { display:flex; align-items:center; justify-content:space-between; gap:15px; flex-wrap:wrap; margin-bottom:20px; }
+.calendar-navigation { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.calendar-navigation h3 { font-size:19px; text-transform:capitalize; min-width:180px; text-align:center; }
+.calendar-view-switch { display:flex; gap:4px; border:1px solid var(--line); padding:4px; border-radius:9px; background:#f6f9f6; }
+.calendar-view-switch .button { border:0; }
+.calendar-layout { display:grid; grid-template-columns:minmax(0,1fr) 240px; gap:22px; }
+.calendar-page { min-width:0; }
+.calendar-weekdays,.calendar-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; }
+.calendar-weekdays { margin-bottom:8px; color:#7a9083; font-size:11px; text-align:center; font-weight:600; }
+.calendar-weekdays.single-day,.calendar-grid.single-day { grid-template-columns:1fr; }
+.calendar-day { display:flex; flex-direction:column; align-items:flex-start; gap:4px; min-width:0; min-height:88px; padding:9px; border:1px solid #e3eae5; border-radius:8px; background:white; color:#344f40; text-align:left; }
+.calendar-day:hover { background:#f4f8f4; border-color:#8fb29e; }
+.calendar-day.outside-month { background:#f8faf8; color:#8c9e92; opacity:.6; }
+.calendar-day.recorded { background:#f3f8f4; border-color:#cbded0; }
+.calendar-day.weekend { background:#f1f2f1; color:#8c958f; border-color:#e5e7e5; }
+.calendar-day.chosen { border-color:var(--green); box-shadow:0 0 0 1px var(--green); background:#eaf4ee; opacity:1; }
+.calendar-day:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
+.calendar-day-number { display:flex; align-items:center; gap:7px; font-size:15px; font-weight:600; margin-bottom:2px; }
+.calendar-day.today .calendar-day-number { color:var(--green); text-decoration:underline; text-underline-offset:4px; }
+.calendar-today-badge { display:inline-flex; align-items:center; gap:4px; color:#276b51; background:#dfede4; border-radius:4px; padding:2px 5px; font-size:9px; font-weight:600; line-height:1.3; }
+.calendar-current-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--green); }
+.calendar-day-count { font-size:10px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.calendar-day-count.present { color:#276b51; }
+.calendar-day-count.absent,.calendar-detail-counts .absent { color:#a44a38; }
+.calendar-day-count.quiet { color:#84958b; }
+.calendar-day-empty,.calendar-day-saved { color:#8b9d91; font-size:9px; line-height:1.5; }
+.calendar-day-saved { margin-top:auto; color:#658c73; }
+.calendar-grid.single-day .calendar-day { min-height:220px; padding:24px; gap:14px; }
+.calendar-grid.single-day .calendar-day-count { font-size:17px; }
+.calendar-grid.single-day .calendar-day-number { font-size:26px; }
+.calendar-detail { border-left:1px solid var(--line); padding-left:20px; }
+.calendar-detail h3 { font-size:17px; line-height:1.5; text-transform:capitalize; margin:8px 0 12px; }
+.calendar-detail .eyebrow { font-size:9px; letter-spacing:1.2px; }
+.calendar-detail p { font-size:11px; color:#6d8375; line-height:1.6; }
+.calendar-detail-counts { display:flex; gap:24px; flex-wrap:wrap; margin:15px 0; }
+.calendar-detail-counts strong { font-size:27px; color:#276b51; }
+.calendar-detail-counts .unexpected { color:#65736c; }
+.calendar-detail-counts small { display:block; font-size:10px; font-weight:400; margin-top:4px; }
+.calendar-period-save,.calendar-day-delete { margin-top:20px; padding-top:17px; border-top:1px solid var(--line); }
+.calendar-period-save>strong { font-size:12px; }
+.calendar-period-save .button { margin-top:12px; }
+.calendar-new-day h3 { font-size:16px; text-transform:capitalize; margin:0 0 18px; }
+.calendar-start-choices { display:grid; gap:10px; }
+.calendar-start-choices>.button { text-align:left; padding:15px 17px; white-space:normal; }
+.calendar-start-choices strong { display:block; font-size:13px; }
+.calendar-start-choices small { display:block; margin-top:5px; color:#7a9083; font-size:11px; }
+.calendar-choose-day { display:flex; gap:10px; align-items:center; }
+.calendar-import-button { margin-right:auto; cursor:pointer; }
+@media(max-width:900px) {
+  .calendar-layout { grid-template-columns:1fr; }
+  .calendar-detail { border-left:0; padding:18px 0 0; border-top:1px solid var(--line); }
+  .calendar-modal .modal-body { padding:16px; }
+  .calendar-day { min-height:84px; padding:6px; }
+  .attendance-heading-actions { gap:12px; }
+  .calendar-auto-note { margin-left:0; }
+}
 .task-mode .student-list { max-height:none; }
 .task-mode .person-row { background:white; border:1px solid var(--line); border-radius:7px; padding:10px 14px; margin:7px 0; gap:18px; }
 .task-mode .person-row>button[data-person] { font-size:14px; flex:1; }
@@ -491,3 +602,17 @@ dialog:has(.project-list) { width:850px; }.project-actions { flex:0 1 auto !impo
 [data-delete-project],#reset-project,#reset-project-confirm,#delete-project-confirm { color:#b3262d; border-color:#efb0b2; background:#fff0f1; }
 [data-delete-project]:hover,#reset-project:hover,#reset-project-confirm:hover,#delete-project-confirm:hover { background:#ffe0e2; }
 #project-action-error,#project-menu-error { color:#b3262d; }
+
+.export-panel { max-width:680px; padding:20px 24px; border:1px solid var(--line); border-radius:10px; background:white; }
+.export-panel .field { display:block; font-size:13px; margin:0 0 20px; }
+.export-actions { display:flex; justify-content:flex-end; margin-top:24px; }
+#export-error { color:#b3262d; font-size:13px; }
+
+.export-day-group { align-items:flex-start; }
+.export-day-group>details { flex:1; min-width:0; }
+.export-day-group summary { padding:7px 0; cursor:pointer; font-size:12px; }
+.export-day-columns { margin:4px 0 4px 10px; }
+
+.export-day-group>input { margin-top:7px; }
+.export-day-group summary[aria-disabled="true"] { color:var(--muted); cursor:default; }
+#export-columns-list .export-attendance-option { margin:8px 0 4px; padding-left:42px; }

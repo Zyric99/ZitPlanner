@@ -41,9 +41,12 @@ app.whenReady().then(async()=>{
     await fs.writeFile(path.join(root,'artifacts','weekly-planning.png'),(await win.webContents.capturePage()).toPNG());
     const output=path.join(root,'artifacts','desktop-weekly.xlsx');
     const downloaded=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{item.setSavePath(output);item.once('done',(_e,status)=>status==='completed'?resolve():reject(Error(status)));}));
-    await js(`document.querySelector('#export').click();document.querySelector('#export-format').value='xlsx';document.querySelector('#export-format').dispatchEvent(new Event('change'));document.querySelector('#export-scope').value='week';document.querySelector('#export-scope').dispatchEvent(new Event('change'));document.querySelector('#export-submit').click();`);await downloaded;
+    await js(`document.querySelector('[data-tab=export]').click();document.querySelector('#export-format').value='xlsx';document.querySelector('#export-format').dispatchEvent(new Event('change'));document.querySelector('#export-scope').value='week';document.querySelector('#export-scope').dispatchEvent(new Event('change'));document.querySelector('#export-submit').click();`);await downloaded;
     const bytes=Array.from(await fs.readFile(output)),sheets=await js(`(async()=>{const x=await import('./excel-import.mjs');return x.workbookSheets(new Uint8Array(${JSON.stringify(bytes)}));})()`);
-    assert.deepEqual(sheets[0].rows[0],['Naam','Plaats']);assert.equal(sheets[0].rows.length,7);
+    assert.deepEqual(sheets[0].rows[0],['Dag','Naam','Plaats']);assert.equal(sheets[0].rows.length,7);
+    assert.deepEqual(sheets[0].rows.slice(1).map(row=>row[0]),['Maandag','Donderdag','Maandag','Dinsdag','Donderdag','Vrijdag']);
+    await js(`document.querySelector('[data-export-column=day]').click();document.querySelector('#export-scope').value='room';document.querySelector('#export-scope').dispatchEvent(new Event('change'));document.querySelector('#export-format').value='csv';document.querySelector('#export-format').dispatchEvent(new Event('change'));document.querySelector('#export-format').value='xlsx';document.querySelector('#export-format').dispatchEvent(new Event('change'));document.querySelector('#export-scope').value='week';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
+    assert.equal(await js(`document.querySelector('[data-export-column=day]').checked`),false);
     s=await loadWeek(false);assert.equal(s.weeklyPlans.keepSeats,false);
     // Editing a class while a day is active restores the manual baseline,
     // without an absence control or an accidental persisted day-specific absence.

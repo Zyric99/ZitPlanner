@@ -1,3 +1,5 @@
+import { periodDates, todayKey } from './calendar-dates.mjs';
+import { calendarAttendanceSaved } from './calendar-model.mjs';
 import { ownValue } from './id-record.mjs';
 import { seatCode, roomStudents } from './engine.mjs';
 import { roomState } from './rooms.mjs';
@@ -29,7 +31,8 @@ export function exportColumns(format='xlsx',{allRooms=false,week=false}={}) {
   ];
   return [...(week?[{id:'day',label:'Dag',value:r=>r.day,selected:true}]:[]),...nameColumns,
     {id:'room',label:'Lokaal',value:r=>r.room,selected:allRooms||week},
-    {id:'seat',label:'Plaats',value:r=>r.seat,selected:true}];
+    {id:'seat',label:'Plaats',value:r=>r.seat,selected:true},
+    ...STUDY_DAYS.map((day,i)=>({id:day,label:`Avondstudie op ${day}`,header:STUDY_HEADERS[i+3],value:r=>r.student.eveningStudy?.[day]??'',selected:false}))];
 }
 function selectedColumns(format,options) {
   const available=exportColumns(format,options),ids=options.columns??available.filter(c=>c.selected).map(c=>c.id);
@@ -81,23 +84,37 @@ function zip(files) {
   return bytes;
 }
 
-function classWorkbook(records,columns,{emptyName='Leerlingen',separateClasses=true}={}) {
+function recordedAttendanceStyle(state, date = state.calendar?.enabled ? state.calendar.selectedDate : todayKey()) {
+  const weekdays = ['maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag'];
+  const styles = new Map(periodDates(date, 'week').map((key, index) => {
+    const record = ownValue(state.calendar?.days, key);
+    const roster = calendarAttendanceSaved(state, key) ? ownValue(state.calendar?.rosters, record.rosterId) ?? [] : [];
+    const absent = new Set(record?.absentIds ?? []);
+    return [weekdays[index], new Map(roster.map(student => [student.id, absent.has(student.id) ? 4 : 3]))];
+  }));
+  return (student, day) => !styles.get(day)?.has(student.id) ? 5 : student.eveningStudy?.[day] === 'Nee' ? 0 : student.eveningStudy?.[day] === 'Ja' ? styles.get(day).get(student.id) : 5;
+}
+
+function classWorkbook(records,columns,{emptyName='Leerlingen',separateClasses=true,attendanceColors=false,state,attendanceDate}={}) {
   const headers=columns.map(c=>c.header??c.label);
-  if(!separateClasses)return tableWorkbook(headers,[...records].sort((a,b)=>compareStudentNames(a.student,b.student)).map(r=>columns.map(c=>c.value(r))),{sheetName:emptyName});
+  const attendanceStyle = attendanceColors ? recordedAttendanceStyle(state, attendanceDate) : null;
+  const sheet=(entries,sheetName,tableName)=>{
+    const sorted=[...entries].sort((a,b)=>compareStudentNames(a.student,b.student));
+    return {sheetName,tableName,headers,rows:sorted.map(r=>columns.map(c=>c.value(r))),
+      cellStyles:attendanceStyle?sorted.map(r=>columns.map(c=>STUDY_DAYS.includes(c.id)?attendanceStyle(r.student,c.id):0)):undefined};
+  };
+  if(!separateClasses)return tablesWorkbook([sheet(records,emptyName,'Leerlingen')]);
   const groups=new Map();
   for(const record of records){const klass=String(record.student.class??'').trim();if(!groups.has(klass))groups.set(klass,[]);groups.get(klass).push(record);}
-  const sheets=[...groups].sort(([a],[b])=>collator.compare(a,b)).map(([klass,entries],i)=>({
-    sheetName:klass||'Zonder klas',tableName:`Klas_${i+1}`,headers,
-    rows:entries.sort((a,b)=>compareStudentNames(a.student,b.student)).map(r=>columns.map(c=>c.value(r)))
-  }));
+  const sheets=[...groups].sort(([a],[b])=>collator.compare(a,b)).map(([klass,entries],i)=>sheet(entries,klass||'Zonder klas',`Klas_${i+1}`));
   return tablesWorkbook(sheets.length?sheets:[{sheetName:emptyName,headers,rows:[]}]);
 }
-export function seatingWorkbook(state,options={}) {return classWorkbook(seatingRecords(state,options),selectedColumns('xlsx',options),{emptyName:'Zitplaatsen',separateClasses:options.separateClasses});}
+export function seatingWorkbook(state,options={}) {return classWorkbook(seatingRecords(state,options),selectedColumns('xlsx',options),{emptyName:'Zitplaatsen',separateClasses:options.separateClasses,attendanceColors:options.attendanceColors,state,attendanceDate:options.attendanceDate});}
 export function studyWorkbook(state,options={}) {
   const positions=studentPositions(state,{allRooms:true});
-  return classWorkbook(state.students.map(student=>({student,room:studentRoomName(state,student),seat:positions.get(student.id)||'Nog niet geplaatst'})),selectedColumns('study-xlsx',options),{separateClasses:options.separateClasses});
+  return classWorkbook(state.students.map(student=>({student,room:studentRoomName(state,student),seat:positions.get(student.id)||'Nog niet geplaatst'})),selectedColumns('study-xlsx',options),{separateClasses:options.separateClasses,attendanceColors:options.attendanceColors,state,attendanceDate:options.attendanceDate});
 }
-export function weeklyWorkbook(state,options={}) {return classWorkbook(weeklyRecords(state),selectedColumns('xlsx',{...options,week:true}),{emptyName:'Weekindeling',separateClasses:options.separateClasses});}
+export function weeklyWorkbook(state,options={}) {return classWorkbook(weeklyRecords(state),selectedColumns('xlsx',{...options,week:true}),{emptyName:'Weekindeling',separateClasses:options.separateClasses,attendanceColors:options.attendanceColors,state,attendanceDate:options.attendanceDate});}
 
 function uniqueSheetName(value,used) {
   const base=String(value??'Werkblad').toWellFormed().replace(/[\u0000-\u001f\ufffe\uffff\[\]:*?/\\]/g,' ').trim().replace(/^'+|'+$/g,'')||'Werkblad';
@@ -112,7 +129,7 @@ function tablesWorkbook(sheets) {
   sheets.forEach((sheet,index)=>{
     const id=index+1,sheetName=uniqueSheetName(sheet.sheetName,used),headers=sheet.headers,rows=sheet.rows;
     if(!headers.length)throw Error('Kies minstens één kolom om te exporteren.');
-    const parts=worksheetFiles(headers,rows,{id,tableName:sheet.tableName??`Tabel_${id}`});
+    const parts=worksheetFiles(headers,rows,{id,cellStyles:sheet.cellStyles,tableName:sheet.tableName??`Tabel_${id}`});
     // Each worksheet owns its table relationship; workbook styles are shared.
     Object.assign(files,parts);
     if(rows.length){types.push(`<Override PartName="/xl/tables/table${id}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml"/>`);}
@@ -128,15 +145,15 @@ function tablesWorkbook(sheets) {
   files['xl/_rels/workbook.xml.rels']=`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationships.join('')}<Relationship Id="rId${sheets.length+1}" Type="${relationshipNS}/styles" Target="styles.xml"/></Relationships>`;
   return zip(files);
 }
-function worksheetFiles(headers,rows,{id,tableName}) {
+function worksheetFiles(headers,rows,{id,tableName,cellStyles}) {
   const all=[headers,...rows],last=all.length,lastColumn=columnName(headers.length-1),range=`A1:${lastColumn}${last}`;
   const widths=headers.map((header,col)=>Math.min(col===0?60:32,Math.max(col===0?28:12,...all.map(row=>String(row[col]).length+3))));
   const sheetRows=all.map((row,i)=>{
     const height=i===0?24:Math.max(20,...row.map((value,col)=>Math.ceil(String(value).length/(widths[col]-2))*15+5));
-    return `<row r="${i+1}" ht="${height}" customHeight="1">${row.map((value,col)=>`<c r="${columnName(col)}${i+1}" t="inlineStr" s="${i===0?1:0}"><is><t xml:space="preserve">${xml(value)}</t></is></c>`).join('')}</row>`;
+    return `<row r="${i+1}" ht="${height}" customHeight="1">${row.map((value,col)=>`<c r="${columnName(col)}${i+1}" t="inlineStr" s="${i===0?1:cellStyles?.[i-1]?.[col]??0}"><is><t xml:space="preserve">${xml(value)}</t></is></c>`).join('')}</row>`;
   }).join('');
   const files={
-    'xl/styles.xml':`<styleSheet xmlns="${spreadsheetNS}"><fonts count="2"><font><sz val="11"/><color rgb="FF263A35"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF27745C"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="3"><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="49" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center"/></xf><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="0"/><tableStyles count="0" defaultTableStyle="TableStyleMedium4" defaultPivotStyle="PivotStyleLight16"/></styleSheet>`,
+    'xl/styles.xml':`<styleSheet xmlns="${spreadsheetNS}"><fonts count="5"><font><sz val="11"/><color rgb="FF263A35"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font><font><sz val="11"/><color rgb="FF008000"/><name val="Calibri"/></font><font><sz val="11"/><color rgb="FFFF0000"/><name val="Calibri"/></font><font><sz val="11"/><color rgb="FF8A9290"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF27745C"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="6"><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="49" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center"/></xf><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="49" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="49" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="49" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="0"/><tableStyles count="0" defaultTableStyle="TableStyleMedium4" defaultPivotStyle="PivotStyleLight16"/></styleSheet>`,
     [`xl/worksheets/sheet${id}.xml`]:`<worksheet xmlns="${spreadsheetNS}" xmlns:r="${relationshipNS}"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="${range}"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="20"/><cols>${widths.map((width,i)=>`<col min="${i+1}" max="${i+1}" width="${width}" customWidth="1"/>`).join('')}</cols><sheetData>${sheetRows}</sheetData><printOptions horizontalCentered="1"/><pageMargins left="0.3" right="0.3" top="0.4" bottom="0.4" header="0.2" footer="0.2"/><pageSetup paperSize="9" orientation="portrait" fitToWidth="1" fitToHeight="0"/><headerFooter><oddFooter>&amp;CPagina &amp;P van &amp;N</oddFooter></headerFooter>${rows.length?'<tableParts count="1"><tablePart r:id="rId1"/></tableParts>':''}</worksheet>`
   };
   if(rows.length) {

@@ -1,10 +1,16 @@
 import { ownValue } from './id-record.mjs';
 import { AREAS, PRIORITIES, RULE_TYPES, CLASS_RULE_TYPES, YEAR_RULE_TYPES, classRuleFor, yearRuleFor, yearPairKey, studentRulesFor, REMOVED_RULE_TYPES, defaults, sampleStudents, enabledSeats, seatBench as engineSeatBench, seatLabel as engineSeatLabel, validSeat as engineValidSeat, seatCode, benchCapacity, benchesFor, roomStudents, seatGeometry, evaluate, generate, sectionsFor, migrateState, sectionLabel, containsBench, letterRange } from './engine.mjs';
 import { warningKey, warningGroups, aggregateUnplacedWarnings, reconcileHiddenWarnings, warningPriorityClass, warningHighlights } from './warning-state.mjs';
-import { seatingWorkbook, studyWorkbook, weeklyWorkbook, exportColumns, EXCEL_MIME } from './excel-export.mjs';
+import { seatingWorkbook, weeklyWorkbook, exportColumns, EXCEL_MIME } from './excel-export.mjs';
 import { workbookSheets } from './excel-import.mjs';
-import { rowsText, textRows, parseStudentRows, parseStudentSheets, STUDY_DAYS } from './student-import.mjs';
+import { rowsText, textRows, parseStudentRows, parseStudentSheets, studentNameParts, STUDY_DAYS } from './student-import.mjs';
 import { updateStudentList } from './student-list.mjs';
+import { createAttendanceUI, setStudentAttendance, resetStudentAttendance, studentIsAbsent, attendanceDate, attendanceStatus, attendanceLabel } from './attendance.mjs';
+import { captureCalendarDay, openCalendarDate, calendarRecord, calendarAttendanceSaved, saveCalendarAttendance } from './calendar-model.mjs';
+import { todayKey, periodDates, validDateKey, isSchoolDay, shiftSchoolDay } from './calendar-dates.mjs';
+import { calendarWorkbook, calendarBackup } from './calendar-export.mjs';
+import { createCalendarPreference } from './calendar-preference.mjs';
+import { createCalendarUI, calendarControlsMarkup } from './calendar-ui.mjs';
 import { evaluateCrossRoomRules } from './auto-distribution.mjs';
 import { inferYear, normalizeYear, manualYear, setManualYear, normalizeStudentYears, studentYearErrors } from './student-year.mjs';
 import { initializeRooms, normalizeRooms, captureRoom, switchRoom, currentRoom, roomState, roomStats, roomSystemValid, classRoomId, assignRoom, assignClassRoom, studentLocationRoomId, distributeRooms, participatingRoomIds } from './rooms.mjs';
@@ -75,6 +81,9 @@ if(projectSession?.hasProject&&!validState(state)) {
 if (!validState(state)) { state=defaults(); state.students=sampleStudents(); state.name='Voorbeeld · Examen oktober'; state=initializeRooms(migrateState(state)); }
 state=initializeRooms(migrateState(state));
 normalizeStudentYears(state.students);
+const calendarPreference=createCalendarPreference(localStorage,state.calendar?.enabled===true);
+calendarPreference.apply(state);
+if(state.calendar?.enabled&&!isSchoolDay(state.calendar.selectedDate))openCalendarDate(state,shiftSchoolDay(state.calendar.selectedDate));
 let plans=read(`${KEY}-plans`,[]).filter(p=>p && validState(p.state)).map(p=>({...p,state:initializeRooms(migrateState(p.state))}));
 let lists=read(`${KEY}-lists`,[]).filter(l=>l && Array.isArray(l.students));
 await projectSession?.initialize(state,plans,lists);
@@ -86,7 +95,8 @@ function toast(message) { $('#toast').textContent=message; $('#toast').hidden=fa
 function commit(change, { keepAlternatives=false, keepWeekly=false }={}) {
   roomsUI.clearAutoResult();past.push(clone(state));if(past.length>60)past.shift();future=[];
   const pins=JSON.stringify(state.rooms.map(r=>r.locks));
-  change();normalizeStudentYears(state.students);normalizeRooms(state);
+  change();calendarPreference.apply(state);normalizeStudentYears(state.students);normalizeRooms(state);
+  if(state.calendar?.enabled&&!isSchoolDay(state.calendar.selectedDate))openCalendarDate(state,shiftSchoolDay(state.calendar.selectedDate));
   if(!keepWeekly&&state.weeklyPlans) {
     if(pins!==JSON.stringify(state.rooms.map(r=>r.locks))) {
       leaveWeeklyDay(state,{restorePins:false});delete state.weeklyPlans;
@@ -96,10 +106,10 @@ function commit(change, { keepAlternatives=false, keepWeekly=false }={}) {
       leaveWeeklyDay(state);normalizeRooms(state);
     }
   }
-  captureWeeklyDay(state);state.modified=new Date().toISOString();revision++;
+  captureWeeklyDay(state);captureCalendarDay(state);state.modified=new Date().toISOString();revision++;
   if(!keepAlternatives)alternatives=[];write(KEY,state);render();
 }
-function history(redo=false) {if(roomsUI.history(redo))return;const source=redo?future:past,dest=redo?past:future; if(!source.length)return; roomsUI.clearAutoResult();dest.push(clone(state));state=source.pop();normalizeStudentYears(state.students);revision++;alternatives=[];write(KEY,state);render(); }
+function history(redo=false) {if(roomsUI.history(redo))return;const source=redo?future:past,dest=redo?past:future; if(!source.length)return; roomsUI.clearAutoResult();dest.push(clone(state));state=source.pop();calendarPreference.apply(state);normalizeStudentYears(state.students);revision++;alternatives=[];write(KEY,state);render(); }
 const person = id => state.students.find(s=>s.id===id);
 const studentSeat = id => Object.keys(state.assignments).find(seat=>state.assignments[seat]===id);
 const activeStudents = () => roomStudents(state).filter(s=>!s.absent);
@@ -180,7 +190,7 @@ function render() {
   $('#summary').innerHTML=stats.map(([n,label],i)=>`<div class="stat ${i===4&&n?'warn':''}"><strong>${n}</strong><small>${label}</small></div>`).join('');
   $('#capacity').textContent=`${activeStudents().length} leerlingen / ${enabledSeats(state.settings).length} beschikbare plaatsen`;
   $('#generation-summary').textContent=`${state.settings.placementMode==='ordered'?'Geordend':'Willekeurig'} · ${state.weeklyPlans?.activeDay?dayLabel(state.weeklyPlans.activeDay):'Zonder dagfilter'}`;
-  renderSidebar();roomsUI.render(tab);renderRoom();renderContext();renderWarnings();renderUnplaced();renderAlternatives();captureRoom(state);captureWeeklyDay(state);weeklyUI.render();
+  renderSidebar();roomsUI.render(tab);calendarUI.renderControls();renderRoom();renderContext();renderWarnings();renderUnplaced();renderAlternatives();captureRoom(state);captureWeeklyDay(state);weeklyUI.render();
   if(DEVELOPER_MODE)renderDeveloperDetails();
 }
 function renderDeveloperDetails() {
@@ -246,7 +256,7 @@ function renderSidebar() {
   document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   const container=$('#sidebar-content');
   container.querySelectorAll('[data-rules-section]').forEach(section=>rulesSectionOpen.set(section.dataset.rulesSection,section.open));
-  const task=['students','rules'].includes(tab);
+  const task=['students','rules','attendance','export'].includes(tab);
   document.body.classList.toggle('task-mode',task);
   $('#task-workspace').hidden=!task;
   (task?$('#task-workspace'):$('.left-sidebar')).append(container);
@@ -254,9 +264,13 @@ function renderSidebar() {
     container.innerHTML=state.settings.layout?.kind==='custom'?``:`${renderSectionList()}<div class="sidebar-block"><h3 class="section-title">Zitrijen</h3><div class="row-buttons">${[1,2,3,4,5,6,7,8].map(row=>`<button class="row-button ${state.settings.rows.includes(row)?'on':''}" data-row="${row}" aria-pressed="${state.settings.rows.includes(row)}">${row}</button>`).join('')}</div></div>`;
   } else if(['rooms','distribution'].includes(tab)) {
     container.innerHTML='';
+  } else if(tab==='export') {
+    renderExport(container);
+  } else if(tab==='attendance') {
+    attendanceUI.render(container);
   } else if(tab==='students') {
     const classes=[...new Set(state.students.map(s=>s.class))].sort(),years=[...new Set(state.students.map(s=>s.year))].sort();
-    container.innerHTML=`<div class="task-heading"><div><h2>Leerlingen</h2><p>${state.students.length} leerlingen · ${classes.length} klassen · ${years.length} leerjaren${state.weeklyPlans?.activeDay?' · '+dayLabel(state.weeklyPlans.activeDay):''}</p></div><div class="task-actions"><button class="button primary" id="import-top" data-action="import">＋ Leerlingen toevoegen</button><details class="overflow-menu"><summary class="button">Lijsten ▾</summary><div class="menu-items"><button data-action="save-list">Lijst bewaren</button><button data-action="lists">Bewaarde lijsten openen</button><button class="danger" data-action="clear">Lijst leegmaken</button></div></details><button class="button" data-action="export-students">Exporteren</button></div></div><div class="student-filters"><label>Zoeken<input id="student-filter" placeholder="Naam, klas of leerjaar…" value="${esc(studentFilter)}"></label><span id="student-filter-count" role="status"></span></div><div class="student-list">${state.students.map(s=>`<div class="person-row" data-student-row="${esc(s.id)}"><button data-person="${esc(s.id)}" title="Leerling aanpassen">${esc(s.name)}<small>${esc(s.class)} · leerjaar ${esc(s.year)} · ${esc(state.rooms.find(r=>r.id===ownValue(state.studentRooms,s.id))?.name??'Nog geen lokaal')}</small></button><button class="button small" data-student-room="${esc(s.id)}">Zitplaats bekijken</button><button class="button small danger" data-delete-student="${esc(s.id)}" aria-label="${esc(s.name)} verwijderen">Verwijderen</button></div>`).join('')||'<p class="muted">Geen leerlingen.</p>'}</div>`;
+    container.innerHTML=`<div class="task-heading"><div><h2>Leerlingen</h2><p>${state.students.length} leerlingen · ${classes.length} klassen · ${years.length} leerjaren${state.weeklyPlans?.activeDay?' · '+dayLabel(state.weeklyPlans.activeDay):''}</p></div><div class="task-actions"><button class="button primary" id="import-top" data-action="import">＋ Leerlingen toevoegen</button><details class="overflow-menu"><summary class="button">Lijsten ▾</summary><div class="menu-items"><button data-action="save-list">Lijst bewaren</button><button data-action="lists">Bewaarde lijsten openen</button><button class="danger" data-action="clear">Lijst leegmaken</button></div></details></div></div><div class="student-filters"><label>Zoeken<input id="student-filter" placeholder="Naam, klas of leerjaar…" value="${esc(studentFilter)}"></label><span id="student-filter-count" role="status"></span></div><div class="student-list">${state.students.map(s=>`<div class="person-row" data-student-row="${esc(s.id)}"><button data-person="${esc(s.id)}" title="Leerling aanpassen">${esc(s.name)}<small>${esc(s.class)} · leerjaar ${esc(s.year)} · ${esc(state.rooms.find(r=>r.id===ownValue(state.studentRooms,s.id))?.name??'Nog geen lokaal')}</small></button><button class="button small" data-student-room="${esc(s.id)}">Zitplaats bekijken</button><button class="button small danger" data-delete-student="${esc(s.id)}" aria-label="${esc(s.name)} verwijderen">Verwijderen</button></div>`).join('')||'<p class="muted">Geen leerlingen.</p>'}</div>`;
     $('#student-filter').oninput=event=>{studentFilter=event.target.value;filterStudents();};filterStudents();
   } else {
     container.innerHTML=`<div class="task-heading"><div><h2>Regels</h2></div><button class="button" data-tab="room">Zitplaatsen bekijken →</button></div><div class="rules-grid">${rulesPage()}</div>`;
@@ -334,6 +348,8 @@ function roomAxisMarkup(axis,value,x,y,{exporting=false}={}) {
 }
 function roomSVG({ exporting=false, detail='class' }={}) {
   const custom=state.settings.layout?.kind==='custom';
+  const rollCallDate=!exporting&&state.attendanceColorsEnabled?attendanceDate(state):null;
+  const rollCallSaved=rollCallDate&&calendarAttendanceSaved(state,rollCallDate);
   const {active}=warningGroups(state,analysis.warnings),{students:warningStudents,benches:warningBenches}=warningHighlights(active.map(({warning})=>warning));
   const enabled=new Set(enabledSeats(state.settings));
   const focusedStudents=new Set(!exporting?analysis.warnings.find(w=>warningKey(state,w)===warningFocus)?.students:[]);
@@ -360,6 +376,8 @@ function roomSVG({ exporting=false, detail='class' }={}) {
       const {x,y,w,chairX,chairY,chairWidth,chairHeight}=seatGeometry(b,i);
       markup+=`<rect class="chair ${seatEnabled?'':'chair-disabled'}" x="${chairX}" y="${chairY}" width="${chairWidth}" height="${chairHeight}" rx="5"/>`;
       let fill='';if(s&&colorMode!=='neutral'&&!studentWarning){ const options=colorMode==='class'?classes:years;fill=` style="fill:${palette[options.indexOf(colorMode==='class'?s.class:s.year)%palette.length]}"`; }
+      const attendanceColor=s&&!exporting&&state.attendanceColorsEnabled&&rollCallSaved;
+      if(attendanceColor)fill=` style="fill:${({present:'#c8e5d5',absent:'#f5ddd6',unexpected:'#e3e7e5'})[attendanceStatus(s,rollCallDate)]}"`;
       const display=s?s.name.split(' ')[0]:'',line=exporting?(detail==='class'?s?.class:detail==='year'?`jr. ${s?.year}`:''):'';
       markup+=`<g class="seat ${!s?'empty':''} ${seatLocked?'pinned':''} ${fixed?'fixed-position':''} ${studentWarning?`warning ${studentWarning}`:''} ${studentFocus?'warning-focus':''} ${!exporting&&selected===s?.id?'selected':''}" data-seat="${seat}" data-code="${esc(seatCode(seat,state.settings))}" data-student="${s?esc(s.id):''}" ${!seatEnabled&&!s?'opacity="0.35"':''}><title>${esc(seatLabel(seat))} · ${s?`${esc(s.name)} · ${esc(s.class)} · leerjaar ${esc(s.year)}`:seatEnabled?'Vrije plaats':'Uitgeschakelde plaats'}${seatLocked?' · Leerling vastgezet':''}${fixed?' · Vaste locatie':''}${studentWarning?' · Actieve waarschuwing':''}</title><rect class="seat-bg" x="${x}" y="${y}" width="${w}" height="43" rx="3"${fill}/>`;
       if(s) {
@@ -398,6 +416,9 @@ function renderContext() {
   let content='<button class="close-context" data-action="close-context" aria-label="Selectie sluiten">×</button>';
   const moveControl=p&&!p.absent&&(ownValue(state.studentRooms,p.id)===state.activeRoomId||!state.rooms.some(room=>room.id===ownValue(state.studentRooms,p.id)))?`<button class="button ${pendingMove===p.id?'primary':''}" data-action="move-student" aria-pressed="${pendingMove===p.id}">Verplaatsen / wisselen</button>`:'';
   if(p) { const seat=studentSeat(p.id),fixed=locationRule(state,p.id);content+=`<div class="eyebrow">GESELECTEERDE LEERLING</div><h3>${esc(p.name)}</h3><small>${esc(p.class)} · leerjaar ${esc(p.year)}<br>${p.absent?'Afwezig':esc(state.rooms.find(room=>room.id===ownValue(state.studentRooms,p.id))?.name||'Nog geen lokaal')+' · '+(seat?esc(seatLabel(seat)):'Nog niet geplaatst')}</small>${moveControl}<button class="button" data-action="edit-student">Gegevens aanpassen</button><button class="button" data-action="fixed-position">⌑ ${fixed?'Vaste locatie aanpassen':'Vaste locatie instellen'}</button>${seat?'<button class="button" data-action="remove">Uit indeling halen</button>':''}<button class="button" data-action="add-rule">＋ Regel voor deze leerling</button>`;
+    const attendanceKind=attendanceStatus(p,attendanceDate(state));
+    const attendanceSaved=calendarAttendanceSaved(state);
+    content+=`<div class="context-attendance is-${attendanceSaved?attendanceKind:'unrecorded'}"><small>Aanwezigheid · ${attendanceLabel(attendanceKind)}${attendanceSaved?'':' · niet bewaard'}</small><button class="button" data-context-attendance="${esc(p.id)}" aria-label="${esc(p.name)} ${studentIsAbsent(p)?'aanwezig':'afwezig'} markeren">${studentIsAbsent(p)?'✓ Aanwezig markeren':'− Afwezig markeren'}</button></div>`;
     const rules=state.rules.filter(r=>r.students.includes(p.id));content+=rules.map(r=>`<div class="rule-chip">${esc(RULE_TYPES[r.type])}<small>${r.type==='fixed'?esc(fixedLabel(r)):r.students.filter(id=>id!==p.id).map(id=>esc(person(id)?.name)).join(', ')} · ${esc(r.priority)}</small>${r.type==='fixed'?`<button class="button small" data-delete-rule="${esc(r.id)}">Vaste locatie verwijderen</button>`:''}</div>`).join('');
   }
   if(b){
@@ -508,7 +529,7 @@ function makeAutomaticRoomPlan() {
   worker.onerror=()=>{finish();render();toast('Automatisch indelen mislukt. Probeer opnieuw.');};
   worker.postMessage({state:prepared,autoDistribution:true});
 }
-function modal(title,body,actions='') { $('#modal').classList.remove('ordered-modal','custom-ordered');$('#modal-content').innerHTML=`<div class="modal-head"><h2>${title}</h2><button class="icon-button" data-close aria-label="Venster sluiten">×</button></div><div class="modal-body">${body}</div>${actions?`<div class="modal-actions">${actions}</div>`:''}`;$('#modal').showModal(); }
+function modal(title,body,actions='') { $('#modal').classList.remove('ordered-modal','custom-ordered','calendar-modal');$('#modal-content').innerHTML=`<div class="modal-head"><h2>${title}</h2><button class="icon-button" data-close aria-label="Venster sluiten">×</button></div><div class="modal-body">${body}</div>${actions?`<div class="modal-actions">${actions}</div>`:''}`;$('#modal').showModal(); }
 function closeModal(){ $('#modal').close(); }
 function download(data,name,type) { const url=URL.createObjectURL(new Blob([data],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),5000); }
 function safeName(name) { return name.replace(/[<>:"/\\|?*]/g,'_').slice(0,100)||'Indeling'; }
@@ -545,11 +566,11 @@ function yearErrorsDialog() {
   };
 }
 function importDialog() {
-  modal('Leerlingen toevoegen',`<label class="field">Excel-, CSV- of tekstbestand<input type="file" id="import-file" accept=".xlsx,.csv,.tsv,.txt"></label><div id="import-class-options" hidden><label class="toggle-line"><input type="checkbox" id="import-class-from-sheet">Werkbladnamen als klassen gebruiken als de kolom Klas ontbreekt</label><p class="muted">Voor Excelbestanden met een apart werkblad per klas. Controleer de klasnamen in de voorvertoning: werkbladnamen kunnen ingekort of aangepast zijn. Alleen de leerlingenlijst wordt geïmporteerd, geen zitplaatsen.</p></div><label class="field" id="import-sheet-field" hidden>Werkblad<select id="import-sheet"></select></label><label class="field" id="import-text-field">Leerlingenlijst<textarea id="import-text" placeholder="Naam;Klas&#10;Emma Peeters;3A&#10;Noah Janssens;4B"></textarea></label><label class="toggle-line"><input type="checkbox" id="replace-list">Huidige leerlingenlijst vervangen</label><div id="import-preview"></div>`,`<button class="button" data-close>Annuleren</button><button class="button primary" id="import-submit">Lijst controleren</button>`);
+  modal('Leerlingen toevoegen',`<label class="field">Excel-, CSV- of tekstbestand<input type="file" id="import-file" accept=".xlsx,.csv,.tsv,.txt"></label><div id="import-class-options" hidden><label class="toggle-line"><input type="checkbox" id="import-class-from-sheet">Werkbladnamen als klassen gebruiken als de kolom Klas ontbreekt</label><p class="muted">Voor Excelbestanden met een apart werkblad per klas. Controleer de klasnamen in de voorvertoning: werkbladnamen kunnen ingekort of aangepast zijn. Alleen de leerlingenlijst wordt geïmporteerd, geen zitplaatsen.</p></div><label class="field" id="import-sheet-field" hidden>Werkblad<select id="import-sheet"></select></label><label class="field" id="import-text-field">Leerlingenlijst<textarea id="import-text" placeholder="Naam;Klas&#10;Emma Peeters;3A&#10;Noah Janssens;4B"></textarea></label><p class="muted">Kolomkoppen: Naam of Volledige naam; Voornaam + Achternaam (of Familienaam); Naam + Voornaam. Aparte naamkolommen bewaren ook samengestelde voornamen.</p><label class="field">Naamvolgorde bij één naamkolom<select id="import-name-order"><option value="first-last">Voornaam achternaam (Emma Van den Berg)</option><option value="last-first">Achternaam voornaam (Van den Berg Emma)</option></select></label><p class="muted">Bij Achternaam voornaam is het laatste woord de voornaam en de rest de achternaam. De getoonde naam wordt Voornaam Achternaam. Aparte naamkolommen bepalen altijd de naam.</p><label class="toggle-line"><input type="checkbox" id="replace-list">Huidige leerlingenlijst vervangen</label><div id="import-preview"></div>`,`<button class="button" data-close>Annuleren</button><button class="button primary" id="import-submit">Lijst controleren</button>`);
   let preview=null,sheets=[],fileRevision=0;
   const reset=()=>{preview=null;$('#import-submit').textContent='Lijst controleren';$('#import-preview').innerHTML='';};
   $('#import-text').oninput=reset;$('#replace-list').onchange=reset;
-  const sheetOptions=()=>({classFromSheetName:$('#import-class-from-sheet').checked});
+  const sheetOptions=()=>({classFromSheetName:$('#import-class-from-sheet').checked,fullNameOrder:$('#import-name-order').value});
   const sheetNotice=()=>{
     if(!sheets.length)return;
     const result=parseStudentSheets(sheets,$('#replace-list').checked?[]:state.students,sheetOptions());
@@ -572,6 +593,7 @@ function importDialog() {
     const previous=$('#import-sheet').value;refreshSheetOptions();
     if($('#import-sheet').value!==previous)chooseSheet();else {reset();sheetNotice();}
   };
+  $('#import-name-order').onchange=()=>{reset();sheetNotice();};
   const fileInput=$('#import-file');
   fileInput.onchange=async event=>{
     const file=event.target.files[0];if(!file)return;
@@ -591,9 +613,9 @@ function importDialog() {
       if(sheets.length&&$('#import-sheet').value==='all')preview=parseStudentSheets(sheets,existing,sheetOptions());
       else {
         const defaultClass=sheets.length&&sheetOptions().classFromSheetName?sheets[Number($('#import-sheet').value)].name:'';
-        preview=parseStudentRows(textRows($('#import-text').value),existing,{defaultClass});
+        preview=parseStudentRows(textRows($('#import-text').value),existing,{defaultClass,fullNameOrder:sheetOptions().fullNameOrder});
       }
-      $('#import-preview').innerHTML=`<p><strong>${preview.students.length} geldige leerlingen</strong>${preview.yearErrors.length?' · leerjaren nog controleren':' klaar om toe te voegen'}.</p>${preview.students.length?`<table><thead><tr><th>Naam</th><th>Klas</th><th>Leerjaar</th></tr></thead><tbody>${preview.students.slice(0,5).map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.class)}</td><td>${esc(p.year||'Niet herkend')}</td></tr>`).join('')}</tbody></table>`:''}${preview.errors.length?`<div class="inline-errors">${preview.errors.map(esc).join('<br>')}<br>Ongeldige werkbladen en regels worden niet toegevoegd.</div>`:''}${preview.yearErrors.length?yearCorrectionFields(preview.yearErrors):''}`;if(preview.yearErrors.length)bindYearCorrections();$('#import-submit').textContent=`${preview.students.length} leerlingen toevoegen`;return;}
+      $('#import-preview').innerHTML=`<p><strong>${preview.students.length} geldige leerlingen</strong>${preview.yearErrors.length?' · leerjaren nog controleren':' klaar om toe te voegen'}.</p>${preview.students.length?`<table><thead><tr><th>Naam</th><th>Klas</th><th>Leerjaar</th><th>Voornaam</th><th>Achternaam</th></tr></thead><tbody>${preview.students.slice(0,5).map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.class)}</td><td>${esc(p.year||'Niet herkend')}</td><td>${esc(studentNameParts(p).firstName)}</td><td>${esc(studentNameParts(p).lastName)}</td></tr>`).join('')}</tbody></table>`:''}${preview.errors.length?`<div class="inline-errors">${preview.errors.map(esc).join('<br>')}<br>Ongeldige werkbladen en regels worden niet toegevoegd.</div>`:''}${preview.yearErrors.length?yearCorrectionFields(preview.yearErrors):''}`;if(preview.yearErrors.length)bindYearCorrections();$('#import-submit').textContent=`${preview.students.length} leerlingen toevoegen`;return;}
     if(!preview.students.length)return toast('Er zijn geen geldige leerlingen om toe te voegen.');
     if(preview.yearErrors.length){const years=correctedYears();if(!years)return;for(const p of preview.yearErrors)setManualYear(p,years.get(p.id));}
     commit(()=>updateStudentList(state,preview.students,{replace:$('#replace-list').checked}));selected=null;selectedBench=null;tab='students';closeModal();render();toast(`${preview.students.length} leerlingen toegevoegd.`);
@@ -671,7 +693,9 @@ function editStudent() {
   };
 }
 function useProject(document) {
-  state=initializeRooms(migrateState(document.state));normalizeStudentYears(state.students);
+  state=initializeRooms(migrateState(document.state));calendarPreference.apply(state);
+  if(state.calendar?.enabled&&!isSchoolDay(state.calendar.selectedDate))openCalendarDate(state,shiftSchoolDay(state.calendar.selectedDate));
+  normalizeStudentYears(state.students);
   plans=document.plans.filter(p=>p&&validState(p.state));lists=document.lists;
   past=[];future=[];revision++;alternatives=[];roomViews.clear();
   benchSelection=[];benchSelectionMode=false;selected=null;selectedBench=null;highlight=[];pendingMove=null;warningFocus=null;tab='room';
@@ -721,7 +745,7 @@ async function projectsDialog() {
   try{
     await projectSession.flush();const projects=await projectSession.list();
     modal('Projecten',`<div class="project-list">${projects.map(p=>`<div class="plan-item project-item"><div><strong>${esc(p.name)}${p.id===projectSession.id?' · geopend':''}</strong><small>${p.error?esc(p.error):`${p.students} leerlingen · ${p.rooms} lokalen`}</small></div><div class="project-actions"><button class="button small" data-open-project="${esc(p.id)}" ${p.error?'disabled':''}>Openen</button><button class="button small" data-duplicate-project="${esc(p.id)}" ${p.error?'disabled':''}>Dupliceren</button><button class="button small" data-rename-project="${esc(p.id)}" ${p.error||p.standard?'disabled':''}>Naam wijzigen</button><button class="button small danger" data-delete-project="${esc(p.id)}" ${p.error||p.standard?'disabled':''} ${p.standard?'title="Het standaardproject kan niet worden verwijderd."':''}>Verwijderen</button></div></div>`).join('')}</div><p id="project-menu-error" role="alert"></p>`,
-      '<button class="button primary" id="new-project">Nieuw project</button><button class="button" id="open-project">Importeren</button><button class="button" id="export-project">Exporteren</button><button class="button danger" id="reset-project">Terugzetten naar standaard…</button><input type="file" id="project-file" accept=".json" hidden>');
+      '<button class="button primary" id="new-project">Nieuw project</button><button class="button" id="open-project">Importeren</button><button class="button danger" id="reset-project">Terugzetten naar standaard…</button><input type="file" id="project-file" accept=".json" hidden>');
     for(const p of projects){
       $(`[data-open-project="${CSS.escape(p.id)}"]`).onclick=async event=>{event.target.disabled=true;try{useProject(await projectSession.open(p.id,validState));}catch(error){event.target.disabled=false;$('#project-menu-error').textContent=error.message;}};
       $(`[data-duplicate-project="${CSS.escape(p.id)}"]`).onclick=async event=>{event.target.disabled=true;try{useProject(await projectSession.duplicate(p.id));}catch(error){event.target.disabled=false;$('#project-menu-error').textContent=error.message;}};
@@ -729,7 +753,6 @@ async function projectsDialog() {
       $(`[data-delete-project="${CSS.escape(p.id)}"]`).onclick=()=>deleteProjectDialog(p);
     }
     $('#new-project').onclick=()=>projectSaveDialog('new');$('#reset-project').onclick=resetProjectDialog;
-    $('#export-project').onclick=()=>exportDialog({format:'json'});
     $('#open-project').onclick=()=>$('#project-file').click();
     $('#project-file').onchange=async event=>{
       try{
@@ -755,7 +778,7 @@ function plansDialog() {
   $('#project-file').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;const data=JSON.parse(await file.text(),(_key,item)=>unpackGridRoom(item));if(!validProjectBackup(data))throw Error();commit(()=>{state=initializeRooms(migrateState(data.state));state.planId=null;});selected=null;selectedBench=null;if(Array.isArray(data.plans)){const incoming=data.plans;plans=[...plans,...incoming.filter(p=>!plans.some(x=>x.id===p.id))];write(`${KEY}-plans`,plans);}if(Array.isArray(data.lists)){lists=[...lists,...data.lists.filter(l=>!lists.some(x=>x.id===l.id))];write(`${KEY}-lists`,lists);}closeModal();render();toast('Projectbestand geopend.');yearErrorsDialog();}catch{toast('Dit is geen geldig Zitplanner-projectbestand.');}};
   $('#duplicate-current').onclick=()=>{closeModal();saveDialog(true);};
 }
-function saveList() { modal('Leerlingenlijst bewaren',`<label class="field">Naam van de lijst<input id="list-name" placeholder="Bijvoorbeeld: klassen 3A en 4B"></label>`,`<button class="button" data-close>Annuleren</button><button class="button primary" id="list-save">Bewaren</button>`);$('#list-save').onclick=()=>{const name=$('#list-name').value.trim();if(!name)return toast('Geef de lijst een naam.');lists.unshift({id:crypto.randomUUID(),name,students:clone(state.students).map(s=>({...s,absent:false}))});write(`${KEY}-lists`,lists);closeModal();toast('Leerlingenlijst bewaard, zonder tijdelijke afwezigheden.');}; }
+function saveList() { modal('Leerlingenlijst bewaren',`<label class="field">Naam van de lijst<input id="list-name" placeholder="Bijvoorbeeld: klassen 3A en 4B"></label>`,`<button class="button" data-close>Annuleren</button><button class="button primary" id="list-save">Bewaren</button>`);$('#list-save').onclick=()=>{const name=$('#list-name').value.trim();if(!name)return toast('Geef de lijst een naam.');lists.unshift({id:crypto.randomUUID(),name,students:clone(state.students).map(s=>({...s,absent:false,...(s.attendanceAbsent!==undefined?{attendanceAbsent:false}:{})}))});write(`${KEY}-lists`,lists);closeModal();toast('Leerlingenlijst bewaard, zonder tijdelijke afwezigheden.');}; }
 function listsDialog() { modal('Bewaarde leerlingenlijsten',`<p>Een lijst openen vervangt de huidige leerlingen en hun regels. Je kunt dit ongedaan maken.</p>${lists.map(l=>`<div class="plan-item"><div><strong>${esc(l.name)}</strong><small>${l.students.length} leerlingen</small></div><button class="button" data-load-list="${esc(l.id)}">Gebruiken</button></div>`).join('')||'<p>Nog geen lijsten bewaard.</p>'}`); }
 function printMarkup(detail) {
   return `<h1>${esc(state.name)}</h1><p>${esc(currentRoom(state).name)} · ${new Date(state.modified).toLocaleString('nl-BE')} · ${activeStudents().length} leerlingen · ${analysis.warnings.length} waarschuwingen</p>${exportSVG(detail)}${analysis.warnings.length?`<div class="print-warnings">${analysis.warnings.map(w=>`<div>⚠ ${state.hiddenWarnings.includes(warningKey(state,w))?'[Verborgen] ':''}${w.benches.map(id=>BY_BENCH[id]?.label??'Onbekend').join(' & ')}: ${esc(w.message)}</div>`).join('')}</div>`:''}`;
@@ -764,33 +787,61 @@ function exportSVG(detail) {
   const styles=`.bench-table{fill:#e9e7dc;stroke:#c8c9be;stroke-width:1.7}.chair{fill:#a6b0b3;stroke:#7f8c90;stroke-width:1.4}.chair-disabled{opacity:.35;fill:#ddd;stroke-dasharray:3 2}.seat-bg{fill:#edf4ef;stroke:#b5c9bc;stroke-width:1.4}.empty .seat-bg{fill:#f9faf7;stroke:#d5d9cf}.disabled{opacity:.37}.disabled:has(.seat.warning){opacity:1}.seat.warning .seat-bg{fill:#ffe0ad;stroke:#d17b16;stroke-width:2.5}.bench-label{fill:#939b90;font-size:13px}.column-label{fill:#798b7e;font-size:21px;font-weight:600}.area-label{fill:#98a79c;font-size:13px}.empty-label{fill:#b1b8ac;font-size:15px}text{font-family:Arial,sans-serif}`;
   const gutter=roomGutter();return `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width+gutter}" height="${ROOM.height}" viewBox="${-gutter} 0 ${ROOM.width+gutter} ${ROOM.height}"><style>${styles}</style>${roomSVG({exporting:true,detail})}</svg>`;
 }
-function exportDialog(options={}) {
-  const formats={xlsx:'Zitplaatsen · Excel (.xlsx)',pdf:'Plattegrond · PDF',print:'Plattegrond · Afdrukken',png:'Plattegrond · PNG',svg:'Plattegrond · SVG','study-xlsx':'Leerlingen · Excel in voorbeeldlayout',csv:'Leerlingen · CSV',json:'Volledig projectbestand (.json)'};
-  modal('Exporteren',`<label class="field">Bestand / uitvoer<select id="export-format">${Object.entries(formats).map(([value,label])=>`<option value="${value}" ${value===(options.format??'xlsx')?'selected':''}>${label}</option>`).join('')}</select></label><label class="field" id="export-scope-field">Omvang<select id="export-scope"><option value="room" ${!options.scope||options.scope==='room'?'selected':''}>Dit lokaal · ${esc(currentRoom(state).name)}</option><option value="all" ${options.scope==='all'?'selected':''}>Alle lokalen</option><option value="week" ${options.scope==='week'?'selected':''} ${weeklyCurrent(state)?'':'disabled'}>Hele week · alle deelnemende lokalen</option></select></label><label class="field" id="export-detail-field">Gegevens op de plattegrond<select id="export-detail"><option value="names">Alleen namen</option><option value="class" selected>Namen + klas</option><option value="year">Namen + leerjaar</option></select></label><fieldset id="export-columns-field" class="export-columns" hidden><legend>Kolommen en volgorde</legend><p>Sleep de kolommen met het handvat naar de gewenste volgorde.</p><div id="export-columns-list"></div></fieldset><div id="export-sheet-options" hidden><strong>Werkbladopties</strong><label class="toggle-line"><input type="checkbox" id="export-separate-classes" checked>Een apart werkblad per klas</label></div><div id="export-error" role="alert"></div>`,`<button class="button" data-close>Annuleren</button><button class="button primary" id="export-submit">Exporteren</button>`);
+function renderExport(container,options={}) {
+  const formats={xlsx:'Excel (.xlsx)',pdf:'Plattegrond · PDF',print:'Plattegrond · Afdrukken',png:'Plattegrond · PNG',svg:'Plattegrond · SVG',csv:'Leerlingen · CSV',json:'Volledig projectbestand (.json)','calendar-xlsx':'Kalender · Excel (.xlsx)','calendar-json':'Kalender · Herstelbestand (.json)'};
+  container.innerHTML=`<div class="task-heading"><h2>Export</h2></div><div class="export-panel"><label class="field">Bestand / uitvoer<select id="export-format">${Object.entries(formats).map(([value,label])=>`<option value="${value}" ${value===(options.format??'xlsx')?'selected':''}>${label}</option>`).join('')}</select></label><label class="field" id="export-scope-field">Omvang<select id="export-scope"><option value="room" ${!options.scope||options.scope==='room'?'selected':''}>Dit lokaal · ${esc(currentRoom(state).name)}</option><option value="all" ${options.scope==='all'?'selected':''}>Alle lokalen</option><option value="week" ${options.scope==='week'?'selected':''} ${weeklyCurrent(state)?'':'disabled'}>Hele week · alle deelnemende lokalen</option></select></label><label class="field" id="export-calendar-date-field" hidden><span id="export-calendar-date-label">Datum</span><input type="date" id="export-calendar-date" value="${esc(state.calendar?.selectedDate??todayKey())}"></label><label class="field" id="export-calendar-scope-field" hidden>Kalenderperiode<select id="export-calendar-scope"><option value="day">Dag</option><option value="week">Week</option><option value="month">Maand</option></select></label><label class="field" id="export-room-field">Lokaal<select id="export-room">${state.rooms.map(room=>`<option value="${esc(room.id)}" ${room.id===state.activeRoomId?'selected':''}>${esc(room.name)}</option>`).join('')}</select></label><label class="field" id="export-detail-field">Gegevens op de plattegrond<select id="export-detail"><option value="names">Alleen namen</option><option value="class" selected>Namen + klas</option><option value="year">Namen + leerjaar</option></select></label><fieldset id="export-columns-field" class="export-columns" hidden><legend>Kolommen en volgorde</legend><div id="export-columns-list"></div></fieldset><div id="export-sheet-options" hidden><strong>Werkbladopties</strong><label class="toggle-line"><input type="checkbox" id="export-separate-classes" checked>Een apart werkblad per klas</label></div><div id="export-error" role="alert"></div><div class="export-actions"><button class="button primary" id="export-submit">Exporteren</button></div></div>`;
   const multipleRooms=state.rooms.length>1;
-  const columnChoices={xlsx:new Map(exportColumns('xlsx',{allRooms:true,week:true}).map(c=>[c.id,c.id==='name'||c.id==='seat'||c.id==='room'&&multipleRooms])),'study-xlsx':new Map([['room',multipleRooms]])};
-  const columnOrder={xlsx:exportColumns('xlsx',{allRooms:true,week:true}).map(c=>c.id),'study-xlsx':exportColumns('study-xlsx').map(c=>c.id)};
-  const selectedColumnIds=()=>[...$('#export-columns-list').querySelectorAll('input:checked')].map(input=>input.dataset.exportColumn);
+  const columnChoices=options.columnChoices??{xlsx:new Map(exportColumns('xlsx',{allRooms:true,week:true}).map(c=>[c.id,c.id==='day'||c.id==='name'||c.id==='seat'||c.id==='room'&&multipleRooms||STUDY_DAYS.includes(c.id)]))};
+  const columnOrder=options.columnOrder??{xlsx:exportColumns('xlsx',{allRooms:true,week:true}).map(c=>c.id)};
+  const selectedColumnIds=()=>[...$('#export-columns-list').querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(input=>input.dataset.exportColumn);
   const orderedColumns=()=>{
     const format=$('#export-format').value,scope=$('#export-scope').value;
     const available=exportColumns(format,{allRooms:scope==='all',week:scope==='week'});
     return columnOrder[format].map(id=>available.find(c=>c.id===id)).filter(Boolean);
   };
+  let eveningStudyEnabled=options.eveningStudyEnabled??false,attendanceColors=options.attendanceColors??false;
+  let eveningStudyOpen=eveningStudyEnabled&&(options.eveningStudyOpen??false);
+  const columnUnits=id=>{
+    const ids=orderedColumns().map(c=>c.id);
+    if(STUDY_DAYS.includes(id))return ids.filter(key=>STUDY_DAYS.includes(key));
+    const units=[];
+    for(const key of ids){if(!STUDY_DAYS.includes(key))units.push(key);else if(!units.includes('eveningStudy'))units.push('eveningStudy');}
+    return units;
+  };
   const renderColumns=()=>{
-    const format=$('#export-format').value,choices=columnChoices[format],columns=orderedColumns();
-    $('#export-columns-list').innerHTML=columns.map(c=>`<div class="export-column-row" data-column-row="${c.id}"><button type="button" class="export-column-handle" data-export-drag="${c.id}" aria-label="${esc(c.label)} verplaatsen" title="Sleep om te verplaatsen, of gebruik de pijltoetsen">⠿</button><label class="toggle-line" ${c.id==='room'?'title="Naam van de toegewezen lokaaltab"':''}><input type="checkbox" data-export-column="${c.id}" ${(choices.get(c.id)??c.selected)?'checked':''}>${esc(c.label)}</label></div>`).join('');
+    const choices=columnChoices.xlsx,columns=orderedColumns();
+    const row=c=>`<div class="export-column-row" data-column-row="${c.id}"><button type="button" class="export-column-handle" data-export-drag="${c.id}" aria-label="${esc(c.label)} verplaatsen" title="Sleep om te verplaatsen, of gebruik de pijltoetsen">⠿</button><label class="toggle-line" ${c.id==='room'?'title="Naam van de toegewezen lokaaltab"':''}><input type="checkbox" data-export-column="${c.id}" ${STUDY_DAYS.includes(c.id)&&!eveningStudyEnabled?'disabled':''} ${(choices.get(c.id)??c.selected)?'checked':''}>${esc(STUDY_DAYS.includes(c.id)?c.id[0].toUpperCase()+c.id.slice(1):c.label)}</label></div>`;
+    const days=columns.filter(c=>STUDY_DAYS.includes(c.id));
+    $('#export-columns-list').innerHTML=columnUnits().map(id=>id==='eveningStudy'?`<div class="export-column-row export-day-group" data-column-row="eveningStudy"><button type="button" class="export-column-handle" data-export-drag="eveningStudy" aria-label="Avondstudiekolommen verplaatsen" title="Sleep om te verplaatsen, of gebruik de pijltoetsen">⠿</button><input type="checkbox" id="export-evening-study-enabled" aria-label="Avondstudie op …" ${eveningStudyEnabled?'checked':''}><details id="export-evening-study" ${eveningStudyOpen?'open':''}><summary aria-disabled="${!eveningStudyEnabled}">Avondstudie op …</summary><div class="export-day-columns">${days.map(row).join('')}<label class="toggle-line export-attendance-option"><input type="checkbox" id="export-attendance-colors" ${attendanceColors?'checked':''} ${eveningStudyEnabled?'':'disabled'}>Aanwezigheden</label></div></details></div>`:row(columns.find(c=>c.id===id))).join('');
+    $('#export-evening-study').ontoggle=event=>{if(!event.target.isConnected)return;if(!eveningStudyEnabled)event.target.open=false;eveningStudyOpen=event.target.open;};
+    const summary=$('#export-evening-study summary');
+    summary.onclick=event=>{if(!eveningStudyEnabled)event.preventDefault();};
+    summary.onkeydown=event=>{if(!eveningStudyEnabled&&['Enter',' '].includes(event.key))event.preventDefault();};
   };
   const validateColumns=()=>{
-    const excel=['xlsx','study-xlsx'].includes($('#export-format').value),empty=excel&&!selectedColumnIds().length;
-    $('#export-submit').disabled=empty;$('#export-error').textContent=empty?'Kies minstens één kolom om te exporteren.':'';
+    const format=$('#export-format').value,excel=format==='xlsx',calendar=format.startsWith('calendar-'),date=$('#export-calendar-date').value,scope=$('#export-calendar-scope').value;
+    const noDays=calendar&&(!validDateKey(date)||!periodDates(date,scope).some(key=>calendarRecord(state,key))),empty=excel&&!selectedColumnIds().length;
+    $('#export-submit').disabled=empty||noDays;$('#export-error').textContent=empty?'Kies minstens één kolom om te exporteren.':noDays?'Geen bewaarde kalenderdagen in deze periode.':'';
   };
-  $('#export-columns-list').onchange=event=>{columnChoices[$('#export-format').value].set(event.target.dataset.exportColumn,event.target.checked);validateColumns();};
+  $('#export-columns-list').onchange=event=>{
+    if(event.target.id==='export-evening-study-enabled'){
+      eveningStudyEnabled=event.target.checked;eveningStudyOpen=eveningStudyEnabled&&$('#export-evening-study').open;renderColumns();$('#export-evening-study-enabled').focus();
+    }else if(event.target.id==='export-attendance-colors')attendanceColors=event.target.checked;
+    else if(event.target.dataset.exportColumn)columnChoices.xlsx.set(event.target.dataset.exportColumn,event.target.checked);
+    updateDateField();validateColumns();
+  };
   const moveColumn=(id,targetId,after=false)=>{
-    const visible=orderedColumns().map(c=>c.id);if(id===targetId||!visible.includes(id)||!visible.includes(targetId))return;
+    const visible=columnUnits(id);if(id===targetId||!visible.includes(id)||!visible.includes(targetId))return;
     const reordered=visible.filter(key=>key!==id);reordered.splice(reordered.indexOf(targetId)+(after?1:0),0,id);
-    const visibleIds=new Set(visible);let index=0;
-    const format=$('#export-format').value;columnOrder[format]=columnOrder[format].map(key=>visibleIds.has(key)?reordered[index++]:key);
-    renderColumns();$(`#export-columns-list [data-export-drag="${id}"]`).focus();
+    if(STUDY_DAYS.includes(id)){
+      let index=0;columnOrder.xlsx=columnOrder.xlsx.map(key=>STUDY_DAYS.includes(key)?reordered[index++]:key);
+    }else{
+      const days=orderedColumns().filter(c=>STUDY_DAYS.includes(c.id)).map(c=>c.id);
+      const reorderedIds=reordered.flatMap(key=>key==='eveningStudy'?days:[key]);
+      const visibleIds=new Set(reorderedIds);let index=0;
+      columnOrder.xlsx=columnOrder.xlsx.map(key=>visibleIds.has(key)?reorderedIds[index++]:key);
+    }
+    eveningStudyOpen=$('#export-evening-study').open;renderColumns();$(`#export-columns-list [data-export-drag="${id}"]`).focus();
   };
   let columnDrag=null;
   const clearDropMarkers=()=>$('#export-columns-list').querySelectorAll('.drop-before,.drop-after').forEach(row=>row.classList.remove('drop-before','drop-after'));
@@ -809,7 +860,7 @@ function exportDialog(options={}) {
     columnDrag.moved=true;columnDrag.handle.closest('.export-column-row').classList.add('is-dragging');clearDropMarkers();columnDrag.target=null;
     const list=$('#export-columns-list'),bounds=list.getBoundingClientRect();
     if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)return;
-    const rows=[...list.querySelectorAll('[data-column-row]')],row=rows.find(item=>event.clientY<=item.getBoundingClientRect().bottom)??rows.at(-1);
+    const rows=[...list.querySelectorAll('[data-column-row]')].filter(item=>STUDY_DAYS.includes(columnDrag.id)?STUDY_DAYS.includes(item.dataset.columnRow):!STUDY_DAYS.includes(item.dataset.columnRow)),row=rows.find(item=>event.clientY<=item.getBoundingClientRect().bottom)??rows.at(-1);
     if(!row||row.dataset.columnRow===columnDrag.id)return;
     const rect=row.getBoundingClientRect(),after=event.clientY>rect.top+rect.height/2;
     columnDrag.target={id:row.dataset.columnRow,after};row.classList.add(after?'drop-after':'drop-before');
@@ -822,38 +873,58 @@ function exportDialog(options={}) {
   $('#export-columns-list').onkeydown=event=>{
     const handle=event.target.closest('[data-export-drag]');if(!handle||!['ArrowUp','ArrowDown'].includes(event.key))return;
     event.preventDefault();cancelColumnDrag();
-    const ids=orderedColumns().map(c=>c.id),id=handle.dataset.exportDrag,index=ids.indexOf(id),next=index+(event.key==='ArrowUp'?-1:1);
+    const id=handle.dataset.exportDrag,ids=columnUnits(id),index=ids.indexOf(id),next=index+(event.key==='ArrowUp'?-1:1);
     if(next>=0&&next<ids.length)moveColumn(id,ids[next],event.key==='ArrowDown');
   };
+  const updateDateField=()=>{
+    const calendar=$('#export-format').value.startsWith('calendar-');
+    $('#export-calendar-date-field').hidden=!calendar;
+    $('#export-calendar-scope-field').hidden=!calendar;
+  };
   const update=()=>{
-    const scope=$('#export-scope').value,format=$('#export-format').value,data=['study-xlsx','csv','json'].includes(format),image=['pdf','print','png','svg'].includes(format);
+    const scope=$('#export-scope').value,format=$('#export-format').value,data=['csv','json'].includes(format)||format.startsWith('calendar-'),image=['pdf','print','png','svg'].includes(format);
+    updateDateField();
     $('#export-scope-field').hidden=data;$('#export-detail-field').hidden=!image;
     cancelColumnDrag();
-    const excel=['xlsx','study-xlsx'].includes(format);$('#export-columns-field').hidden=!excel;$('#export-sheet-options').hidden=!excel;
-    if(excel)renderColumns();
+    const excel=format==='xlsx';$('#export-columns-field').hidden=!excel;$('#export-sheet-options').hidden=!excel;
+    if(excel){eveningStudyOpen=$('#export-evening-study')?.open??eveningStudyOpen;renderColumns();}
     $('#export-scope').querySelectorAll('option').forEach(option=>option.disabled=option.value==='week'&&!weeklyCurrent(state)||image&&option.value!=='room');
     if(image&&scope!=='room')$('#export-scope').value='room';
+    $('#export-room-field').hidden=data||$('#export-scope').value!=='room';
 
     $('#export-submit').textContent=format==='print'?'Afdrukken':'Exporteren';
     validateColumns();
   };
-  $('#export-format').onchange=update;$('#export-scope').onchange=update;update();
+  $('#export-format').onchange=update;$('#export-scope').onchange=update;
+  $('#export-calendar-date').onchange=validateColumns;$('#export-calendar-scope').onchange=validateColumns;
+  $('#export-detail').value=options.detail??'class';$('#export-separate-classes').checked=options.separateClasses??true;update();
+  $('#export-room').onchange=event=>{
+    const choices={format:$('#export-format').value,scope:$('#export-scope').value,detail:$('#export-detail').value,separateClasses:$('#export-separate-classes').checked,columnChoices,columnOrder,eveningStudyEnabled,attendanceColors,eveningStudyOpen:$('#export-evening-study')?.open??eveningStudyOpen};
+    openRoom(event.target.value);tab='export';render();renderExport(container,choices);
+  };
   const detail=()=>$('#export-detail').value;
   const prepare=()=>{const d=detail();$('#print-root').innerHTML=printMarkup(d)+`<p>${Object.entries(state.assignments).map(([seat,id])=>{const s=person(id);return `${esc(seatCode(seat,state.settings))}: ${esc(s.name)}${d==='class'?' · '+esc(s.class):d==='year'?' · leerjaar '+esc(s.year):''}`;}).join(' &nbsp; | &nbsp; ')}</p>`;};
   $('#export-submit').onclick=async()=>{
     const format=$('#export-format').value,scope=$('#export-scope').value;
     try {
-      if(format==='xlsx'){
-        if(scope==='week')download(weeklyWorkbook(state,{columns:selectedColumnIds(),separateClasses:$('#export-separate-classes').checked}),'Weekindeling.xlsx',EXCEL_MIME);
-        else download(seatingWorkbook(state,{allRooms:scope==='all',columns:selectedColumnIds(),separateClasses:$('#export-separate-classes').checked}),safeName(state.name)+(scope==='all'?'-alle-lokalen':'')+'.xlsx',EXCEL_MIME);
-      } else if(format==='study-xlsx')download(studyWorkbook(state,{columns:selectedColumnIds(),separateClasses:$('#export-separate-classes').checked}),'Leerlingen-avondstudie.xlsx',EXCEL_MIME);
+      if(format.startsWith('calendar-')){
+        const date=$('#export-calendar-date').value,period=$('#export-calendar-scope').value;
+        if(!validDateKey(date)||!periodDates(date,period).some(key=>calendarRecord(state,key)))throw Error('Geen bewaarde kalenderdagen in deze periode.');
+        const name=`Kalender-${{day:'Dag',week:'Week',month:'Maand'}[period]}-${date}`;
+        if(format==='calendar-xlsx')download(calendarWorkbook(state,date,period),name+'.xlsx',EXCEL_MIME);
+        else download(JSON.stringify(calendarBackup(state,date,period),null,2),name+'.json','application/json');
+      }
+      else if(format==='xlsx'){
+        if(scope==='week')download(weeklyWorkbook(state,{columns:selectedColumnIds(),separateClasses:$('#export-separate-classes').checked,attendanceColors:eveningStudyEnabled&&attendanceColors}),'Weekindeling.xlsx',EXCEL_MIME);
+        else download(seatingWorkbook(state,{allRooms:scope==='all',columns:selectedColumnIds(),separateClasses:$('#export-separate-classes').checked,attendanceColors:eveningStudyEnabled&&attendanceColors}),safeName(state.name)+(scope==='all'?'-alle-lokalen':'')+'.xlsx',EXCEL_MIME);
+      }
       else if(format==='json')download(JSON.stringify({version:1,state,plans,lists},null,2),safeName(state.name)+'.json','application/json');
       else if(format==='csv')download('\uFEFFNaam;Klas;Leerjaar\r\n'+state.students.map(s=>[s.name,s.class,s.year].map(v=>'"'+v.replaceAll('"','""')+'"').join(';')).join('\r\n'),'Leerlingen.csv','text/csv;charset=utf-8');
       else if(format==='svg')download(exportSVG(detail()),safeName(state.name)+'.svg','image/svg+xml');
       else if(format==='png')exportPNG(detail());
-      else {prepare();closeModal();if(format==='print'){if(window.desktop)await window.desktop.print();else window.print();}else if(window.desktop){const saved=await window.desktop.exportPDF(state.name);if(saved)toast('PDF opgeslagen.');}else{toast('Kies Opslaan als PDF in het afdrukvenster.');window.print();}return;}
-      closeModal();toast('Export klaargezet.');
-    } catch(error){if($('#modal').open)$('#export-error').textContent='Exporteren is niet gelukt. '+error.message;else toast('Exporteren is niet gelukt. Probeer opnieuw.');}
+      else {prepare();if(format==='print'){if(window.desktop)await window.desktop.print();else window.print();}else if(window.desktop){const saved=await window.desktop.exportPDF(state.name);if(saved)toast('PDF opgeslagen.');}else{toast('Kies Opslaan als PDF in het afdrukvenster.');window.print();}return;}
+      toast('Export klaargezet.');
+    } catch(error){if($('#export-error'))$('#export-error').textContent='Exporteren is niet gelukt. '+error.message;else toast('Exporteren is niet gelukt. Probeer opnieuw.');}
   };
 }
 function exportPNG(detail) {
@@ -865,6 +936,15 @@ document.addEventListener('click',event=>{
   const target=event.target.closest('button');if(!target)return;
   if(target.hasAttribute('data-close'))return closeModal();
   if(target.dataset.tab){tab=target.dataset.tab;render();return;}
+  if(target.hasAttribute('data-attendance')||target.hasAttribute('data-context-attendance')) {
+    if(busy)return toast('Wacht tot de planner klaar is.');
+    const id=target.dataset.attendance??target.dataset.contextAttendance,pupil=person(id);if(!pupil)return;
+    const absent=!studentIsAbsent(pupil),main=$('main'),scroll=main.scrollTop;
+    commit(()=>setStudentAttendance(state,id,absent),{keepWeekly:true,keepAlternatives:true});
+    const card=target.hasAttribute('data-context-attendance')?$('#context [data-context-attendance]'):[...document.querySelectorAll('[data-attendance]')].find(button=>button.dataset.attendance===id);
+    (card&&!card.hidden?card:$('#attendance-status'))?.focus({preventScroll:true});main.scrollTop=scroll;
+    return;
+  }
   if(target.dataset.openRoom){openRoom(target.dataset.openRoom);return;}
   if(target.dataset.editSection){sectionDialog(state.settings.sections.find(s=>s.id===target.dataset.editSection));return;}
   if(target.dataset.removeSection){const section=state.settings.sections.find(s=>s.id===target.dataset.removeSection);if(section&&!section.builtin)commit(()=>state.settings.sections=state.settings.sections.filter(s=>s.id!==section.id));return;}
@@ -890,7 +970,6 @@ document.addEventListener('click',event=>{
   const action=target.dataset.action;
   if(action==='fix-years')yearErrorsDialog();
   if(action==='class-layouts')roomsUI.classesDialog();
-  if(action==='export-students')exportDialog({format:'study-xlsx'});
   if(action==='add-section')sectionDialog();
   if(action==='add-year-rule')yearRuleDialog();
   if(action==='import')importDialog();if(action==='add-rule')ruleDialog();if(action==='save-list')saveList();if(action==='lists')listsDialog();if(action==='edit-student')editStudent();
@@ -1044,20 +1123,22 @@ $('#search').oninput=event=>{
 };
 $('#generate').onclick=()=>generationDialog();
 $('#warnings-check').onclick=()=>{render();toast(`${analysis.warnings.length} waarschuwingen · ${analysis.evaluated} persoonlijke regels gecontroleerd. Niemand is verplaatst.`);};
-$('#undo').onclick=()=>history();$('#redo').onclick=()=>history(true);$('#save').onclick=()=>saveDialog();$('#open-plans').onclick=plansDialog;$('#export').onclick=()=>exportDialog();
+$('#undo').onclick=()=>history();$('#redo').onclick=()=>history(true);$('#save').onclick=()=>saveDialog();$('#open-plans').onclick=plansDialog;
 if(!projectSession){$('#save').textContent='Plan bewaren';$('#open-plans').textContent='Mijn plannen';}
 $('#color-mode').onchange=event=>{colorMode=event.target.value;renderRoom();};$('#fit').onclick=fitRoom;$('#overview').onclick=()=>{zoomMode='overview';renderRoom();};$('#zoom-in').onclick=()=>{zoomMode='custom';zoom=Math.min(3,zoom+.1);renderRoom();};$('#zoom-out').onclick=()=>{zoomMode='custom';zoom=Math.max(.1,zoom-.1);renderRoom();};
 $('#zoom-label').onchange=()=>{const value=$('#zoom-label').value.trim();if(!/^\d+(?:[.,]\d+)?\s*%?$/.test(value)){toast('Vul een zoompercentage van 10 tot 300 in.');renderRoom();return;}zoomMode='custom';zoom=Math.min(3,Math.max(.1,parseFloat(value.replace(',','.'))/100));renderRoom();};
 $('#zoom-label').onkeydown=event=>{if(event.key==='Enter'){$('#zoom-label').dispatchEvent(new Event('change'));$('#zoom-label').blur();}};
-function expandRoom(value=!expanded) { expanded=value;document.body.classList.toggle('room-expanded',expanded);(expanded?$('#export'):$('#save')).before($('.header-history'));$('#expand-room').textContent=expanded?'⛶ Werkruimte verkleinen':'⛶ Werkruimte vergroten';$('#expand-room').setAttribute('aria-pressed',String(expanded));requestAnimationFrame(()=>{renderRoom();if(selectedBench)focusBench(selectedBench);}); }
+function expandRoom(value=!expanded) { expanded=value;document.body.classList.toggle('room-expanded',expanded);(expanded?$('.toolbar-space'):$('#save')).before($('.header-history'));$('#expand-room').textContent=expanded?'⛶ Werkruimte verkleinen':'⛶ Werkruimte vergroten';$('#expand-room').setAttribute('aria-pressed',String(expanded));requestAnimationFrame(()=>{renderRoom();if(selectedBench)focusBench(selectedBench);}); }
 $('#expand-room').onclick=()=>expandRoom();
 document.addEventListener('keydown',event=>{if(['INPUT','TEXTAREA','SELECT'].includes(event.target.tagName)||$('#modal').open)return;if((event.ctrlKey||event.metaKey)&&['z','y'].includes(event.key.toLowerCase())){event.preventDefault();history(event.key.toLowerCase()==='y'||event.shiftKey);}if(event.key==='Escape'){if(benchSelection.length||benchSelectionMode||drag?.kind==='selection'){benchSelection=[];benchSelectionMode=false;drag=null;renderRoom();renderContext();return;}if(pendingMove){pendingMove=null;renderContext();return;}if(expanded){expandRoom(false);return;}warningFocus=null;selected=null;selectedBench=null;highlight=[];renderRoom();renderContext();renderUnplaced();}if(event.key==='Delete'&&selected)removeStudent(selected);});
 // Rendering a context action replaces its button before the click bubbles here.
 // Use the original event path so that action does not count as clicking away.
 document.addEventListener('click',event=>{if(selected&&!$('#modal').open&&!event.composedPath().some(node=>node instanceof Element&&node.matches('#context,#room,#unplaced,#warning-list,[data-person],[data-seat],#search,#search-results,[data-unplaced]'))){selected=null;selectedBench=null;highlight=[];pendingMove=null;warningFocus=null;renderRoom();renderContext();renderUnplaced();}});
 $('#modal').addEventListener('click',event=>{if(event.target===$('#modal'))closeModal();});
-const roomsUI=createRoomUI({getState:()=>state,getBusy:()=>busy,commit,openRoom,toast,autoDistribute:makeAutomaticRoomPlan,editLocation:id=>ruleDialog(locationRule(state,id),{fixed:true,apply:true,pupilId:id,roomOnly:true}),showTab:value=>{tab=value;render();},exportAll:()=>exportDialog({scope:'all',format:'xlsx'})});
+const attendanceUI=createAttendanceUI({getState:()=>state,esc,calendarControls:calendarControlsMarkup,saveAttendance:()=>{if(busy)return toast('Wacht tot de planner klaar is.');commit(()=>saveCalendarAttendance(state,attendanceDate(state)),{keepWeekly:true,keepAlternatives:true});toast('Aanwezigheden bewaard.');$('#attendance-status').focus({preventScroll:true});},resetAttendance:()=>{if(busy)return toast('Wacht tot de planner klaar is.');commit(()=>resetStudentAttendance(state),{keepWeekly:true,keepAlternatives:true});toast('Aanwezigheden gereset.');$('#attendance-reset').focus({preventScroll:true});},setColors:enabled=>{commit(()=>{state.attendanceColorsEnabled=enabled;},{keepWeekly:true,keepAlternatives:true});$('#attendance-seat-colors').focus({preventScroll:true});}});
+const roomsUI=createRoomUI({getState:()=>state,getBusy:()=>busy,commit,openRoom,toast,autoDistribute:makeAutomaticRoomPlan,editLocation:id=>ruleDialog(locationRule(state,id),{fixed:true,apply:true,pupilId:id,roomOnly:true}),showTab:value=>{tab=value;render();}});
 const weeklyUI=createWeeklyUI({getState:()=>state,commit:(change)=>commit(change,{keepWeekly:true}),toast,clearSelection:()=>{benchSelection=[];benchSelectionMode=false;selected=null;selectedBench=null;highlight=[];pendingMove=null;warningFocus=null;}});
+const calendarUI=createCalendarUI({getState:()=>state,getBusy:()=>busy,setEnabled:enabled=>calendarPreference.setEnabled(enabled),commit:change=>commit(change,{keepWeekly:true}),modal,closeModal,toast,esc,validateDay:validState,clearSelection:()=>{benchSelection=[];benchSelectionMode=false;selected=null;selectedBench=null;highlight=[];pendingMove=null;warningFocus=null;}});
 window.desktop?.projects?.onBeforeClose(()=>projectSession.flush());
 render();write(KEY,state);yearErrorsDialog();
 if(DEVELOPER_MODE)window.desktop.developerInfo().then(info=>{developerInfo=info;renderDeveloperDetails();}).catch(()=>{developerInfo={electron:'onbekend',node:'onbekend',storagePath:'Opslagpad niet beschikbaar'};renderDeveloperDetails();});

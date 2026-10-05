@@ -24,7 +24,7 @@ export function emptyProjectState(source,name='Nieuw project') {
   state.name=name;state.planId=null;state.students=[];state.rules=[];
   state.assignments={};state.locks=[];state.benchLocks=[];state.hiddenWarnings=[];
   state.studentRooms={};state.classRooms={};state.studentRoomPins={};state.distribution.reviewed=false;
-  delete state.weeklyPlans;
+  delete state.weeklyPlans;delete state.calendar;
   for(const room of state.rooms){room.assignments={};room.locks=[];room.hiddenWarnings=[];}
   state.modified=new Date().toISOString();return state;
 }

@@ -2,9 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { legacyDefaults as defaults, BENCHES, seatCode } from '../src/engine.mjs';
 import { seatingRows, seatingWorkbook, studyWorkbook, weeklyWorkbook, exportColumns, EXCEL_HEADERS, EXCEL_MIME } from '../src/excel-export.mjs';
+import { setCalendarEnabled, openCalendarDate, saveCalendarPeriod, saveCalendarAttendance, deleteCalendarDay, captureCalendarDay } from '../src/calendar-model.mjs';
+import { setStudentAttendance, resetStudentAttendance } from '../src/attendance.mjs';
 import { STUDY_HEADERS } from '../src/student-import.mjs';
 import { generateWeek } from '../src/weekly-planner.mjs';
-import { initializeRooms, newRoom, assignRoom } from '../src/rooms.mjs';
+import { initializeRooms, newRoom, assignRoom, normalizeRooms } from '../src/rooms.mjs';
 function files(bytes) {
   const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),decoder=new TextDecoder(),result={};let cursor=0;
   while(view.getUint32(cursor,true)===0x04034b50) {
@@ -156,4 +158,102 @@ test('custom column order includes the assigned room name even when different ro
   assert.deepEqual(study[0],['Plaats','Lokaal','Naam hoofdaccount']);assert.deepEqual(study.find(row=>row[2]==='Maes'),['A1','Zaal West','Maes']);
   s.rooms[0].name='Nieuwe naam';assert.equal(rows(files(seatingWorkbook(s,{columns:['room'],separateClasses:false})))[1][0],'Nieuwe naam');
   s.rooms[0].name='Zaal Oost';assert.deepEqual(s,before);
+});
+
+
+test('combined Excel offers unique optional evening-study fields without changing defaults',()=>{
+  const columns=exportColumns();assert.equal(new Set(columns.map(c=>c.id)).size,columns.length);
+  assert.deepEqual(columns.filter(c=>c.selected).map(c=>c.id),['name','class','year','seat']);
+  const s=fixture();s.students[0].eveningStudy={maandag:'Ja',vrijdag:'Nee'};
+  const parts=files(seatingWorkbook(s,{columns:['name','vrijdag','maandag'],separateClasses:false}));
+  assert.deepEqual(rows(parts)[0],['Naam','Avondstudie op vrijdag','Avondstudie op maandag']);
+  assert.deepEqual(rows(parts).find(row=>row[0]==='Emma Peeters'),['Emma Peeters','Nee','Ja']);
+});
+
+
+function cellStylesFor(parts,name,sheetId=1) {
+  const row=[...parts[`xl/worksheets/sheet${sheetId}.xml`].matchAll(/<row[^>]*>(.*?)<\/row>/g)].find(match=>match[1].includes(name))?.[1];
+  assert.ok(row,`Missing row for ${name}`);
+  return [...row.matchAll(/<c[^>]* s="(\d+)"/g)].map(match=>Number(match[1]));
+}
+
+test('attendance export colors each saved date independently and grays unrecorded days',()=>{
+  const s=fixture();initializeRooms(s);normalizeRooms(s);
+  s.students[0].eveningStudy={maandag:'Ja',dinsdag:'Ja',donderdag:'Ja',vrijdag:'Nee'};
+  s.students[1].eveningStudy={maandag:'Nee',dinsdag:'Ja',donderdag:'Nee',vrijdag:'Ja'};
+  setCalendarEnabled(s,true,'2026-10-05');setStudentAttendance(s,'e',true);
+  saveCalendarAttendance(s,'2026-10-05');
+  openCalendarDate(s,'2026-10-06');setStudentAttendance(s,'l',true);saveCalendarAttendance(s,'2026-10-06');
+  openCalendarDate(s,'2026-10-09');setStudentAttendance(s,'e',true); // Unsaved Friday is still unknown.
+  const before=structuredClone(s),options={columns:['name','maandag','dinsdag','donderdag','vrijdag'],separateClasses:false};
+  const plain=files(seatingWorkbook(s,options)),colored=files(seatingWorkbook(s,{...options,attendanceColors:true}));
+  assert.deepEqual(rows(colored),rows(plain));
+  assert.deepEqual(cellStylesFor(colored,'Emma Peeters'),[0,4,3,5,5]);
+  assert.deepEqual(cellStylesFor(colored,'Lucas Maes'),[0,0,4,5,5]);
+  assert.deepEqual(rows(colored).find(row=>row[0]==='Emma Peeters'),['Emma Peeters','Ja','Ja','Ja','Nee']);
+  assert.match(colored['xl/styles.xml'],/color rgb="FF008000"/);assert.match(colored['xl/styles.xml'],/color rgb="FFFF0000"/);assert.match(colored['xl/styles.xml'],/color rgb="FF8A9290"/);
+  assert.doesNotMatch(plain['xl/worksheets/sheet1.xml'],/s="[345]"/);
+  const separate=files(seatingWorkbook(s,{...options,separateClasses:true,attendanceColors:true}));
+  assert.deepEqual(cellStylesFor(separate,'Emma Peeters',4),[0,4,3,5,5]);
+  const reordered=files(seatingWorkbook(s,{...options,columns:['vrijdag','name','dinsdag','maandag'],attendanceColors:true}));
+  assert.deepEqual(cellStylesFor(reordered,'Emma Peeters'),[5,0,3,4]);
+  assert.deepEqual(s,before);
+});
+
+test('all Excel workbooks keep Nee black and blank schedules gray even on recorded dates',()=>{
+  const s=defaults();s.students=[{id:'e',name:'Emma Peeters',class:'4B',year:'4',absent:false,eveningStudy:{maandag:'',dinsdag:'Nee',donderdag:'Ja',vrijdag:'Nee'}}];
+  initializeRooms(s);setCalendarEnabled(s,true,'2026-10-05');setStudentAttendance(s,'e',true);saveCalendarAttendance(s,'2026-10-05');
+  openCalendarDate(s,'2026-10-06');saveCalendarAttendance(s,'2026-10-06');
+  s.weeklyPlans=generateWeek(s,{iterations:0});
+  const before=structuredClone(s),options={columns:['lastName','maandag','dinsdag','donderdag','vrijdag'],separateClasses:false,attendanceColors:true};
+  for(const exporter of [seatingWorkbook,studyWorkbook,weeklyWorkbook]) {
+    assert.deepEqual(cellStylesFor(files(exporter(s,options)),'Peeters'),[0,5,0,5,5]);
+  }
+  assert.deepEqual(s,before);
+});
+
+test('no calendar, a deleted day or a pupil outside the archived roster never imply presence',()=>{
+  const s=fixture();initializeRooms(s);normalizeRooms(s);
+  s.students[0].attendanceAbsent=true;s.students[0].eveningStudy={maandag:'Ja',dinsdag:'Ja'};
+  const options={columns:['name','maandag','dinsdag'],separateClasses:false,attendanceColors:true,attendanceDate:'2026-10-05'};
+  assert.deepEqual(cellStylesFor(files(seatingWorkbook(s,options)),'Emma Peeters'),[0,5,5]);
+  setCalendarEnabled(s,true,'2026-10-05');saveCalendarAttendance(s,'2026-10-05');
+  openCalendarDate(s,'2026-10-06');saveCalendarPeriod(s,'2026-10-06','day');deleteCalendarDay(s,'2026-10-06');
+  s.students.push({id:'new',name:'New Student',class:'4B',year:'4',absent:false,eveningStudy:{maandag:'Ja',dinsdag:'Ja'}});normalizeRooms(s);
+  const colored=files(seatingWorkbook(s,options));
+  assert.deepEqual(cellStylesFor(colored,'Emma Peeters'),[0,4,5]);
+  assert.deepEqual(cellStylesFor(colored,'New Student'),[0,5,5]);
+  assert.deepEqual(rows(colored).find(row=>row[0]==='New Student'),['New Student','Ja','Ja']);
+});
+
+test('attendance week selection matches exact calendar dates across years for every Excel export',()=>{
+  const s=defaults();s.students=[{id:'e',name:'Emma Peeters',class:'4B',year:'4',absent:false,eveningStudy:{maandag:'Ja',dinsdag:'Ja',donderdag:'Ja',vrijdag:'Ja'}}];
+  initializeRooms(s);
+  setCalendarEnabled(s,true,'2026-12-28');setStudentAttendance(s,'e',true);saveCalendarAttendance(s,'2026-12-28');
+  openCalendarDate(s,'2027-01-01');saveCalendarAttendance(s,'2027-01-01');
+  s.weeklyPlans=generateWeek(s,{iterations:0});
+  const before=structuredClone(s),options={columns:['lastName','maandag','vrijdag'],separateClasses:false,attendanceColors:true};
+  for(const exporter of [seatingWorkbook,studyWorkbook,weeklyWorkbook]) {
+    assert.deepEqual(cellStylesFor(files(exporter(s,options)),'Peeters'),[0,4,3]);
+    assert.deepEqual(cellStylesFor(files(exporter(s,{...options,attendanceDate:'2027-01-04'})),'Peeters'),[0,5,5]);
+  }
+  assert.deepEqual(s,before);
+});
+
+test('Ja and Nee stay gray after layout saving or day switches until attendance is confirmed',()=>{
+  const s=fixture();initializeRooms(s);normalizeRooms(s);
+  s.students[0].eveningStudy={maandag:'Ja',dinsdag:'Nee',donderdag:'Ja',vrijdag:'Nee'};
+  const options={columns:['name','maandag','dinsdag','donderdag','vrijdag'],separateClasses:false,attendanceColors:true};
+  setCalendarEnabled(s,true,'2026-10-05');saveCalendarPeriod(s,'2026-10-05','day');
+  assert.deepEqual(cellStylesFor(files(seatingWorkbook(s,options)),'Emma Peeters'),[0,5,5,5,5]);
+  saveCalendarAttendance(s);
+  assert.deepEqual(cellStylesFor(files(seatingWorkbook(s,options)),'Emma Peeters'),[0,3,5,5,5]);
+  setStudentAttendance(s,'e',true);captureCalendarDay(s);
+  assert.deepEqual(cellStylesFor(files(seatingWorkbook(s,options)),'Emma Peeters'),[0,5,5,5,5]);
+  saveCalendarAttendance(s);openCalendarDate(s,'2026-10-06');saveCalendarPeriod(s,'2026-10-06','day');
+  assert.deepEqual(cellStylesFor(files(seatingWorkbook(s,options)),'Emma Peeters'),[0,4,5,5,5]);
+  saveCalendarAttendance(s);
+  assert.deepEqual(cellStylesFor(files(seatingWorkbook(s,options)),'Emma Peeters'),[0,4,0,5,5]);
+  resetStudentAttendance(s);captureCalendarDay(s);
+  assert.deepEqual(cellStylesFor(files(seatingWorkbook(s,options)),'Emma Peeters'),[0,4,5,5,5]);
 });

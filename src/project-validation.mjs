@@ -4,6 +4,7 @@ import { roomSystemValid } from './rooms.mjs';
 import { weeklyPlansValid } from './weekly-planner.mjs';
 import { STUDY_DAYS } from './student-import.mjs';
 import { normalizeYear } from './student-year.mjs';
+import { calendarValid } from './calendar-model.mjs';
 
 export function validState(state) {try{return validateState(state);}catch{return false;}}
 
@@ -19,6 +20,7 @@ export function validProjectBackup(data) {
 
 function validateState(s) {
   if (!s || !Array.isArray(s.students) || !Array.isArray(s.rules) || !s.settings || !s.assignments || typeof s.assignments !== 'object' || Array.isArray(s.assignments) || !Array.isArray(s.locks) || !Array.isArray(s.benchLocks) || typeof s.name !== 'string') return false;
+  if (!calendarValid(s.calendar, validState)) return false;
   if(s.settings.layout!==undefined&&!layoutValid(s.settings.layout)||!roomSystemValid(s))return false;
   if(!weeklyPlansValid(s.weeklyPlans,s))return false;
   const BY_BENCH=Object.fromEntries(benchesFor(s.settings).map(b=>[b.id,b]));
@@ -40,6 +42,8 @@ function validateState(s) {
   } else if(typeof s.settings.mixYears!=='boolean'||!PRIORITIES.includes(s.settings.yearPriority))return false;
   if (!s.settings.rows.every(r => Number.isInteger(r) && r >= 1 && r <= 8) || !s.settings.disabled.every(b => BY_BENCH[b])) return false;
   if (!s.students.every(p => p && ['id','name','class'].every(k => typeof p[k] === 'string' && p[k].trim()) && (p.year===undefined||typeof p.year==='string') && typeof p.absent === 'boolean')) return false;
+  if (!s.students.every(p => p.attendanceAbsent === undefined || typeof p.attendanceAbsent === 'boolean')) return false;
+  if (s.attendanceColorsEnabled !== undefined && typeof s.attendanceColorsEnabled !== 'boolean') return false;
   if(!s.students.every(p=>p.yearOverride===undefined||p.yearOverride&&typeof p.yearOverride.class==='string'&&typeof p.yearOverride.year==='string'&&!!normalizeYear(p.yearOverride.year)))return false;
   if(!s.students.every(p=>['firstName','lastName'].every(key=>p[key]===undefined||typeof p[key]==='string')&&(p.eveningStudy===undefined||p.eveningStudy&&typeof p.eveningStudy==='object'&&!Array.isArray(p.eveningStudy)&&STUDY_DAYS.every(day=>['Ja','Nee',''].includes(p.eveningStudy[day])))))return false;
   const ids=new Set(s.students.map(p=>p.id));

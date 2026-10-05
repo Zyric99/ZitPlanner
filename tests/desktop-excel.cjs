@@ -49,10 +49,10 @@ app.whenReady().then(async()=>{
     state=await js(`JSON.parse(localStorage.getItem('klaslokaal-v1'))`);assert.equal(state.students[1].name,'Bért Voorbeeld B');assert.equal(state.students[1].eveningStudy.vrijdag,'Ja');
     const outputPath=path.join(root,'artifacts','desktop-study-layout.xlsx');
     const downloaded=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{item.setSavePath(outputPath);item.once('done',(_e,status)=>status==='completed'?resolve():reject(Error(status)));}));
-    await js(`document.querySelector('#export').click();document.querySelector('#export-format').value='study-xlsx';document.querySelector('#export-format').dispatchEvent(new Event('change'));document.querySelector('#export-submit').click();`);await downloaded;
+    await js(`document.querySelector('[data-tab=export]').click();document.querySelector('#export-evening-study-enabled').click();document.querySelector('#export-evening-study').open=true;document.querySelectorAll('[data-export-column]:checked:not(:disabled)').forEach(el=>el.click());['lastName','firstName','class','maandag','dinsdag','donderdag','vrijdag'].forEach(id=>document.querySelector('[data-export-column='+id+']').click());document.querySelector('#export-submit').click();`);await downloaded;
     const output=Array.from(await fs.readFile(outputPath));
     const roundTrip=await js(`(async()=>{const x=await import('./excel-import.mjs'),p=await import('./student-import.mjs');const sheets=await x.workbookSheets(new Uint8Array(${JSON.stringify(output)}));return {rows:sheets[0].rows,result:p.parseStudentRows(sheets[0].rows)};})()`);
-    assert.deepEqual(roundTrip.rows[0],parsed.sheets[0].rows[0]);assert.equal(roundTrip.rows[1].length,7);assert.deepEqual(roundTrip.result.errors,[]);
+    assert.deepEqual(roundTrip.rows[0],['Achternaam','Voornaam',...parsed.sheets[0].rows[0].slice(2)]);assert.equal(roundTrip.rows[1].length,7);assert.deepEqual(roundTrip.result.errors,[]);
     assert.deepEqual(roundTrip.result.students.map(({id,...p})=>p),state.students.map(({id,...p})=>p));
     // Existing seating exports can also be imported as a student roster.
     const standard=await js(`(async()=>{const x=await import('./excel-import.mjs'),p=await import('./student-import.mjs'),e=await import('./excel-export.mjs');const sheets=await x.workbookSheets(e.seatingWorkbook(JSON.parse(localStorage.getItem('klaslokaal-v1'))));return p.parseStudentRows(sheets[0].rows);})()`);
@@ -62,28 +62,25 @@ app.whenReady().then(async()=>{
     await js(`(async()=>{const e=await import('./engine.mjs');const s=e.defaults();s.students=[{id:'z',name:'Ada Zulu',class:'2A',year:'2',absent:false},{id:'b',name:'Zoe Beta',class:'10B',year:'10',absent:false},{id:'a',name:'Anna Alpha',class:'2A',year:'2',absent:false}];s.assignments={'grid-B1:1':'z','grid-C2:0':'a'};localStorage.setItem('klaslokaal-v1',JSON.stringify(s));})()`);
     await win.loadFile(path.join(root,'src','index.html'));
     const setFormat=async format=>js(`document.querySelector('#export-format').value='${format}';document.querySelector('#export-format').dispatchEvent(new Event('change'));`);
-    await js(`document.querySelector('#export').click()`);assert.equal(await js(`document.querySelector('#export-format').value`),'xlsx');
+    await js(`document.querySelector('[data-tab=export]').click()`);assert.equal(await js(`document.querySelector('#export-format').value`),'xlsx');
     assert.equal(await js(`document.querySelector('#export-columns-field').hidden`),false);assert.equal(await js(`document.querySelector('#export-separate-classes').checked`),true);
     await setFormat('xlsx');assert.equal(await js(`document.querySelector('#export-columns-field').hidden`),false);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','seat']);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','seat']);
     await js(`document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','seat']);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','seat']);
     assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]')].slice(-2).map(el=>el.dataset.exportColumn)`),['room','seat']);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]')].filter(el=>!['maandag','dinsdag','donderdag','vrijdag'].includes(el.dataset.exportColumn)).slice(-2).map(el=>el.dataset.exportColumn)`),['room','seat']);
     assert.equal(await js(`document.querySelector('#export-separate-classes').checked`),true);
-    await js(`document.querySelectorAll('[data-export-column]:checked').forEach(el=>el.click())`);
+    await js(`document.querySelectorAll('[data-export-column]:checked:not(:disabled)').forEach(el=>el.click())`);
     assert.equal(await js(`document.querySelector('#export-submit').disabled`),true);assert.match(await js(`document.querySelector('#export-error').textContent`),/minstens één/);
     await js(`document.querySelector('[data-export-column="lastName"]').click();document.querySelector('[data-export-column="firstName"]').click();`);
     assert.equal(await js(`document.querySelector('#export-submit').disabled`),false);
     await js(`document.querySelector('#export-separate-classes').click()`);
     await setFormat('csv');assert.equal(await js(`document.querySelector('#export-columns-field').hidden`),true);assert.equal(await js(`document.querySelector('#export-submit').disabled`),false);
-    await setFormat('study-xlsx');assert.equal(await js(`document.querySelectorAll('[data-export-column]:checked').length`),7);
-    assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
-    assert.equal(await js(`document.querySelector('[data-export-column=seat]').checked`),false);
-    await js(`document.querySelector('[data-export-column=seat]').click()`);
-    await setFormat('csv');await setFormat('study-xlsx');
-    assert.equal(await js(`document.querySelector('[data-export-column=seat]').checked`),true);
-    await setFormat('xlsx');assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['lastName','firstName']);
+    await setFormat('xlsx');
+    assert.equal(await js(`document.querySelector('#export-evening-study').open`),false);
+    assert.equal(await js(`document.querySelectorAll('#export-evening-study [data-export-column]:checked').length`),4);
+    await setFormat('xlsx');assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['lastName','firstName']);
     assert.equal(await js(`document.querySelector('#export-separate-classes').checked`),false);
     await js(`document.querySelector('#export-separate-classes').click()`);
     await js(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
@@ -96,10 +93,8 @@ app.whenReady().then(async()=>{
     assert.deepEqual(selectedSheets.map(sheet=>sheet.name),['2A','10B']);
     assert.deepEqual(selectedSheets[0].rows,[['Achternaam','Voornaam'],['Alpha','Anna'],['Zulu','Ada']]);
     assert.deepEqual(selectedSheets[1].rows,[['Achternaam','Voornaam'],['Beta','Zoe']]);
-    // A newly opened example-layout export defaults back to seven columns.
-    await js(`document.querySelector('[data-tab=students]').click();document.querySelector('[data-action=export-students]').click()`);
-    assert.equal(await js(`document.querySelector('[data-export-column=seat]').checked`),false);
-    await js(`document.querySelector('[data-export-column=seat]').click()`);
+    // Unified Excel keeps ordinary defaults; optional study fields share the same checklist.
+    await js(`document.querySelector('[data-tab=export]').click();document.querySelector('#export-evening-study-enabled').click();document.querySelector('#export-evening-study').open=true;document.querySelectorAll('[data-export-column]:checked:not(:disabled)').forEach(el=>el.click());['lastName','firstName','class','maandag','dinsdag','donderdag','vrijdag','seat'].forEach(id=>document.querySelector('[data-export-column='+id+']').click());document.querySelector('[data-export-drag=eveningStudy]').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true}));`);
     const studySeatsPath=path.join(root,'artifacts','desktop-study-layout-seats.xlsx');
     const studySeatsDownload=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{item.setSavePath(studySeatsPath);item.once('done',(_e,status)=>status==='completed'?resolve():reject(Error(status)));}));
     await js(`document.querySelector('#export-submit').click()`);await studySeatsDownload;
@@ -109,7 +104,7 @@ app.whenReady().then(async()=>{
     assert.equal(studySeatsSheets[0].rows[0].length,8);assert.equal(studySeatsSheets[0].rows[0].at(-1),'Plaats');
     assert.deepEqual(studySeatsSheets[0].rows.slice(1).map(row=>row.at(-1)),['C3','B2']);
     assert.equal(studySeatsSheets[1].rows[1].at(-1),'Nog niet geplaatst');
-    await js(`document.querySelector('#export').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));document.querySelector('#export-separate-classes').click();document.querySelectorAll('[data-export-column]:checked').forEach(el=>el.click());document.querySelector('[data-export-column="lastName"]').click();document.querySelector('[data-export-column="firstName"]').click();`);
+    await js(`document.querySelector('[data-tab=export]').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));document.querySelector('#export-separate-classes').click();document.querySelectorAll('[data-export-column]:checked:not(:disabled)').forEach(el=>el.click());document.querySelector('[data-export-column="lastName"]').click();document.querySelector('[data-export-column="firstName"]').click();`);
     const combinedPath=path.join(root,'artifacts','desktop-excel-combined.xlsx');
     const combinedDownload=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{item.setSavePath(combinedPath);item.once('done',(_e,status)=>status==='completed'?resolve():reject(Error(status)));}));
     await js(`document.querySelector('#export-submit').click()`);await combinedDownload;
@@ -128,19 +123,13 @@ app.whenReady().then(async()=>{
       win.webContents.sendInputEvent({type:'mouseUp',...points.to,button:'left',clickCount:1});
       await js(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
     };
-    await js(`document.querySelector('#export').click()`);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
+    await js(`document.querySelector('[data-tab=export]').click()`);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
     // An explicit room deselection survives scope/format changes.
     await js(`document.querySelector('[data-export-column=room]').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
     assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
-    await setFormat('study-xlsx');
-    assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),true);
-    assert.equal(await js(`document.querySelectorAll('[data-export-column]:checked').length`),8);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]')].slice(-2).map(el=>el.dataset.exportColumn)`),['room','seat']);
-    await js(`document.querySelector('[data-export-column=room]').click()`);
-    await setFormat('xlsx');assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
-    await setFormat('study-xlsx');assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
-    await js(`document.querySelector('[data-close]').click();document.querySelector('#export').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
+    await setFormat('csv');await setFormat('xlsx');assert.equal(await js(`document.querySelector('[data-export-column=room]').checked`),false);
+    await js(`document.querySelector('[data-tab=export]').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
     // Download unchanged defaults: identical seat codes retain their room names.
     const multiRoomDefaultPath=path.join(root,'artifacts','desktop-excel-room-defaults.xlsx');
     const multiRoomDefaultDownload=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{item.setSavePath(multiRoomDefaultPath);item.once('done',(_e,status)=>status==='completed'?resolve():reject(Error(status)));}));
@@ -148,25 +137,25 @@ app.whenReady().then(async()=>{
     const multiRoomDefaultBytes=Array.from(await fs.readFile(multiRoomDefaultPath));
     const multiRoomDefaultSheets=await js(`(async()=>{const x=await import('./excel-import.mjs');return x.workbookSheets(new Uint8Array(${JSON.stringify(multiRoomDefaultBytes)}));})()`);
     assert.deepEqual(multiRoomDefaultSheets[0].rows,[['Naam','Lokaal','Plaats'],['Anna Alpha','Zaal Oost','A1'],['Zoe Beta','Zaal West','A1']]);
-    await js(`document.querySelector('#export').click()`);
+    await js(`document.querySelector('[data-tab=export]').click()`);
     assert.equal(await js(`document.querySelector('#export-columns-field').contains(document.querySelector('#export-separate-classes'))`),false);
     assert.ok(await js(`document.querySelector('#export-sheet-options').getBoundingClientRect().top-document.querySelector('#export-columns-field').getBoundingClientRect().bottom>=20`));
     await dragColumn('room','seat',true);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','seat','room']);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','seat','room']);
     await js(`document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));`);
-    await setFormat('study-xlsx');await setFormat('xlsx');
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','seat','room']);
+    await setFormat('csv');await setFormat('xlsx');
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','seat','room']);
     await dragColumn('room','name',false);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['room','name','seat']);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['room','name','seat']);
     await dragColumn('room','seat',false);
     assert.equal(await js(`document.querySelector('#export-separate-classes').checked`),true);
     await js(`document.querySelector('#export-separate-classes').click();`);
     assert.equal(await js(`document.querySelector('#export-separate-classes').checked`),false);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
     await js(`document.querySelector('[data-export-drag=room]').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}));`);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','seat','room']);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','seat','room']);
     await js(`document.querySelector('[data-export-drag=room]').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true}));`);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
     assert.equal(await js(`document.querySelectorAll('.is-dragging,.drop-before,.drop-after').length`),0);
     await js(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
     await fs.writeFile(path.join(root,'artifacts','desktop-excel-column-order.png'),(await win.webContents.capturePage()).toPNG());
@@ -226,8 +215,8 @@ app.whenReady().then(async()=>{
     assert.deepEqual(await js(`JSON.parse(localStorage.getItem('klaslokaal-v1')).students`),imported.students);
     await js(`document.querySelector('[data-close]').click()`);
     // Actual default seating download round-trips after opting into class tabs.
-    await js(`document.querySelector('#export').click()`);
-    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
+    await js(`document.querySelector('[data-tab=export]').click()`);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
     const defaultPath=path.join(root,'artifacts','desktop-excel-default-roundtrip.xlsx');
     const defaultDownload=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{item.setSavePath(defaultPath);item.once('done',(_e,status)=>status==='completed'?resolve():reject(Error(status)));}));
     await js(`document.querySelector('#export-submit').click()`);await defaultDownload;
@@ -269,6 +258,36 @@ app.whenReady().then(async()=>{
     await js(`document.querySelector('#import-submit').click()`);
     assert.match(await js(`document.querySelector('#import-preview').textContent`),/Ontbrekende kolommen: Klas/);
     await js(`document.querySelector('[data-close]').click()`);
+    // Real XLSX import uses Dutch headers and the selected full-name order,
+    // including all sheets, a selected sheet, preview reset and persistence.
+    const nameWorkbook=await js(`(async()=>{const e=await import('./engine.mjs'),x=await import('./excel-export.mjs');const s=e.defaults();s.students=[{id:'a',name:'Van den Berg Emma',class:'3A',year:'3'},{id:'b',name:'Zulu Anne-Marie',class:'4B',year:'4'}];return Array.from(x.seatingWorkbook(s,{columns:['name']}));})()`);
+    await uploadWorkbook(nameWorkbook);
+    await js(`document.querySelector('#replace-list').click();document.querySelector('#import-class-from-sheet').click();document.querySelector('#import-submit').click()`);
+    assert.match(await js(`document.querySelector('#import-preview tbody').textContent`),/Van den Berg Emma/);
+    await js(`document.querySelector('#import-name-order').value='last-first';document.querySelector('#import-name-order').dispatchEvent(new Event('change'))`);
+    assert.equal(await js(`document.querySelector('#import-submit').textContent`),'Lijst controleren');
+    await js(`document.querySelector('#import-submit').click()`);
+    assert.deepEqual(await js(`[...document.querySelector('#import-preview tbody tr').cells].map(c=>c.textContent)`),['Emma Van den Berg','3A','3','Emma','Van den Berg']);
+    await js(`document.querySelector('#import-sheet').value='0';document.querySelector('#import-sheet').dispatchEvent(new Event('change'));document.querySelector('#import-submit').click()`);
+    assert.match(await js(`document.querySelector('#import-preview').textContent`),/1 geldige leerlingen/);
+    assert.match(await js(`document.querySelector('#import-preview tbody').textContent`),/Emma Van den Berg/);
+    await js(`document.querySelector('#import-sheet').value='all';document.querySelector('#import-sheet').dispatchEvent(new Event('change'));document.querySelector('#import-submit').click();document.querySelector('#import-submit').click()`);
+    await win.loadFile(path.join(root,'src','index.html'));
+    assert.deepEqual(await js(`JSON.parse(localStorage.getItem('klaslokaal-v1')).students.map(p=>[p.name,p.firstName,p.lastName,p.class])`),[['Emma Van den Berg','Emma','Van den Berg','3A'],['Anne-Marie Zulu','Anne-Marie','Zulu','4B']]);
+    // Pasted lists use the same setting; opening another dialog restores the
+    // existing first-name-first default for ordinary full-name exports.
+    await js(`document.querySelector('[data-tab="students"]').click();document.querySelector('#import-top').click()`);
+    assert.equal(await js(`document.querySelector('#import-name-order').value`),'first-last');
+    await js(`document.querySelector('#replace-list').click();document.querySelector('#import-text').value='Naam;Klas\\nPeeters Noah;5C';document.querySelector('#import-text').dispatchEvent(new Event('input'));document.querySelector('#import-name-order').value='last-first';document.querySelector('#import-name-order').dispatchEvent(new Event('change'));document.querySelector('#import-submit').click()`);
+    assert.deepEqual(await js(`[...document.querySelector('#import-preview tbody tr').cells].map(c=>c.textContent)`),['Noah Peeters','5C','5','Noah','Peeters']);
+    await js(`document.querySelector('[data-close]').click()`);
+    const splitWorkbook=await js(`(async()=>{const x=await import('./excel-export.mjs');return Array.from(x.tableWorkbook(['Volledige naam','Naam','Voornaam','Klas'],[['Zulu Anne Marie','Zulu','Anne Marie','4B']],{sheetName:'4B'}));})()`);
+    await uploadWorkbook(splitWorkbook);
+    await js(`document.querySelector('#replace-list').click();document.querySelector('#import-name-order').value='last-first';document.querySelector('#import-name-order').dispatchEvent(new Event('change'));document.querySelector('#import-submit').click()`);
+    assert.deepEqual(await js(`[...document.querySelector('#import-preview tbody tr').cells].map(c=>c.textContent)`),['Anne Marie Zulu','4B','4','Anne Marie','Zulu']);
+    await js(`document.querySelector('#import-submit').click()`);
+    await win.loadFile(path.join(root,'src','index.html'));
+    assert.deepEqual(await js(`JSON.parse(localStorage.getItem('klaslokaal-v1')).students.map(p=>[p.name,p.firstName,p.lastName])`),[['Anne Marie Zulu','Anne Marie','Zulu']]);
     if(errors.length)throw Error(errors.join('\n'));
     console.log(JSON.stringify({ok:true,checks:'real compressed example, file import and preview, persistence, split-name and attendance editing, XLSX round trip, Excel default, optional class tabs, combined download, column checklist, empty-selection validation, format and scope switching, actual selected-column download, per-class tabs and surname sorting, legacy seating import, invalid file'}));app.exit(0);
   }catch(error){console.error(error);app.exit(1);}

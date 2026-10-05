@@ -1,10 +1,26 @@
-import { inferYear, studentYearErrors } from './student-year.mjs';
+import { inferYear, normalizeYear, setManualYear, studentYearErrors } from './student-year.mjs';
 export { inferYear } from './student-year.mjs';
 export const STUDY_DAYS=['maandag','dinsdag','donderdag','vrijdag'];
 export const STUDY_HEADERS=['Naam hoofdaccount','Voornaam hoofdaccount','Klas',...STUDY_DAYS.map(day=>`Avondstudie op ${day}`)];
 const normalized=value=>String(value??'').trim().toLocaleLowerCase('nl');
 const normalizedName=value=>normalized(value).replace(/\s+/g,' ');
 const studentKey=(name,klass)=>JSON.stringify([normalized(name),normalized(klass)]);
+const nameHeader=value=>normalized(value)==='familienaam'?'achternaam':normalized(value)==='full name'?'volledige naam':normalized(value);
+function nameColumns(headers) {
+  const study=headers.includes('naam hoofdaccount')||headers.includes('voornaam hoofdaccount');
+  const first=headers.indexOf(study?'voornaam hoofdaccount':'voornaam');
+  // In Dutch rosters, Naam + Voornaam means surname + first name.
+  const surnameLabel=study?'naam hoofdaccount':headers.includes('achternaam')?'achternaam':first>=0?'naam':'achternaam';
+  const last=headers.indexOf(surnameLabel),split=first>=0&&last>=0;
+  const full=headers.findIndex(label=>label==='volledige naam'||label==='name'||label==='naam'&&!(split&&surnameLabel==='naam'));
+  return {study,first,last,split,full,recognized:study||split||full>=0||first>=0||last>=0};
+}
+function splitFullName(name,order) {
+  const parts=name.trim().split(/\s+/);
+  return parts.length<2?{firstName:'',lastName:name}:order==='last-first'
+    ?{firstName:parts.at(-1),lastName:parts.slice(0,-1).join(' ')}
+    :{firstName:parts[0],lastName:parts.slice(1).join(' ')};
+}
 
 // CSV/TSV records may contain quoted delimiters, escaped quotes and newlines.
 export function textRows(text) {
@@ -46,55 +62,64 @@ export function textRows(text) {
 export function rowsText(rows) {
   return rows.map(row=>Array.from(row,value=>`"${String(value??'').replaceAll('"','""')}"`).join('\t')).join('\n');
 }
-export function parseStudentRows(rows,existing=[],{defaultClass=''}={}) {
+export function parseStudentRows(rows,existing=[],{defaultClass='',fullNameOrder='first-last'}={}) {
   defaultClass=String(defaultClass??'').trim();
   const students=[],errors=[],seen=new Set(existing.map(s=>studentKey(s.name,s.class)));
   const firstIndex=rows.findIndex(row=>row.some(value=>String(value??'').trim()));
   if(firstIndex<0)return {students,errors,yearErrors:[]};
-  const headers=rows[firstIndex].map(normalized),study=headers.includes('naam hoofdaccount')||headers.includes('voornaam hoofdaccount');
-  const splitNames=!study&&headers.includes('achternaam')&&headers.includes('voornaam');
-  const standard=!study&&(headers.includes('naam')||headers.includes('name')||splitNames);
+  const headers=rows[firstIndex].map(nameHeader),names=nameColumns(headers),study=names.study;
+  const splitNames=names.split;
+  const standard=!study&&names.recognized;
   const hasHeader=study||standard;
+  const hasEveningStudy=study||standard&&STUDY_DAYS.some(day=>headers.includes(normalized(`Avondstudie op ${day}`)));
   const column=label=>headers.indexOf(normalized(label));
   if(rows[firstIndex].invalidQuotes)return {students,errors:[`Regel ${firstIndex+1}: controleer de aanhalingstekens.`],yearErrors:[]};
-  const recognized=new Set([...STUDY_HEADERS.map(normalized),'naam','name','achternaam','voornaam']);
+  const recognized=new Set([...STUDY_HEADERS.map(normalized),'naam','name','volledige naam','achternaam','voornaam','leerjaar']);
   const duplicate=headers.find((label,index)=>recognized.has(label)&&headers.indexOf(label)!==index);
-  if(hasHeader&&(duplicate||headers.includes('naam')&&headers.includes('name')))return {students,errors:[`Dubbele naam of kolomkop: ${duplicate||'Naam / name'}.`],yearErrors:[]};
-  const required=study?STUDY_HEADERS:standard?(splitNames?['Klas']:['Naam','Klas']):[];
-  const missing=required.filter(label=>column(label)<0&&!(label==='Naam'&&headers.includes('name'))&&!(label==='Klas'&&defaultClass));
+  const fullColumns=headers.filter((label,index)=>['naam','name','volledige naam'].includes(label)&&!(splitNames&&index===names.last));
+  if(hasHeader&&(duplicate||fullColumns.length>1))return {students,errors:[`Dubbele naam of kolomkop: ${duplicate||fullColumns.join(' / ')}.`],yearErrors:[]};
+  const required=study?STUDY_HEADERS:standard?(splitNames||names.full>=0?['Klas']:['Voornaam','Achternaam','Klas']):[];
+  const missing=required.filter(label=>column(label)<0&&!(label==='Klas'&&defaultClass));
   if(missing.length)return {students,errors:[`Ontbrekende kolommen: ${missing.join(', ')}.`],yearErrors:[]};
   for(let i=firstIndex+(hasHeader?1:0);i<rows.length;i++) {
     const row=rows[i];if(!row.some(value=>String(value??'').trim()))continue;
     const get=index=>String(row[index]??'').trim();
-    const lastName=study?get(column(STUDY_HEADERS[0])):splitNames?get(column('Achternaam')):'',firstName=study?get(column(STUDY_HEADERS[1])):splitNames?get(column('Voornaam')):'';
-    const fullNameColumn=column('Naam')>=0?column('Naam'):column('name');
+    let lastName=study||splitNames?get(names.last):'',firstName=study||splitNames?get(names.first):'';
+    const fullNameColumn=names.full;
     // Split fields define the displayed name too. A redundant full-name cell
     // must agree before we retain the row, so exports cannot identify someone else.
-    const name=study||splitNames?[firstName,lastName].filter(Boolean).join(' '):get(standard?fullNameColumn:0);
+    const hasSplitName=(study||splitNames)&&!!(firstName||lastName);
+    let name=hasSplitName?[firstName,lastName].filter(Boolean).join(' '):get(hasHeader?fullNameColumn:0);
+    const inferredReverse=!hasSplitName&&!!name&&fullNameOrder==='last-first';
+    if(inferredReverse){({firstName,lastName}=splitFullName(name,fullNameOrder));name=[firstName,lastName].filter(Boolean).join(' ');}
     const klass=hasHeader&&column('Klas')<0?defaultClass:get(hasHeader?column('Klas'):1);
     const year=inferYear(klass);
     if(row.invalidQuotes||!name||!klass){errors.push(`Regel ${i+1}: ${row.invalidQuotes?'controleer de aanhalingstekens':'naam en klas zijn verplicht'}.`);continue;}
-    if((study||splitNames)&&fullNameColumn>=0&&get(fullNameColumn)&&normalizedName(get(fullNameColumn))!==normalizedName(name)) {
-      errors.push(`Regel ${i+1}: de volledige naam (${column('Naam')>=0?'Naam':'name'}) komt niet overeen met de voornaam en achternaam. Corrigeer de naamkolommen.`);continue;
+    const suppliedYear=get(hasHeader?column('Leerjaar'):2);
+    if(suppliedYear&&!normalizeYear(suppliedYear)){errors.push(`Regel ${i+1}: leerjaar moet een positief geheel getal zijn.`);continue;}
+    if(hasSplitName&&fullNameColumn>=0&&get(fullNameColumn)&&![name,[lastName,firstName].filter(Boolean).join(' ')].some(candidate=>normalizedName(get(fullNameColumn))===normalizedName(candidate))) {
+      errors.push(`Regel ${i+1}: de volledige naam (${rows[firstIndex][fullNameColumn]}) komt niet overeen met de voornaam en achternaam. Corrigeer de naamkolommen.`);continue;
     }
     const eveningStudy={};let invalid=false;
-    if(study)for(const day of STUDY_DAYS){const value=get(column(`Avondstudie op ${day}`)),key=normalized(value);if(!['ja','nee',''].includes(key)){errors.push(`Regel ${i+1}: avondstudie op ${day} moet Ja, Nee of leeg zijn.`);invalid=true;}eveningStudy[day]=key==='ja'?'Ja':key==='nee'?'Nee':'';}
+    if(hasEveningStudy)for(const day of STUDY_DAYS){const value=get(column(`Avondstudie op ${day}`)),key=normalized(value);if(!['ja','nee',''].includes(key)){errors.push(`Regel ${i+1}: avondstudie op ${day} moet Ja, Nee of leeg zijn.`);invalid=true;}eveningStudy[day]=key==='ja'?'Ja':key==='nee'?'Nee':'';}
     if(invalid)continue;
     const key=studentKey(name,klass);
     if(seen.has(key)){errors.push(`Regel ${i+1}: ${name} (${klass}) staat al in de lijst.`);continue;}
-    seen.add(key);students.push({id:globalThis.crypto.randomUUID(),name,class:klass,year,absent:false,...(study?{firstName,lastName,eveningStudy}:splitNames?{firstName,lastName}:{})});
+    const student={id:globalThis.crypto.randomUUID(),name,class:klass,year,absent:false,...(hasSplitName||inferredReverse?{firstName,lastName}:{}),...(hasEveningStudy?{eveningStudy}:{})};
+    if(suppliedYear&&normalizeYear(suppliedYear)!==year)setManualYear(student,suppliedYear);
+    seen.add(key);students.push(student);
   }
   return {students,errors,yearErrors:studentYearErrors(students)};
 }
-export function parseStudents(text,existing=[]) {return parseStudentRows(textRows(text),existing);}
+export function parseStudents(text,existing=[],options={}) {return parseStudentRows(textRows(text),existing,options);}
 
-export function parseStudentSheets(sheets,existing=[],{classFromSheetName=false}={}) {
+export function parseStudentSheets(sheets,existing=[],{classFromSheetName=false,fullNameOrder='first-last'}={}) {
   const students=[],errors=[],reports=[];
   for(const sheet of sheets) {
     const name=String(sheet.name??'Werkblad'),rows=sheet.rows??[];
-    const options={defaultClass:classFromSheetName?sheet.name:''};
-    const header=rows.find(row=>row.some(value=>String(value??'').trim()))?.map(normalized)??[];
-    const recognized=['naam','name','naam hoofdaccount','voornaam hoofdaccount'].some(label=>header.includes(label))||header.includes('achternaam')&&header.includes('voornaam');
+    const options={defaultClass:classFromSheetName?sheet.name:'',fullNameOrder};
+    const header=rows.find(row=>row.some(value=>String(value??'').trim()))?.map(nameHeader)??[];
+    const recognized=nameColumns(header).recognized;
     const checked=sheet.error||!recognized?null:parseStudentRows(rows,[],options);
     const valid=!!checked?.students.length;
     if(!valid) {
@@ -111,8 +136,8 @@ export function parseStudentSheets(sheets,existing=[],{classFromSheetName=false}
 }
 
 export function studentNameParts(p) {
-  const parts=p.name.trim().split(/\s+/);
-  return {firstName:p.firstName??(parts.length>1?parts[0]:''),lastName:p.lastName??(parts.length>1?parts.slice(1).join(' '):p.name)};
+  const inferred=splitFullName(p.name,'first-last');
+  return {firstName:p.firstName??inferred.firstName,lastName:p.lastName??inferred.lastName};
 }
 export function studyRows(students) {
   return students.map(p=>{

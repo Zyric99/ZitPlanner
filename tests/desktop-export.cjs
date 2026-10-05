@@ -1,0 +1,114 @@
+const {app,BrowserWindow}=require('electron');
+const fs=require('node:fs/promises'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+app.setPath('userData',path.join(root,'artifacts','export-module-profile'));
+app.whenReady().then(async()=>{
+  try {
+    const win=new BrowserWindow({show:false,width:1200,height:850,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false}});
+    const errors=[],js=code=>win.webContents.executeJavaScript(code).catch(error=>{console.error(code,errors);throw error;});
+    win.webContents.on('console-message',event=>{if(event.level==='error')errors.push(event.message);});
+    await win.loadFile(path.join(root,'src','index.html'));
+    await js(`(async()=>{const e=await import('./engine.mjs'),r=await import('./rooms.mjs'),s=e.defaults();s.students=[{id:'a',name:'Anna Alpha',class:'3A',year:'3',absent:false,eveningStudy:{maandag:'Ja',dinsdag:'Nee',donderdag:'',vrijdag:''}}];r.initializeRooms(s);const second=r.newRoom(s,'Tweede lokaal','default');r.switchRoom(s,second.id);r.assignRoom(s,'a',s.activeRoomId);s.assignments={'grid-A1:0':'a'};r.captureRoom(s);const c=await import('./calendar-model.mjs');c.setCalendarEnabled(s,true,'2026-10-05');s.students[0].attendanceAbsent=true;c.saveCalendarAttendance(s,'2026-10-05');c.openCalendarDate(s,'2026-10-06');c.saveCalendarAttendance(s,'2026-10-06');localStorage.setItem('zitplanner-calendar-enabled','true');localStorage.setItem('klaslokaal-v1',JSON.stringify(s));})()`);
+    await win.loadFile(path.join(root,'src','index.html'));
+    assert.equal(await js(`document.querySelector('[data-tab=attendance]').nextElementSibling.dataset.tab`),'export');
+    for(const tab of ['room','students','distribution']) {
+      await js(`document.querySelector('[data-tab=${tab}]').click()`);
+      assert.equal(await js(`document.querySelectorAll('#export,[data-action=export-students],[data-room-action=export-all]').length`),0);
+    }
+    await js(`document.querySelector('[data-tab=export]').click()`);
+    assert.equal(await js(`document.querySelector('#modal').open`),false);
+    assert.equal(await js(`document.querySelectorAll('.export-panel p').length`),0);
+    assert.deepEqual(await js(`[...document.querySelector('#export-format').options].map(o=>o.value)`),['xlsx','pdf','print','png','svg','csv','json','calendar-xlsx','calendar-json']);
+    assert.equal(await js(`document.querySelector('#export-scope option[value=week]').disabled`),true);
+    assert.deepEqual(await js(`[...document.querySelectorAll('[data-export-column]:checked:not(:disabled)')].map(el=>el.dataset.exportColumn)`),['name','room','seat']);
+    assert.equal(await js(`document.querySelector('#export-evening-study').open`),false);
+    assert.equal(await js(`document.querySelector('[data-export-column=maandag]').checkVisibility()`),false);
+    assert.equal(await js(`document.querySelectorAll('#export-evening-study [data-export-column]:checked:disabled').length`),4);
+    assert.equal(await js(`document.querySelector('#export-attendance-colors').checked`),false);
+    assert.equal(await js(`document.querySelector('#export-calendar-date-field').hidden`),true);
+    await js(`document.querySelector('#export-evening-study summary').click();`);
+    assert.equal(await js(`document.querySelector('#export-evening-study').open`),false);
+    await js(`document.querySelector('#export-evening-study-enabled').click();document.querySelector('#export-evening-study summary').click();document.querySelector('[data-export-column=donderdag]').click();document.querySelector('[data-export-column=vrijdag]').click();document.querySelector('#export-attendance-colors').click();document.querySelector('[data-export-drag=dinsdag]').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true}));document.querySelector('[data-export-drag=eveningStudy]').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true}));document.querySelector('#export-evening-study summary').click();`);
+
+    await js(`document.querySelector('[data-export-column=class]').click();document.querySelector('#export-separate-classes').click();document.querySelector('#export-room').value=document.querySelector('#export-room').options[0].value;document.querySelector('#export-room').dispatchEvent(new Event('change'));`);
+    assert.equal(await js(`document.querySelector('#navigation [data-tab=export]').classList.contains('active')`),true);
+    assert.equal(await js(`document.querySelector('[data-export-column=class]').checked`),true);
+    assert.equal(await js(`document.querySelector('#export-separate-classes').checked`),false);
+    await js(`document.querySelector('#export-room').value=document.querySelector('#export-room').options[1].value;document.querySelector('#export-room').dispatchEvent(new Event('change'));`);
+    const download=async(format,extension)=>{
+      const target=path.join(root,'artifacts',`export-module.${extension}`);
+      const done=new Promise((resolve,reject)=>win.webContents.session.once('will-download',(_event,item)=>{
+        item.setSavePath(target);item.once('done',(_event,status)=>status==='completed'?resolve():reject(Error(status)));
+      }));
+      await js(`document.querySelector('#export-format').value='${format}';document.querySelector('#export-format').dispatchEvent(new Event('change'));document.querySelector('#export-submit').click()`);
+      await done;assert.equal(await js(`document.querySelector('#export-submit')!==null`),true);
+      return fs.readFile(target);
+    };
+    assert.equal(await js(`document.querySelector('#export-calendar-date-field').hidden`),true);
+    assert.equal(await js(`[...document.querySelectorAll('.export-panel label')].some(label=>label.textContent.includes('Week van'))`),false);
+    assert.equal(await js(`document.querySelector('#export-calendar-date').value`),'2026-10-06');
+    const workbook=await download('xlsx','xlsx');
+    assert.equal(workbook.readUInt32LE(0),0x04034b50);
+    assert.match(workbook.toString('utf8'),/r="D2" t="inlineStr" s="0"/);
+    assert.match(workbook.toString('utf8'),/r="E2" t="inlineStr" s="4"/);
+    const rows=await js(`(async()=>{const x=await import('./excel-import.mjs');return (await x.workbookSheets(new Uint8Array(${JSON.stringify([...workbook])})))[0].rows;})()`);
+    assert.deepEqual(rows,[['Naam','Klas','Lokaal','Avondstudie op dinsdag','Avondstudie op maandag','Plaats'],['Anna Alpha','3A','Tweede lokaal','Nee','Ja','A1']]);
+    assert.equal(await js(`document.querySelector('#export-evening-study').open`),false);
+    assert.equal(await js(`document.querySelector('#export-attendance-colors').checked`),true);
+    await js(`document.querySelector('#export-calendar-date').value='2026-10-12';document.querySelector('#export-calendar-date').dispatchEvent(new Event('change'));`);
+    const activeWeek=await download('xlsx','xlsx');
+    assert.match(activeWeek.toString('utf8'),/r="D2" t="inlineStr" s="0"/);
+    assert.match(activeWeek.toString('utf8'),/r="E2" t="inlineStr" s="4"/);
+    await js(`document.querySelector('#export-calendar-date').value='';document.querySelector('#export-calendar-date').dispatchEvent(new Event('change'));`);
+    assert.equal(await js(`document.querySelector('#export-submit').disabled`),false);
+    await js(`document.querySelector('#export-calendar-date').value='2026-10-06';document.querySelector('#export-calendar-date').dispatchEvent(new Event('change'));document.querySelector('#export-evening-study-enabled').click();`);
+    assert.equal(await js(`document.querySelector('#export-calendar-date-field').hidden`),true);
+    assert.equal(await js(`document.querySelector('#export-evening-study summary').getAttribute('aria-disabled')`),'true');
+    const disabledWorkbook=await download('xlsx','xlsx');
+    const disabledRows=await js(`(async()=>{const x=await import('./excel-import.mjs');return (await x.workbookSheets(new Uint8Array(${JSON.stringify([...disabledWorkbook])})))[0].rows;})()`);
+    assert.deepEqual(disabledRows[0],['Naam','Klas','Lokaal','Plaats']);
+    await js(`document.querySelector('#export-evening-study-enabled').click();`);
+    assert.equal(await js(`document.querySelector('#export-attendance-colors').checked`),true);
+    assert.match((await download('csv','csv')).toString('utf8'),/Anna Alpha;"3A"|"Anna Alpha";"3A"/);
+    const project=JSON.parse((await download('json','json')).toString('utf8'));
+    assert.equal(project.state.students[0].name,'Anna Alpha');assert.equal(project.version,1);
+    assert.match((await download('svg','svg')).toString('utf8'),/<svg/);
+    assert.equal((await download('png','png')).subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+    await js(`for(const index of [0,1]){document.querySelector('#export-room').value=document.querySelector('#export-room').options[index].value;document.querySelector('#export-room').dispatchEvent(new Event('change'));}document.querySelector('#export-format').value='xlsx';document.querySelector('#export-format').dispatchEvent(new Event('change'));`);
+    await js(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
+    assert.equal(await js(`document.documentElement.scrollWidth<=innerWidth`),true);
+    await fs.writeFile(path.join(root,'artifacts','desktop-export-module.png'),(await win.webContents.capturePage()).toPNG());
+    // Ordinary seating exports retain manual years when re-imported.
+    await js(`(async()=>{const e=await import('./engine.mjs'),r=await import('./rooms.mjs'),y=await import('./student-year.mjs'),s=e.defaults();s.students=[{id:'a',name:'Anna Alpha',class:'1A',year:'1',absent:false,eveningStudy:{maandag:'Ja',dinsdag:'Nee',donderdag:'Nee',vrijdag:'Nee'}},{id:'b',name:'Bert Beta',class:'2B',year:'2',absent:false,eveningStudy:{maandag:'Nee',dinsdag:'Ja',donderdag:'Nee',vrijdag:'Nee'}},{id:'c',name:'Cleo Gamma',class:'Onbekend',year:'',absent:false}];y.setManualYear(s.students[0],'3');y.setManualYear(s.students[1],'5');y.setManualYear(s.students[2],'6');r.initializeRooms(s);const other=r.newRoom(s,'Ander lokaal','default');r.assignRoom(s,'b',other.id);localStorage.setItem('zitplanner-calendar-enabled','false');localStorage.setItem('klaslokaal-v1',JSON.stringify(s));})()`);
+    await win.loadFile(path.join(root,'src','index.html'));
+    await js(`document.querySelector('[data-tab=export]').click();document.querySelector('#export-scope').value='all';document.querySelector('#export-scope').dispatchEvent(new Event('change'));document.querySelector('[data-export-column=class]').click();document.querySelector('[data-export-column=year]').click();document.querySelector('#export-evening-study-enabled').click();document.querySelector('#export-separate-classes').click();`);
+    const readSheets=bytes=>js(`(async()=>{const x=await import('./excel-import.mjs');return x.workbookSheets(new Uint8Array(${JSON.stringify([...bytes])}));})()`);
+    const seatingBytes=await download('xlsx','xlsx');
+    const seatingSheets=await readSheets(seatingBytes);
+    assert.equal(seatingSheets.length,1);assert.equal(seatingSheets[0].rows.length,4);
+    assert.deepEqual(seatingSheets[0].rows[0].slice(0,3),['Naam','Klas','Leerjaar']);
+    const csvBytes=await download('csv','csv');
+    const csvParsed=await js(`(async()=>{const p=await import('./student-import.mjs'),e=await import('./engine.mjs'),s=e.defaults(),result=p.parseStudents(${JSON.stringify(csvBytes.toString('utf8'))});s.students=result.students;return {errors:result.errors,yearErrors:result.yearErrors,students:e.migrateState(s).students};})()`);
+    assert.deepEqual(csvParsed.errors,[]);assert.deepEqual(csvParsed.yearErrors,[]);assert.deepEqual(csvParsed.students.map(p=>p.year),['3','5','6']);
+    // Actual exported workbook -> file import -> preview -> replacement -> reopen.
+    await js(`document.querySelector('[data-tab=students]').click();document.querySelector('#import-top').click();document.querySelector('#replace-list').checked=true;const transfer=new DataTransfer();transfer.items.add(new File([new Uint8Array(${JSON.stringify([...seatingBytes])})],'Zitplaatsen.xlsx'));const input=document.querySelector('#import-file');input.files=transfer.files;input.dispatchEvent(new Event('change'));`);
+    await js(`new Promise((resolve,reject)=>{const start=Date.now(),timer=setInterval(()=>{if(!document.querySelector('#import-submit').disabled){clearInterval(timer);resolve();}else if(Date.now()-start>10000){clearInterval(timer);reject(Error('Import timeout'));}},20);})`);
+    await js(`document.querySelector('#import-submit').click()`);
+    assert.match(await js(`document.querySelector('#import-preview').textContent`),/3 geldige leerlingen/);
+    assert.equal(await js(`document.querySelectorAll('[data-year-correction]').length`),0);
+    await js(`document.querySelector('#import-submit').click()`);
+    await win.loadFile(path.join(root,'src','index.html'));
+    const reimported=await js(`JSON.parse(localStorage.getItem('klaslokaal-v1')).students`);
+    assert.deepEqual(reimported.map(p=>[p.name,p.year,p.yearOverride]),[['Anna Alpha','3',{class:'1A',year:'3'}],['Bert Beta','5',{class:'2B',year:'5'}],['Cleo Gamma','6',{class:'Onbekend',year:'6'}]]);
+    assert.equal(reimported[1].eveningStudy.dinsdag,'Ja');
+    await js(`document.querySelector('[data-tab=students]').click();document.querySelector('#import-top').click();document.querySelector('#replace-list').checked=true;document.querySelector('#import-text').value=${JSON.stringify(csvBytes.toString('utf8'))};document.querySelector('#import-submit').click();`);
+    assert.match(await js(`document.querySelector('#import-preview').textContent`),/3 geldige leerlingen/);
+    assert.equal(await js(`document.querySelectorAll('[data-year-correction]').length`),0);
+    await js(`document.querySelector('#import-submit').click()`);
+    await win.loadFile(path.join(root,'src','index.html'));
+    assert.deepEqual(await js(`JSON.parse(localStorage.getItem('klaslokaal-v1')).students.map(p=>[p.name,p.year,p.yearOverride])`),reimported.map(p=>[p.name,p.year,p.yearOverride]));
+    assert.deepEqual(errors,[]);
+    console.log(JSON.stringify({ok:true,checks:'central export navigation, master study toggle, calendar attendance colors, preserved export options, actual XLSX/CSV/JSON/SVG/PNG downloads, Excel and CSV manual-year round trips through import and reload'}));
+    app.exit(0);
+  } catch(error) { console.error(error);app.exit(1); }
+});

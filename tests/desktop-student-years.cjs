@@ -14,7 +14,7 @@ app.whenReady().then(async()=>{
     await load();
     await js(`(async()=>{const e=await import('./engine.mjs');localStorage.setItem('klaslokaal-v1',JSON.stringify(e.defaults()));localStorage.removeItem('klaslokaal-v1-plans');localStorage.removeItem('klaslokaal-v1-lists');})()`);await load();
     await click('[data-tab="students"]');await click('#import-top');
-    const text=['Naam;Klas;Leerjaar','Detected;4B;2',...Array.from({length:9},(_,i)=>`Pupil ${i};Onbekend;3`)].join('\n');
+    const text=['Naam;Klas;Leerjaar','Detected;4B;',...Array.from({length:9},(_,i)=>`Pupil ${i};Onbekend;`)].join('\n');
     await input('#import-text',text);await click('#import-submit');
     assert.equal(await js("document.querySelectorAll('[data-year-correction]').length"),9);
     await click('#import-submit');assert.equal((await state()).students.length,0);
